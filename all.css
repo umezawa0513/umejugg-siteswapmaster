@@ -1,0 +1,60 @@
+.smallButton{
+    padding:10px 20px;
+    width: 60vw;
+    text-align: center;
+    background-color: #eeeeee;
+}
+a{
+    -webkit-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+    -moz-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+    -ms-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+    -o-transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+    transition: all 200ms cubic-bezier(0.390, 0.500, 0.150, 1.360);
+    display: block;
+    margin: 5px auto;
+    max-width: 180px;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+a.button {
+    color: rgba(30, 22, 54, 0.6);
+    box-shadow: rgba(30, 22, 54, 0.4) 0 0px 0px 2px inset;
+}
+
+a.button:hover {
+    color: rgba(255, 255, 255, 0.85);
+    box-shadow: rgba(30, 22, 54, 0.7) 0 0px 0px 40px inset;
+}
+body{
+    margin: 0px;
+    padding: 0px;
+    position: relative;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    height: 100vh;
+    width: 100vw;
+    background-color: white;
+}
+.home{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.c-form-text {
+    height: 2.4em;
+    width: 70%;
+    padding: 0 16px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 0 0 1px #ccc inset;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    }
+    
+    .c-form-text:focus {
+    outline: 0;
+    box-shadow: 0 0 0 2px rgb(33, 150, 243) inset;
+    }

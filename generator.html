@@ -1,0 +1,539 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>サイトスワップ自動生成/Siteswap Generator</title>
+        <style>
+            input[class="inputs"] {
+            width: 200px; /*--幅--*/
+            padding: 10px; /*--余白--*/
+            font-size: 20px; /*--文字サイズ--*/
+            border: solid 2px #cccccc; /*--ボーダー線--*/
+            border-radius: 15px; /*--角丸--*/
+            }
+
+
+            input[name = "textr"] {
+            size: 10; /*--幅--*/
+            padding: 10px; /*--余白--*/
+            font-size: 25px; /*--文字サイズ--*/
+            border: solid 2px #cccccc; /*--ボーダー線--*/
+            border-radius: 15px; /*--角丸--*/
+            }
+
+            form{
+                width:100%;
+                padding:0;
+                margin:0;
+            }
+
+            a.cp_btn {
+            display: block;
+            width: 160px;
+            padding: 0.8em;
+            text-align: center;
+            text-decoration: none;
+            color: #EC407A;
+            border: 2px solid #EC407A;
+            border-radius: 3px;
+            transition: .4s;
+            }
+            a.cp_btn:hover {
+            background: #EC407A;
+            color: #fff;
+            }
+            div.erer{
+                color: #ff0000;
+            }
+
+#haiiro{
+                color:#a9a9a9;
+            }
+            canvas {
+                background-color: #5a5a5a;
+                z-index: 3;
+              }
+              
+              .container {
+                width: 100%;
+                height: 500px;
+              }
+              .point{
+                cursor: pointer;
+              }
+        </style>
+        <style>
+            /* CSSコード */
+            @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+        </style>
+        <link rel="stylesheet" href="all.css">
+    </head>
+   
+   
+    <body>
+        <center>
+            <a href="home">
+                <h1 style="display: flex;justify-content: center;"><img src="title.png" alt="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップ
+                    マスター】" style="border-radius:20px;width:100px;height:auto;margin-top:3px;"></h1>
+                </a>
+        <p>入力された条件をもとにサイトスワップを生成します。</p>
+        <p><strong>半角英数字</strong>で入力してください。</p>
+
+        <form>
+        <div class="seisei">
+            <p><label for="ball">ボールの数を入力してください/Number of balls</label></p>
+            <p><input class="inputs" type="text" name="ball" id="ball"></p>
+        </div>
+        <div class="seisei">
+            <p><label for="period">周期数を入力してください/Period</label></p>
+            <p><input class="inputs" type="number" name="period" id="period"  min = "0" max = "10"></p>
+        </div>
+        <div class="seisei">
+            <p><label for="maxh">高さの上限を指定できます(任意)/Max height</label></p>
+            <p><input class="inputs" type="text" name="maxh" id="maxh"></p>
+        </div>
+        <div class="seisei">
+            <p><label for="excNum">除きたい数値をカンマ区切りで指定できます(任意)/0と2を除く場合:「0,2」</label></p>
+            <p><input class="inputs" type="text" name="excNum" id="excNum"></p>
+        </div>
+        <div class="seisei"></div>
+            <label for="isSort">昇順/降順</label>
+            <input type="checkbox" id="isSort" name="isSort" value="yes" onclick="document.getElementById('isSortText').textContent=(this.checked?'昇順':'降順')+'で出力されます'">
+            <p id="isSortText">降順で出力されます</p>
+       <a href="#" class="cp_btn" id="seiseibtn">生成/Generate</a>
+        </form>
+        <div id="er" class = "erer">
+        </div>
+        <p>クリックしたサイトスワップをシミュレーションできます<p>
+        <p><label for="resultForm" id="resultTitle">計算結果: </label></p>
+        <div id='arrow' style="font-size:20px"></div>
+        <div id="resultForm" style="font-size:28px"></div>
+        <div id='arrow2' style="font-size:20px"></div>
+        <p id = "haiiro">※計算量が多い場合は自動的に中断されます(周期数が大きいと爆発的に計算量が多くなります)</p>
+        <p id = "haiiro">※サイクリックシフトを区別していません</p>
+        <a href="home"  class="button smallButton">ホームに戻る</a>
+</center>
+<script>
+    class InputValidator{
+        constructor(ballInput,periodInput,maxhInput,excNumInput){
+            this.convert_num_zidou = {"a":10,"b":11,"c":12,"d":13,"e":14,"f":15,"g":16,"h":17,"i":18,"j":19,"k":20,"l":21,"m":22,"n":23,"o":24,"p":25,"q":26,"r":27,"s":28,"t":29,"u":30,"v":31,"w":32,"x":33,"y":34,"z":35,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15,"G":16,"H":17,"I":18,"J":19,"K":20,"L":21,"M":22,"N":23,"O":24,"P":25,"Q":26,"R":27,"S":28,"T":29,"U":30,"V":31,"W":32,"X":33,"Y":34,"Z":35,"10":10,"11":11,"12":12,"13":13,"14":14,"15":15,"16":16,"17":17,"18":18,"19":19,"20":20,"21":21,"22":22,"23":23,"24":24,"25":25,"26":26,"27":27,"28":28,"29":29,"30":30,"31":31,"32":32,"33":33,"34":34,"35":35,"":""};
+            this.ballInput=ballInput;
+            this.periodInput=periodInput;
+            this.maxhInput=maxhInput;
+            this.excNumInput=excNumInput;
+            this.ballNum = this.in_convert(ballInput);
+            this.periodNum = this.in_convert(periodInput);
+            this.maxhNum = this.in_convert(maxhInput);
+            this.excNumL;
+            this.erValue="";
+            this.isValid=this.isErAndSetErValue();
+        }
+        excNum_er(excNumInput){
+            let excNumL=excNumInput.split(",");
+            for(let i=0;i<excNumL.length;i++){
+                let excNum=this.in_convert(excNumL[i]);
+                if (excNum<0){
+                    this.erValue+="<p>除去する数値は0以上にしてください</p>";
+                    return false
+                }
+                else if (excNum>35){
+                    this.erValue+="<p>除去する数値は35以下にしてください</p>";
+                    return false
+                }
+                else if (excNum=="％＄存在しない"){
+                    this.erValue+="<p>数値除去指定欄に不適切な値が入力されています。</p>"
+                    return false;
+                }
+            }
+            this.excNumL=excNumL.map(e => this.in_convert(e));
+            //console.log(this.excNumL);
+            this.excNumL=this.excNumL.filter(item => item !== "");
+            //console.log(this.excNumL);
+            return true;
+        }
+        isErAndSetErValue(){
+            return (this.ball_er(this.ballNum)&&this.period_er(this.periodNum)&&this.maxh_er(this.maxhNum,this.ballNum)&&this.excNum_er(this.excNumInput))
+        }
+
+        isNumberAllowString(n){
+            const type = typeof(n);
+            if ( type === 'number' && Number.isFinite(n) ) {
+                return true;
+            }
+            if ( type === 'string' && n.trim() !== '' && Number.isFinite(n - 0) ) {
+                return true;
+            }
+            return false;
+        };
+
+        in_convert(in_b){
+            if (this.isNumberAllowString(in_b)){
+                return Number(in_b);
+            }
+            else{
+                if (in_b in this.convert_num_zidou) {
+                    //in_bというキーが存在する場合の処理
+                    return this.convert_num_zidou[in_b];
+                } 
+                else {
+                    //in_bというキーが存在しない場合の処理
+                    return "％＄存在しない";
+                }
+            }
+        };
+
+        ball_er(ball){
+            if (ball<0){
+                this.erValue+="<p>ボールの数は0以上にしてください</p>";
+                return false
+            }
+            else if (ball>35){
+                this.erValue+="<p>ボールの数は35以下にしてください</p>";
+                return false
+            }
+            else if (ball==""){
+                this.erValue+="<p>ボールの数を入力してください</p>";
+                return false
+            }
+            else if (ball=="％＄存在しない"){
+                this.erValue+="<p>ボールの数に不適切な値が入力されています。</p>"
+                return false
+            }
+            else{
+                return true
+            }
+        };
+
+        period_er(period){
+            if (period<0){
+                this.erValue+="<p>周期数は0以上にしてください</p>";
+                return false
+            }
+            else if (period>10){
+                this.erValue+="<p>周期数は10以下にしてください</p>";
+                return false
+            }
+            else if (period==""){
+                this.erValue+="<p>周期数を半角数字で入力してください</p>";
+                return false
+            }
+            else if (period=="％＄存在しない"){
+                this.erValue+="<p>周期数に不適切な値が入力されています。</p>"
+                return false
+            }
+            else{
+                return true
+            }
+        };
+
+        maxh_er(maxh,ball){
+            if (maxh<0){
+                this.erValue+="<p>最大の高さは0以上にしてください</p>"
+                return false
+            }
+            else if (maxh>35){
+                this.erValue+="<p>最大の高さは35以下にしてください</p>"
+                return false
+            }
+            else if (maxh==""){
+                this.maxhNum =35;
+                return true
+            }
+            else if (Number(maxh)<Number(ball)){
+                this.erValue+="<p>最大の高さはボールの数以上を指定してください</p>"
+                return false
+            }
+            else if (maxh=="％＄存在しない"){
+                this.erValue+="<p>最大の高さに不適切な値が入力されています。</p>"
+                return false
+            }
+            else{
+                return true
+            }
+        };
+    }
+    class SiteSwap{
+        constructor(ballInputNum,periodInputNum,maxhInputNum,isSort,excNumL){
+            this.ballInputNum=ballInputNum;
+            this.periodInputNum=periodInputNum;
+            this.maxhInputNum=maxhInputNum;
+            this.excNumL=excNumL;
+            this.calcMax = 1000000;
+            this.resultMax = 10000;
+            this.isSort = isSort;
+            this.erValue="";
+            this.result=[];
+        }
+        create(){//サイトスワップを数字の配列で作成
+            let erValue="";
+            function findCombinations(targetSum, numNumbers, maxNum,minNum,calcMax,resultMax,isSort,period,excNumL){
+                // 組み合わせを計算
+                const result = [];
+                let calcNum=0;
+                let isStop=false;
+                let er={er1:0,er2:0,er3:0,er4:0,er5:0,er6:0,er7:0}
+                let convert={0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",10:"a",11:"b",12:"c",13:"d",14:"e",15:"f",16:"g",17:"h",18:"i",19:"j",20:"k",21:"l",22:"m",23:"n",24:"o",25:"p",26:"q",27:"r",28:"s",29:"t",30:"u",31:"v",32:"w",33:"x",34:"y",35:"z"};
+                function pushUnique(pushData){
+                    pushData=pushData.map(e => convert[e]);
+                    if(result.length==0){
+                        er.er7++;
+                        result.push(pushData.join(''));
+                    }
+                    let checkData=pushData;
+                    for(let i=0;i<pushData.length;i++){
+                        checkData.push(checkData.shift());
+                        if(result.includes(checkData.join(''))){
+                            return;
+                        }
+                    }
+                    er.er7++;
+                    result.push(pushData.join(''));
+                }
+                function exsistSameValue(a){
+                    let sss = new Set(a);
+                    return 
+                }
+                function isThrowable(pushList,period){
+                    let t=pushList.map((num, index) => (num + index+1)%period);
+                    return new Set(t).size == t.length;
+                }
+                function findCombinationsHelper(targetSum, numNumbers, maxNum,minNum, currentCombination){
+                    if(isStop){
+                        return;
+                    }
+                    if(result.length>resultMax){
+                        isStop=true;
+                        //console.log("出力数が"+resultMax+"を超えたため中断されました");
+                        erValue="出力数が"+resultMax+"を超えたため中断されました";
+                        return;
+                    }
+                    if(calcNum>calcMax){
+                        isStop=true;
+                        //console.log("計算量が"+calcMax+"回を超えたため中断されました");
+                        erValue="計算量が"+calcMax+"回を超えたため中断されました";
+                        return;
+                    }
+                    if(targetSum/numNumbers>maxNum){
+                        er.er1++;
+                        return;
+                    }
+                    if(numNumbers === 1){
+                        if(excNumL.includes(targetSum)){
+                            er.er2++;
+                            return;
+                        }
+                        if(currentCombination.length>=2&&!isThrowable([...currentCombination, targetSum],period)){
+                            er.er4++;
+                            return;
+                        }
+                        if(isThrowable([...currentCombination, targetSum],period)){
+                            pushUnique([...currentCombination, targetSum]);
+                        }
+                        //result.push([...currentCombination, targetSum]);
+                        er.er5++;
+                        return;
+                    }
+                    if(isSort){
+                        for (let i = (maxNum>targetSum?targetSum:maxNum); i >= (currentCombination.length==0?minNum:0); i--) {
+                        calcNum++;
+                        //console.log(excNumL);
+                        if(excNumL.includes(i)){
+                            er.er2++;
+                        }else if([...currentCombination, i].length>=2&&!isThrowable([...currentCombination, i],period)){
+                            er.er6++;
+                        }else{
+                            //console.log(numNumbers,[...currentCombination, i]);
+                            //if(targetSum - i>=0){i = (maxNum>targetSum?targetSum:maxNum)にしたので必要ない
+                                findCombinationsHelper(targetSum - i, numNumbers - 1, maxNum,minNum, [...currentCombination, i]);
+                            //}
+                        }
+                    }
+                    }else{
+                        for (let i = (currentCombination.length==0?minNum:0); i <= (maxNum>targetSum?targetSum:maxNum); i++){
+                        calcNum++;
+                        if(excNumL.includes(i)){
+                            er.er2++;
+                        }else if([...currentCombination, i].length>=2&&!isThrowable([...currentCombination, i],period)){
+                            er.er6++;
+                        }else{
+                            //console.log(numNumbers,[...currentCombination, i]);
+                            //if(targetSum - i>=0){
+                                findCombinationsHelper(targetSum - i, numNumbers - 1, maxNum,minNum, [...currentCombination, i]);
+                            //}
+                        }
+                    }
+                    }
+                }
+
+                findCombinationsHelper(targetSum, numNumbers, maxNum,minNum,[]);
+                console.log(JSON.stringify(er));
+                return result;
+            }
+            let targetSum = this.ballInputNum*this.periodInputNum;//配列の合計値
+            let numNumbers = this.periodInputNum;//周期数
+            let maxNum = (this.ballInputNum*this.periodInputNum>this.maxhInputNum?this.maxhInputNum:this.ballInputNum*this.periodInputNum);//最大値
+            let minNum = this.ballInputNum;//最初の最小値
+            let calcMax = this.calcMax;
+            let resultMax = this.resultMax;
+            let isSort = this.isSort;
+            let output = findCombinations(targetSum,numNumbers,maxNum,minNum,calcMax,resultMax,isSort,this.periodInputNum,this.excNumL);
+            this.erValue=erValue;
+            //this.result=output;
+            return output;
+            //console.log(output);
+        }
+    }
+    let count=0;
+    let startTime;
+    let endTime;
+    var button = document.getElementById("seiseibtn");
+    let result=[];
+    button.addEventListener("click", function(e) {
+        e.preventDefault();
+        // 4つの入力フォームの値を取得
+        let ballInput = document.getElementById("ball").value;
+        let periodInput = document.getElementById("period").value;
+        let maxhInput = document.getElementById("maxh").value;
+        let excNumInput = document.getElementById("excNum").value;
+        let isSortInput = document.getElementById('isSort').checked;
+
+        let input=new InputValidator(ballInput,periodInput,maxhInput,excNumInput);
+        if(input.isValid){
+            document.getElementById("er").innerHTML="";
+            document.getElementById("resultForm").innerHTML="";
+            //console.log(input.ballNum,input.maxhNum,input.periodNum);
+            let siteswap=new SiteSwap(input.ballNum,input.periodNum,input.maxhNum,!isSortInput,input.excNumL);
+            async function getSiteswap(){
+                document.getElementById("er").innerHTML=await "<p>計算中です</p>";
+                count++;
+                console.log("計算中です...",count);
+                document.getElementById("resultForm").style.display="none"
+                result=await siteswap.create();
+                await displayNext(0,100);
+                endTime = performance.now();
+                const elapsedTime = endTime - startTime;
+                console.log(`処理時間: ${elapsedTime} ミリ秒`);
+                console.log("siteswap.create() 処理が完了しました");
+                setTimeout(() => {
+                    button.style.display="block";
+                    document.getElementById("er").innerHTML="";
+                    //document.getElementById("er").innerHTML+=(elapsedTime>100?`<p>処理時間: ${elapsedTime.toFixed(0)} ミリ秒</p>`:"");
+                    document.getElementById("er").innerHTML+=siteswap.erValue;
+                    document.getElementById("resultForm").style.display="block";
+                    var element = document.getElementById("resultTitle");
+                    // 要素が存在する場合、その要素までスクロール
+                    if (element) {
+                        element.scrollIntoView({ behavior: 'smooth'});
+                    }
+                }, 1000);
+            }
+            button.style.display="none";
+            console.log("非同期処理を開始します");
+            startTime = performance.now();
+            getSiteswap();
+            console.log("別の処理を実行します");
+        }else{
+            document.getElementById("er").innerHTML="";
+            document.getElementById("resultForm").innerHTML="";
+            document.getElementById("er").innerHTML+=input.erValue;
+        }
+    });
+
+    async function displayNext(s,l){
+        event.preventDefault();
+        document.getElementById("resultForm").innerHTML="";
+        document.getElementById("arrow").innerHTML="";
+        document.getElementById("arrow2").innerHTML="";
+        let last=(result.length>l?l:result.length);
+        if(s-100>=0){
+            document.getElementById("arrow").innerHTML+=`<a href="#" name="Previous" id="Previous" style="display:inline" onclick=displayNext(${s-100},${l-100})><<前を表示     </a>`;
+            document.getElementById("arrow2").innerHTML+=`<a href="#" name="Previous" id="Previous" style="display:inline" onclick=displayNext(${s-100},${l-100})><<前を表示     </a>`;
+        }
+        if(result.length>l){
+            document.getElementById("arrow").innerHTML+=`<a href="#" name="next" id="next" style="display:inline" onclick=displayNext(${s+100},${l+100})>   次を表示>> </a>`;
+            document.getElementById("arrow2").innerHTML+=`<a href="#" name="next" id="next" style="display:inline" onclick=displayNext(${s+100},${l+100})>   次を表示>> </a>`;
+        }
+        document.getElementById("resultForm").innerHTML=`<p id="displaySSN" style="font-size: 20px;" >${result.length}個中、${s+1}〜${last}が表示されています</p>`;
+        for(let i=s;i<last;i++){
+            document.getElementById("resultForm").innerHTML+=`<p class="point">${result[i]}</p>`
+        }
+    }
+    let canCreateCanvas=true;
+    document.getElementById("resultForm").addEventListener('pointerdown', function(event) {
+        event.stopPropagation();
+        // クリックされた要素がpタグであるかを確認
+        if (event.target.tagName === 'P') {
+            // クリックされたpタグのテキストを取得
+            var clickedText = event.target.textContent;
+            if(event.target.id!="displaySSN"){
+                console.log('クリックされたテキスト:', clickedText);
+                if(canCreateCanvas){
+                    sim(event.target,clickedText);
+                }
+            }
+        }
+    });
+    function sim(d,s){
+        canCreateCanvas=false;
+        (async () => {
+            var element = await document.getElementById('sim');
+            if (element) {
+                // 要素が存在する場合、削除
+                await element.remove();
+            }
+            await d.insertAdjacentHTML('afterend', ` <center id="sim">
+                <div><canvas id="canvas" width="300" height="500" style="background-color: dimgrey;"></canvas></div>
+                <div><input type="range" id="SR" min="0" max="100" value="30" style="display:none"></div></center>`);
+                console.log(s);
+            FS(s);
+            var element = document.getElementById('sim');
+            // 要素が存在する場合、その要素までスクロール
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth',block: 'center' });
+            }
+            setTimeout(() => {
+                document.getElementById('SR').style.display="block";
+                canCreateCanvas=true;
+            }, 500);
+        })();
+
+    }
+</script>
+<script>
+    function FS($){let e=document.querySelector("#SR").value/10,l="#FFFFFF",_="#000000",n=null,o=null,u=null,h=[],a=[],f=[],s,g,c=x2=x3=x4=null,
+    p=null,v=0,T,y,P,b,S,R=[],m=[];function x($,l,_,n){let o=$[0]-1,u=$[4],a=$[3];a-u||(u+=.1);let f=u-a,s=a+$[1],g=f/(o*P);o||(g=f/1);
+    let c=400-10*(o+1)**2/p;o-1||(c=400-10*(o+25.5/(S-b))**2/p);let v=(a+u)/2,T=(c-400)/((v-a)*(v-u))*((s+=g*l*e)-a)*(s-u)+400;
+    T<=401&&(ctx.beginPath(),ctx.arc(s,T,_,0,2*Math.PI),ctx.fill()),h[n]=[$[0],s-a,T,$[3],$[4]]}function F($,l,_,n){let o=$[4],u=$[3];
+    u==o&&(o+=.1);let h=o-u,f=u+$[1],s=(u+o)/2,g=-((400-10*(1+25.5/(S-b))**2/p-400)/((s-u)*(s-o)))*((f+=h/(1*P)*l*e)-u)*(f-o)+400;
+    ctx.beginPath(),ctx.arc(f,g,_,0,2*Math.PI),ctx.fill(),a[n]=[$[0],f-u,g,$[3],$[4]]}function L($,n,o){let u,h,a=$[4],s=$[3],
+    g={RU:[1,-1],RD:[-1,-1],LU:[1,1],LD:[-1,1]}[$[0]];u=g[0],h=g[1],s-a||(a+=.1);let c=a-s,v=s+$[1],T=(s+a)/2,y=u*((400-10*(1+25.5/(S-b))**2/p-400)/((T-s)*(T-a)))*((v+=c/(1*P)*n*e)-s)*(v-a)+400;
+    ctx.beginPath(),ctx.moveTo(v,y),ctx.lineTo((w=width/2)+(r=h*(S-b))/.9-(v-w)/5,400-(t=S-b)/1.7+(y-400)/7),ctx.stroke(),ctx.beginPath(),
+    ctx.moveTo(w+r/.9-(v-w)/5,400-t/1.7+(y-400)/7),ctx.lineTo(w+r/2,400-1.6*t),ctx.lineTo(w+r/12,400-1.7*t),ctx.stroke(),ctx.beginPath(),
+    ctx.fillStyle=_,ctx.fill(),ctx.arc(w+r/.9-(v-w)/5,400-t/1.7+(y-400)/7,.113*t,0,2*Math.PI),ctx.fill(),ctx.fillStyle=l,f[o]=[$[0],v-s,y,s,a]}
+    function D(U){if(!0==o){ctx.fillStyle=l;let I=FM(n);for(i=0,x2=(r=width/2)-(w=170/(I=I>=5?I:5))|0,x3=r+w|0,p=10*I**2/370,x4=(x3-r)*1.5+x3|0,
+    c=x2-(x3-r)*1.5|0,S=((b=r+w)-r)*1.5+x3,s=FI(n),h=[],a=[],f=[],v=0,T=1,y=0,P=0,R=[];i<36;i++)R.push("_");for(i=0,m=[];i<36;i++)m.push("_");
+    ctx.lineWidth=(S-b)/5}if(!1!=o){g||(g=U),dt=(U-g)/1e3,g=U,ctx.clearRect(0,0,width,height),ctx.beginPath(),ctx.fill();let z=[];
+    for(let E=0;E<h.length;E++)h[E][2]>400||z.push(h[E]);h=z;let B=[];for(let C=0;C<a.length;C++)a[C][2]<400||B.push(a[C]);a=B;let H=[];
+    for(let M=0;M<f.length;M++)(f[M][2]>=400&&"RU"!=f[M][0]&&"LU"!=f[M][0]||f[M][2]<=400&&"RD"!=f[M][0]&&"LD"!=f[M][0])&&H.push(f[M]);
+    for(f=H,ctx.strokeStyle=_,ctx.beginPath(),ctx.arc(w=width/2,400-2.5*(r=S-b)+r/6,r/1.5-r/6,0,2*Math.PI),ctx.stroke(),ctx.beginPath(),
+    ctx.moveTo(w,400-2.5*r+r/1.5),ctx.lineTo(w,400),ctx.lineTo(w+.6*r,400+3*r/2),ctx.lineTo(w+r,400+3*r),ctx.lineTo(w+.9*r,400+3*r),
+    ctx.lineTo(w+.6*r,400+3*r/2),ctx.stroke(),ctx.beginPath(),ctx.moveTo(w,400),ctx.lineTo(w-.6*r,400+3*r/2),ctx.lineTo(w-r,400+3*r),
+    ctx.lineTo(w-.9*r,400+3*r),ctx.lineTo(w-.6*r,400+3*r/2),ctx.stroke(),ctx.fillStyle=l,ctx.font="30px serif",ctx.fillText($,0,height),
+    i=f.length;i--;L(f[i],dt,i));for(i=h.length;i--;x(h[i],dt,FB(n),i));for(i=a.length;i--;F(a[i],dt,FB(n),i));(T+=dt*e)-y>1&&(R.shift(),R.push("_"),
+    R[s[v%(r=s.length)][0]]=s[w=v%r][4],m.shift(),m.push("_"),m[s[w][0]]=s[w][0],q=(v+1)%r,1!=m[1]&&"_"!=R[1]&&a.push([m[1],0,400,R[1],s[q][3]]),
+    s[w][0]&&h.push(s[w]),s[q][0]-1||(R[2]=s[q][4]),v%2?(f.push(["RD",0,400,c,x2]),f.push(["LU",0,400,x3,x4])):(f.push(["RU",0,400,x2,c]),
+    f.push(["LD",0,400,x4,x3])),v+=1,P=T-y,y=T),u=requestAnimationFrame(D)}!1==o&&(u=null,ctx.clearRect(0,0,width,height)),o=null}
+    function U($,e){n=$,o=e,null==u&&(u=requestAnimationFrame(D))}ctx=(canvas=document.getElementById("canvas")).getContext("2d"),
+    width=canvas.width,height=canvas.height,DC={0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,a:10,b:11,c:12,d:13,e:14,f:15,g:16,h:17,
+    i:18,j:19,k:20,l:21,m:22,n:23,o:24,p:25,q:26,r:27,s:28,t:29,u:30,v:31,w:32,x:33,y:34,z:35,A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,
+    I:18,J:19,K:20,L:21,M:22,N:23,O:24,P:25,Q:26,R:27,S:28,T:29,U:30,V:31,W:32,X:33,Y:34,Z:35},FC=$=>{for(i=r=$.length,t=new Set;
+    i--;t.add(($[i]+i+1)%r));return!!(t.size-r||$.reduce(($,e)=>$+e)/r%1)},FV=$=>{for(i=$.length;i--;)if(!($[i]in DC))return!0;return!1},
+    FM=$=>Math.max(...$),FB=$=>FM($)/5|0?80/FM($):16,FI=$=>{for($.length%2-1||($=$.concat($)),k=[],i=0;i<$.length;i++)k.push([r=$[i],0,400,
+    i%2?x3:x2,r%2^i%2?r-1?x4:x3:r-1?c:x2]);return k},document.querySelector("#SR").addEventListener("input",function $(l){e=l.target.value/10},!1),
+    !function $(e){let l=e.split(""),_=[];for(i=0;i<(r=l.length);i++)_.push(DC[l[i]]);let n=[0];FV(l)?U(n,!0):r?r>100?U(n,!0):FC(_)?U(n,!0):U(_,!0):U(n,!0)}($)}
+</script>
+    </body>
+</html>

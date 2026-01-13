@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップモンスター - サイトスワップマスター</title>
+    <style>
+        iframe {
+            display: block;
+        }
+        main > div > div {
+            margin: 1px;
+        }
+    </style>
+</head>
+<body>
+        <main>
+            <div style ="display: flex;    flex-wrap: wrap;    justify-content: center;"></div>
+        </main>
+        <script>
+            // iframeを生成する関数
+            function createIframe(pattern, object, speed) {
+                const wrapper = document.createElement('div');
+                wrapper.style.width = '50px';
+                
+                const iframe = document.createElement('iframe');
+                iframe.src = `embed?pattern=${pattern}&object=${object}&speed=${speed}`;
+                iframe.style.width = '100%';
+                iframe.style.aspectRatio = '3 / 5';
+                iframe.style.border = '0';
+                iframe.scrolling = 'no';
+                
+                wrapper.appendChild(iframe);
+                return wrapper;
+            }
+            
+            // メインのコンテナを取得
+            const container = document.querySelector('main > div');
+            
+            // 複数のiframeを生成
+            const speeds = [90, 92, 94, 96, 98, 100];
+            const pattern = '97531';
+            const object = 'club';
+            
+            // 必要な数だけ繰り返す（例：8セット = 48個）
+            for (let i = 0; i < 30; i++) {
+                speeds.forEach(speed => {
+                    const iframeWrapper = createIframe(pattern, object, speed);
+                    container.appendChild(iframeWrapper);
+                });
+            }
+            </script>
+</body>
+</html>

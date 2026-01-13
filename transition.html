@@ -1,0 +1,446 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>サイトスワップを繋げる/Transition from Siteswap</title>
+        <style>
+/*入力された二つのサイトスワップを繋げるための間に入る数列を自動で計算してくれます。サイトスワップ自動生成とともに遊んでみましょう。*/
+            input[type="text"] {
+            size: 10; /*--幅--*/
+            padding: 10px; /*--余白--*/
+            font-size: 20px; /*--文字サイズ--*/
+            border: solid 2px #cccccc; /*--ボーダー線--*/
+            border-radius: 15px; /*--角丸--*/
+            }
+
+            form{
+                width:100%;
+                padding:0;
+                margin:0;
+            }
+
+            a.cp_btn {
+            display: block;
+            width: 160px;
+            padding: 0.8em;
+            text-align: center;
+            text-decoration: none;
+            color: #EC407A;
+            border: 2px solid #EC407A;
+            border-radius: 3px;
+            transition: .4s;
+            }
+            a.cp_btn:hover {
+            background: #EC407A;
+            color: #fff;
+            }
+
+            div.erer{
+                color: #ff0000;
+            }
+
+            div.saitosyousai{
+                font-size:18px;
+            }
+
+            #saitoprint{
+                font-size:30px;
+            }
+
+            #saitoprint2{
+                font-size:30px;
+            }
+
+            #saitosyousai5{
+                font-size:30px;
+            }
+
+            #haiiro{
+                color:#a9a9a9;
+            }
+        </style>
+        <style>
+            /* CSSコード */
+            @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+        </style>
+        <link rel="stylesheet" href="all.css">
+    </head>
+   
+   
+    <body>
+        <center>  
+            <a href="home">
+                <h1 style="display: flex;justify-content: center;"><img src="title.png" alt="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップ
+                    マスター】" style="border-radius:20px;width:100px;height:auto;margin-top:3px;"></h1>
+                </a>
+            <p>入力された二つのサイトスワップを繋げることができます。</p>
+        <p><strong>半角英数字</strong>で入力してください。</p>
+        <p>　</p>
+        <form>
+        <p><div class="kakunin">
+            <label for="skaku">サイトスワップ1</label>
+            <p><input type="text" name="skaku" id="skaku"></input></p>
+            <label for="skaku2">サイトスワップ2</label>
+            <p><input type="text" name="skaku2" id="skaku2"></input></p>
+        </div></p>
+       <a href="#" class="cp_btn" id="kakuninbtn">読み込む</a>
+       </form>
+        <div class = "erer">
+        <p><output id = "er"　name = "er"></output></p>
+        <p><output id = "er1"　name = "er1"></output></p>
+        </div>
+<hr>
+        <p class = "saitoprint">
+        <p>入力した数列1→＜<output id = "saitoprint"　name = "saitoprint"></output>＞</p>
+        <p>入力した数列2→＜<output id = "saitoprint2"　name = "saitoprint2"></output>＞</p>
+        </p>
+        <div class = "saitosyousai">
+        <p><output id = "saitosyousai0"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai1"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai2"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai3"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai4"　name = "saitosyousai"></output></p>
+        <p>結合したサイトスワップ</p>
+        <p><output id = "saitosyousai5"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai6"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai7"　name = "saitosyousai"></output></p>
+        <p><output id = "saitosyousai8"　name = "saitosyousai"></output></p>
+        </div>
+        <p></p>
+        <a href="home"  class="button smallButton">ホームに戻る</a>
+<hr>
+        <p id = "haiiro">※「対応していない文字が含まれています」と表示された場合は、全角になっていないか、空欄が含まれていないか、を確認してください。</p>
+</center>
+<script>
+    // ボタンの要素を取得
+    var button = document.getElementById("kakuninbtn");
+    
+    // ボタンをクリックした時の処理
+    button.addEventListener("click", function(e) {
+        e.preventDefault();
+
+  
+    // ボタンの要素を取得
+
+    //----------------------------------------------------------
+const convert_Alpha = {0:"0", 1:"1", 2:"2", 3:"3", 4:"4", 5:"5", 6:"6", 7:"7", 8:"8", 9:"9", 10:"a", 11:"b",
+           12:"c",13:"d", 14:"e", 15:"f", 16:"g",17:"h", 18:"i", 19:"j", 20:"k", 21:"l", 22:"m",23:"n",
+           24:"o", 25:"p", 26:"q", 27:"r", 28:"s", 29:"t", 30:"u", 31:"v", 32:"w", 33:"x", 34:"y", 35:"z"
+        };
+
+const convert_num = {
+    "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"a":10,"b":11,"c":12,"d":13,"e":14,
+    "f":15,"g":16,"h":17,"i":18,"j":19,"k":20,"l":21,"m":22,"n":23,"o":24,"p":25,"q":26,"r":27,"s":28,
+    "t":29,"u":30,"v":31,"w":32,"x":33,"y":34,"z":35,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15,"G":16,
+    "H":17,"I":18,"J":19,"K":20,"L":21,"M":22,"N":23,"O":24,"P":25,"Q":26,"R":27,"S":28,"T":29,"U":30,
+    "V":31,"W":32,"X":33,"Y":34,"Z":35,
+};
+
+ function in_convert(in_b){
+            if (in_b in convert_num) {
+                //in_bというキーが存在する場合の処理
+                return true;
+            } 
+            else {
+                //in_bというキーが存在しない場合の処理
+                return false;
+            }
+        };
+
+        function check_conv(skaku_str_l_p){
+            let skaku_str_l_check = 0;
+            for (let i = 0 ; i < skaku_str_l_p.length ; i++){
+                if (in_convert(skaku_str_l_p[i])){
+                    skaku_str_l_check += 1;
+                }
+            }
+            if (skaku_str_l_check == skaku_str_l_p.length){
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
+
+ function in_convert1(in_b){
+            if (in_b in convert_Alpha) {
+                //in_bというキーが存在する場合の処理
+                return true;
+            } 
+            else {
+                //in_bというキーが存在しない場合の処理
+                return false;
+            }
+        };
+
+        function check_conv1(skaku_str_l_p){
+            let skaku_str_l_check = 0;
+            for (let i = 0 ; i < skaku_str_l_p.length ; i++){
+                if (in_convert1(skaku_str_l_p[i])){
+                    skaku_str_l_check += 1;
+                }
+            }
+            if (skaku_str_l_check == skaku_str_l_p.length){
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
+
+function convert_to_alphabet(inl){
+    let inla = [];
+    for (let i = 0 ; i < (inl.length) ; i++){
+    //for i in inl:
+        inla.push(convert_Alpha[inl[i]]);
+    }
+    return inla;
+};
+
+function convert_to_numbers(inl1){
+    let inla1 = [];
+    for (let i = 0 ; i < (inl1.length) ; i++){
+    //for i in inl:
+        inla1.push(convert_num[inl1[i]]);
+    }
+    return inla1;
+};
+
+function max_height(ska_s_lh){
+    const heiMax = function (a, b) {return Math.max(a, b);}
+    return ska_s_lh.reduce(heiMax);
+};
+
+function state_preparation(l2){ 
+    let lp = [];
+    while (max_height(l2) != lp.length){
+        for (let i = 1 ; i < (l2.length+1) ; i++){
+            lp.push(l2[(l2.length)-i]);
+            if (lp.length == max_height(l2)){
+                break;
+            }
+        }
+    }
+    return lp;
+};
+
+function state(l2){
+    let lp = state_preparation(l2);
+    let state_l = [];
+    for (let n = 1 ; n < (max_height(l2)+1) ; n++){
+        let sta_n = n-1;
+        let np = n;
+        for (let i = 0 ; i < lp.length ; i++){
+            //console.log(`${n}hueru`);
+            if (lp[i] == np){
+                state_l.push(sta_n);
+                break;
+            }
+        np += 1;
+        }
+    }
+    return state_l;
+};
+
+function itizutuhiku(snml2){
+    snml2 = snml2.map(function(a){
+        return a-1;
+    });
+    return snml2;
+};
+
+Set.prototype.isSubset = function(superset) {
+    for (var elem of this) {
+        if (!superset.has(elem)) {
+            return false;
+        }
+    }
+    return true;
+};
+
+Set.prototype.difference = function(setBf) {
+    var difference = new Set(this);
+    for (var elem of setBf) {
+        difference.delete(elem);
+    }
+    return difference;
+};
+
+function main_process(a_mp,b_mp){ //それぞれの状態から間に入るサイトスワップを計算する
+    let ki_s_l = state(a_mp);
+    let wa_s_l = state(b_mp);
+    let i = -1;
+    let bgkaihi = 0;
+    while (bgkaihi<100000){             
+        var setA = new Set(ki_s_l);
+        var setB = new Set(wa_s_l);              //部分集合になるまで繰り返す。
+        if (setA.isSubset(setB)){
+            break;
+        };
+        ki_s_l = itizutuhiku(ki_s_l);
+        wa_s_l.unshift(i);
+        i += -1;
+        bgkaihi += 1;
+    };
+
+    var setC = new Set(ki_s_l);
+    var setD = new Set(wa_s_l); 
+        
+    let a_no = [];
+    a_no =  setD.difference(setC);
+    let a_no1 = Array.from(a_no);
+    //console.log(a_no);//Aに含まれないリスト 
+    a_no1.sort(
+        function(a,b){
+          return (a < b ? -1 : 1);
+        }
+    );
+
+    //console.log(a_no1);
+    
+    let in_list = [];
+    //for i in range(len(A)):
+    for (let i = 0 ; i < a_no1.length; i++){
+        in_list.push(a_no1[i]+(a_no1.length-i))
+        //in_list.append(A[i]+(len(A)-i)) //繋ぐサイトスワップを作る
+    }
+    return in_list;
+};
+
+  function ave_sait(n_l){
+            let sum = 0;
+            for (let i=0; i<n_l.length; i++) {
+                sum += n_l[i];
+            }
+            return (sum / n_l.length);
+        };
+
+        function existsSameValue(a){
+            var sss = new Set(a);
+            return sss.size != a.length;
+        };
+
+        function check_the_numbers(l2){
+            if ((ave_sait(l2))%1 == 0){
+                let t = [];
+                for (let i = 0; i < l2.length; i++) {
+                    t.push(　(Number(l2[i])+i+1) % (l2.length)　)
+                };
+                for (let j = 0; j < l2.length; j++){
+                    if (existsSameValue(t)){
+                        return false;
+                    };
+                };
+                return true;
+            }
+            else{
+                return false;
+            };
+        };
+
+        function inp_str_list(covp_str){
+        let skaku_str_l = covp_str.split("");
+    let skaku_num_l = [];
+    for (let i = 0 ; i < skaku_str_l.length ; i++){
+        skaku_num_l.push(skaku_str_l[i]);
+    }
+    return skaku_num_l;
+};
+
+        er.value = "";
+        er1.value = "";
+        saitoprint.value = "";
+        saitoprint2.value = "";
+        saitosyousai0.value = "";
+        saitosyousai1.value = "";
+        saitosyousai2.value = "";
+        saitosyousai3.value = "";
+        saitosyousai4.value = "";
+        saitosyousai5.value = "";
+        saitosyousai6.value = "";
+        saitosyousai7.value = "";
+        saitosyousai8.value = "";
+
+var inp_van1 = document.getElementById("skaku").value;
+var inp_van2 = document.getElementById("skaku2").value;
+//saitosyousai0.value = `入力1---${inp_van1}`;
+//saitosyousai2.value = `入力2---${inp_van2}`;
+//saitosyousai4.value = `入力1---${inp_van1}`;
+saitoprint.value = inp_van1;
+saitoprint2.value = inp_van2;
+
+//var inp_van1 = "stx";
+//var inp_van2 ="oxx";
+if (inp_van1 == ""){
+    er.value = "サイトスワップ1の入力欄が空欄です。";
+    //console.log(`サイトスワップ1の入力欄が空欄です。`);
+}
+if (inp_van2 == ""){
+    er1.value = "サイトスワップ2の入力欄が空欄です。";
+    //console.log(`サイトスワップ2の入力欄が空欄です。`);
+}
+if(inp_van1 != "" && inp_van2 != ""){
+    let inp_van11 = inp_str_list(inp_van1);
+    let inp_van22 = inp_str_list(inp_van2);
+    if(!(check_conv(inp_van11))){
+        er.value = "サイトスワップ1の入力欄に対応していない文字が含まれています。"
+        //console.log(`サイトスワップ1の入力欄に対応していない文字が含まれています。`);
+    }
+    if(!(check_conv(inp_van22))){
+        er1.value = "サイトスワップ2の入力欄に対応していない文字が含まれています。"
+        //console.log(`サイトスワップ2の入力欄に対応していない文字が含まれています。`);
+    }
+    if(check_conv(inp_van11) && check_conv(inp_van22)){
+        let inp_num_l1 = convert_to_numbers(inp_van11);
+        let inp_num_l2 = convert_to_numbers(inp_van22);
+        if (check_the_numbers(inp_num_l1) && check_the_numbers(inp_num_l2) && (ave_sait(inp_num_l1)==ave_sait(inp_num_l2))  ){
+            //console.log(`処理に進む`);
+            let in_list1 = main_process(inp_num_l1,inp_num_l2);
+            let in_list2 = main_process(inp_num_l2,inp_num_l1);
+            if (check_conv1(in_list1) && check_conv1(in_list2)){
+                let in_list1a = convert_to_alphabet(in_list1);
+                let in_list2a = convert_to_alphabet(in_list2);
+                let in_list1b = in_list1a.join("");
+                let in_list2b = in_list2a.join("");
+                //console.log(in_list1b);
+                //console.log(in_list2b);
+                saitosyousai1.value = `間---${in_list1b}`;
+                saitosyousai3.value = `間---${in_list2b}`;
+                saitosyousai0.value = `入力1---${inp_van1}`;
+                saitosyousai2.value = `入力2---${inp_van2}`;
+                saitosyousai4.value = `入力1---${inp_van1}`;
+                saitosyousai5.value = `「${inp_van1+in_list1b+inp_van2+in_list2b+inp_van1}」`;
+            }
+            else{
+                saitosyousai1.value = "計算できませんでした";
+                saitosyousai3.value = "計算できませんでした";
+                //console.log("計算できませんでした")
+            }
+        }
+        if (!(check_the_numbers(inp_num_l1))){
+            er.value = "サイトスワップ1に入力された数列は投げられません";
+            //console.log("サイトスワップ1に入力された数列は投げられません")
+        }
+        if (!(check_the_numbers(inp_num_l2))){
+            er1.value = "サイトスワップ2に入力された数列は投げられません";
+            //console.log("サイトスワップ2に入力された数列は投げられません")
+        }
+        else if (check_the_numbers(inp_num_l1) && check_the_numbers(inp_num_l2) && ave_sait(inp_num_l1)!=ave_sait(inp_num_l2)){
+            er.value = "ボールの数が違うため結合できません。The number of balls in the site swap you entered is incorrect.";
+            //console.log("ボールの数が違うため結合できません。")
+        };
+
+    };
+
+};
+
+
+//console.log(in_list1b);
+//console.log(in_list2b);
+});
+</script>
+    </body>
+</html>

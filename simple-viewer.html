@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップシンプルビュワー - Siteswap Simple Viewer</title>
+    <meta name="description" content="入力または共有されたサイトスワップパターンをブラウザでシンプルに再生できるビューアです。ジャグリングの動きを直感的に確認できます。">
+    <style>
+        /* CSSコード */
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.5">
+</head>
+<body>
+    <div class="container">
+    <main>
+        <div class="error-display" style="margin: 0;">
+            <output id="er"></output>
+        </div>
+        <div class="canvas-section">
+            <canvas id="canvas" width="300" height="500" style="border-radius: 0;"></canvas>
+        </div>
+        <div style="display: none;">
+            <section id="clubRotSetting" style="display:none"></section>
+            <section id="ringSetting" style="display:none"></section>
+        </div>
+    </main>
+</div>
+    <script src="simulation.min.js?ver=8.6"></script><!---->
+    <script>
+        state.enableTimeoutStop = false;
+    </script>
+</body>
+</html>

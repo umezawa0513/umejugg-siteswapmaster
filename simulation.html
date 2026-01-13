@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップのシミュレーション/Siteswap Simulator</title>
+    <meta name="description" content="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップマスター】">
+    <style>
+        /* CSSコード */
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.7.1">
+    <link rel="stylesheet" href="syncModal.css?ver=8.7.1">
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loader"><p>Loading...</p></div>
+    <header id="title-wrapper">
+        <a href="home" class="titleText">
+            <h1><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+    
+    <main>
+        <section>
+            <h2>シミュレーター</h2>
+            <p>入力された数列がどのようなサイトスワップであるかをシミュレーションできます。</p>
+            <div class="error-display">
+                <output id="er"></output>
+            </div>
+            <div class="input-container">
+                <label for="siteswapInput">確認したいパターンを入力してください</label>
+                <div class="input-box">
+                    <input type="text" name="siteswapInput" id="siteswapInput" placeholder="例: 97531">
+                    <a href="#" id="openSyncModal" class="btn sync-btn"><span>簡単</span><span>入力</span></a>
+                </div>
+                <div id="log" class="log log-div"></div>
+                <a href="#" class="btn" id="loadSiteswapBtn">読み込む</a>
+            </div>
+
+            <div class="canvas-section">
+                <div id="output-display" class="output-display">
+                    <span>入力パターン : </span>
+                    <span><output id="siteswapDisplay"></output></span>
+                </div>
+                
+                <canvas id="canvas" width="300" height="500"></canvas>
+                
+                <p id="low-fps-warning" class="low-fps-warning">
+                    <span class="warning-text"></span>
+                    <button class="low-fps-warning-close-btn">&times;</button>
+                </p>
+
+                <div class="range-controls">
+                    <div class="range-item">
+                        <label for="viewSpeed">速度</label>
+                        <input type="range" id="viewSpeed" class="viewSpeed" min="0" max="200" value="100">
+                    </div>
+                    <div class="range-item">
+                        <label for="camera-x">視点</label>
+                        <input type="range" id="camera-x" min="-100" max="100" value="0" step="1">
+                    </div>
+                    <!-- <div class="range-item">
+                        <label for="yaw">傾きテスト</label>
+                        <input type="range" id="yaw" min="-100" max="100" value="0" step="1">
+                    </div> -->
+                </div>
+            </div>
+        </section>
+        <section id="clubRotSetting" style="display:none"></section>
+        <section id="ringSetting" style="display:none"></section>
+            
+        <!-- 詳細設定 -->
+        <section>
+            <div>
+                <h2>詳細設定</h2>
+                <div class="settings-grid">
+                    <div class="setting-item">
+                        <label for="objectSelect">オブジェクト選択</label>
+                        <select id="objectSelect" class="objectsyurui">
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="isPlayerVisible">棒人間を表示</label>
+                        <input type="checkbox" id="isPlayerVisible">
+                    </div>
+                    <div class="setting-item">
+                        <label for="isTextVisible">テキストを表示</label>
+                        <input type="checkbox" id="isTextVisible">
+                    </div>
+                    <div class="setting-item">
+                        <label for="isRandomColor">ランダムカラー</label>
+                        <input type="checkbox" id="isRandomColor">
+                    </div>
+                    <div class="setting-item">
+                        <label for="isNotStopWhenMovCam">視点移動時も継続</label>
+                        <input type="checkbox" id="isNotStopWhenMovCam">
+                    </div>
+                    <div class="setting-item">
+                        <label for="backgroundColorSelect">背景の色</label>
+                        <input type="color" id="backgroundColorSelect">
+                    </div>
+                    <div class="setting-item">
+                        <label for="objectColor">オブジェクトの色</label>
+                        <input type="color" id="objectColor">
+                    </div>
+                    <div class="setting-item">
+                        <label for="playerColor">棒人間の色</label>
+                        <input type="color" id="playerColor">
+                    </div>
+                    <div class="setting-item">
+                        <label for="textColor">テキストの色</label>
+                        <input type="color" id="textColor">
+                    </div>
+                    <div class="setting-item">
+                        <label for="resetSpeedBtn">速度をリセット</label>
+                        <a href="#" id="resetSpeedBtn" class="setting-btn">リセット</a>
+                    </div>
+                    <div class="setting-item">
+                        <label for="resetCameraBtn">視点をリセット</label>
+                        <a href="#" id="resetCameraBtn" class="setting-btn">リセット</a>
+                    </div>
+                    
+                </div>
+            </div>
+        </section>
+        
+        <section>
+            <h2>接頭辞による投げ方の指定</h2>
+                <p class="info-text">数字の前に記号をつけることで、特定の投げ方を指定できます。</p>
+                <p class="info-text"><strong>「/」</strong>：アウター</p>
+                <p class="info-text"><strong>「+」</strong>：外コラム(偶数),外回り(奇数)</p>
+                <p class="info-text"><strong>「-」</strong>：内コラム(偶数),内回り(奇数)</p>
+                <p class="info-text">例：+6-45,　/[43]20,　(/6x,/[84])*,　(+4,-4)(-4,+4)</p>
+        </section>
+        
+        <section>
+            <h2>バージョン履歴</h2>
+            <div class="accordion">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span>一覧</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="version-list">
+                            <div class="version-item">
+                                <span class="version-date">実装予定</span>
+                                <span class="version-number">ver10.0</span>
+                                <span class="version-description">ミルズメス、ウインドミル等の指定機能</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2026/1/4</span>
+                                <span class="version-number">ver9.2</span>
+                                <span class="version-description">オブジェクトコメット修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/12/27</span>
+                                <span class="version-number">ver9.1</span>
+                                <span class="version-description">修正,オブジェクトにコメット追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/12/26</span>
+                                <span class="version-number">ver9.0</span>
+                                <span class="version-description">ランダムカラー機能</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/9/13</span>
+                                <span class="version-number">ver8.3</span>
+                                <span class="version-description">仕様改善、機能追加等</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/19</span>
+                                <span class="version-number">ver8.2</span>
+                                <span class="version-description">クラブの回転を安定化</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/17</span>
+                                <span class="version-number">ver8.1</span>
+                                <span class="version-description">アニメーションの安定化</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/9</span>
+                                <span class="version-number">ver8.0</span>
+                                <span class="version-description">新デザイン</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/6</span>
+                                <span class="version-number">ver7.3</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/6</span>
+                                <span class="version-number">ver7.2</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/7/3</span>
+                                <span class="version-number">ver7.1</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/6/15</span>
+                                <span class="version-number">ver7.0</span>
+                                <span class="version-description">シンクロ簡単入力機能追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/2/14</span>
+                                <span class="version-number">ver6.3</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/2/12</span>
+                                <span class="version-number">ver6.2</span>
+                                <span class="version-description">リングの投げ方指定機能追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/2/12</span>
+                                <span class="version-number">ver6.1</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/2/12</span>
+                                <span class="version-number">ver6.0</span>
+                                <span class="version-description">疑似3D機能追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/1/28</span>
+                                <span class="version-number">ver5.2</span>
+                                <span class="version-description">履歴機能追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/1/28</span>
+                                <span class="version-number">ver5.1</span>
+                                <span class="version-description">シンクロの短縮形に対応</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2025/1/28</span>
+                                <span class="version-number">ver5.0</span>
+                                <span class="version-description">マルチに対応</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2024/2/17</span>
+                                <span class="version-number">ver4.1</span>
+                                <span class="version-description">修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2024/2/17</span>
+                                <span class="version-number">ver4.0</span>
+                                <span class="version-description">クラブ回転数変更機能</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2024/2/12</span>
+                                <span class="version-number">ver3.1</span>
+                                <span class="version-description">クラブのアニメーション修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2023/2/1</span>
+                                <span class="version-number">ver3.0</span>
+                                <span class="version-description">横視点追加,リング&クラブ追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2023/1/18</span>
+                                <span class="version-number">ver2.2</span>
+                                <span class="version-description">テキスト表示機能追加</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2023/1/12</span>
+                                <span class="version-number">ver2.1</span>
+                                <span class="version-description">バグ修正</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2023/1/11</span>
+                                <span class="version-number">ver2.0</span>
+                                <span class="version-description">シンクロに対応</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2022/12/30</span>
+                                <span class="version-number">ver1.1</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2022/12/29</span>
+                                <span class="version-number">ver1.0</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2022/11/26</span>
+                                <span class="version-number">ver0.1</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <a href="home" class="back-home-footer">ホームに戻る</a>
+        <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact" class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
+                バグを報告
+        </a>
+        <p>&copy; 2021 サイトスワップマスター</p>
+    </footer>
+</div>
+    <script>
+        window.onload = function() {const spinner = document.getElementById('loading');spinner.classList.add('loaded');}
+        // アコーディオンの動作
+        document.querySelector('.accordion-header').addEventListener('click', function() {
+            const accordionItem = this.parentElement;
+            accordionItem.classList.toggle('active');
+        });
+    </script>
+    <script src="syncPatternInput.js?ver=1.0.1"></script>
+    <script src="siteswapProcessor.js?ver=1.1.1"></script>
+    <script src="simulation.min.js?ver=9.2.0"></script><!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
+    <script src="siteswapLab.js?ver=1.0.0"></script>
+</body>
+</html>

@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>シミュレーター埋め込み利用ガイド - サイトスワップマスター</title>
+    <meta name="description" content="サイトスワップマスターのURLパラメータを使用したカスタマイズガイド">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+
+        main{
+            max-width: 1000px !important;
+        }
+        .info-text ul li {
+            word-break: break-all;
+            line-height: 1.6;
+        }
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+        }
+        .table_component {
+            overflow: auto;
+            width: 100%;
+        }
+        
+        .table_component table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+        
+        .table_component caption {
+            caption-side: top;
+            text-align: left;
+        }
+        
+        .table_component th {
+            border: 1px solid #dededf;
+            background-color: #3F72AF;
+            color: #F9F7F7;
+            padding: 5px;
+        }
+        
+        .table_component td {
+            border: 1px solid #dededf;
+            background-color: #F9F7F7;
+            color: #112D4E;
+            padding: 5px;
+        }
+        
+        .param-name {
+            font-family: 'Courier New', monospace;
+            background: #f1f8ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #3F72AF;
+            font-weight: bold;
+        }
+        
+        .example-code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            color: #495057;
+        }
+
+        .example-item a {
+            word-break: break-all;
+    display: inline-block;
+    max-width: 100%;
+        }
+        
+        .info-text {
+            background: #F9F7F7;
+            border-left: 4px solid #3F72AF;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        .warning-box h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+        
+        .color-example {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 3px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        
+        .example-item {
+            background: #F9F7F7;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #3F72AF;
+            margin-bottom: 12px;
+        }
+        
+        .example-title {
+            font-weight: 700;
+            color: #3F72AF;
+            margin-bottom: 0.5rem;
+        }
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.5">
+</head>
+<body>
+    <div class="container">
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+            <div class="subtitle">シミュレーター埋め込み利用ガイド</div>
+        </header>
+        
+        <main>
+            <section>
+                <h2>概要</h2>
+                <p>サイトスワップマスターは、URLにパラメータを追加することで表示や動作をカスタマイズできます。シミュレーション設定を事前に指定してリンクを共有したい場合やサイトにシミュレータを埋め込みたい場合に便利です。</p>
+
+                <div class="info-text">
+                    <strong>対応ページ</strong><br>
+                    URLパラメータは以下のページでのみ使用できます：
+                    <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                        <li><strong>Simulation(多機能シミュレーター)</strong>: <span>https://umejugg.com/siteswapmaster/simulation</span></li>
+                        <li><strong>Viewer(表示、埋め込み専用)</strong>: <span>https://umejugg.com/siteswapmaster/viewer</span></li>
+                        <li><strong>Embed(埋め込み専用)</strong>: <span>https://umejugg.com/siteswapmaster/embed</span></li>
+                    </ul>
+                </div>
+                
+                <div class="info-text">
+                    <strong>基本的な使用方法</strong><br>
+                    URLの末尾に「?」を付けてパラメータを指定します。複数のパラメータは「&」で区切ります。
+                </div>
+                <p>例：</p>
+                <div class="example-code">
+                    <pre><code>&lt;div style="max-width: 300px;width:100%;"&gt;&lt;!-- ここのwidthを変更することで表示サイズを変更可能 --&gt;
+                        &lt;iframe 
+                        src="https://umejugg.com/siteswapmaster/embed?pattern=97531&amp;speed=90&amp;object=club"
+                        style="width: 100%; aspect-ratio: 3 / 5; border:0;" 
+                        scrolling="no"&gt;
+                        &lt;/iframe&gt;
+                    &lt;/div&gt;</code></pre>
+                </div>
+                <div style ="display: flex;">
+                    <div style="max-width: 300px;width:100%;"><!-- ここのwidthを変更することで表示サイズを変更可能 -->
+                        <iframe 
+                        src="https://umejugg.com/siteswapmaster/embed?pattern=97531&speed=90&object=club"
+                        style="width: 100%; aspect-ratio: 3 / 5; border:0;" 
+                        scrolling="no">
+                        </iframe>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>パラメータ一覧</h2>
+                <p>画面幅が狭い端末の場合、横スクロールでテーブルを確認してください</p>
+                    <div class="table_component" role="region" tabindex="0">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>パラメータ</th>
+                                <th>説明</th>
+                                <th>設定値</th>
+                                <th>デフォルト</th>
+                                <th>使用例</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="param-name">pattern</td>
+                                <td>サイトスワップを入力</td>
+                                <td>英数列のみで表されるサイトスワップ</td>
+                                <td>なし</td>
+                                <td>?pattern=db97531</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">encoded-pattern</td>
+                                <td>URLエンコードされたサイトスワップを入力</td>
+                                <td>URLエンコードされたサイトスワップ</td>
+                                <td>なし</td>
+                                <td>?encoded-pattern=(6x%2C4)(%5B48%5D%2C6x)</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">speed</td>
+                                <td>アニメーション速度</td>
+                                <td>0~200の数値</td>
+                                <td>100</td>
+                                <td>?speed=150</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">camera</td>
+                                <td>視点位置</td>
+                                <td>-100~100の数値</td>
+                                <td>0</td>
+                                <td>?camera=50</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">object</td>
+                                <td>オブジェクトの種類</td>
+                                <td>ball, ring, clubなど</td>
+                                <td>ball</td>
+                                <td>?object=ring</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">text</td>
+                                <td>テキスト表示位置(複数指定可能)</td>
+                                <td>none, bottom, top, side (複数指定可)</td>
+                                <td>top</td>
+                                <td>?text=top,side</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">show-header</td>
+                                <td>ヘッダーを表示するか</td>
+                                <td>true, false</td>
+                                <td>true</td>
+                                <td>?show-header=false</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">show-player</td>
+                                <td>棒人間を表示するか</td>
+                                <td>true, false</td>
+                                <td>true</td>
+                                <td>?show-player=false<br></td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">random-color</td>
+                                <td>ランダムカラーを使用するか</td>
+                                <td>true, false</td>
+                                <td>false</td>
+                                <td>?random-color=true</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">background-color</td>
+                                <td>背景色の指定</td>
+                                <td>6桁カラーコード</td>
+                                <td>
+                                    <div>
+                                        <div>5a5a5a</div>
+                                    </div>
+                                </td>
+                                <td>?background-color=FF0000</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">object-color</td>
+                                <td>オブジェクトの色指定</td>
+                                <td>6桁カラーコード</td>
+                                <td>FFFFFF</td>
+                                <td>?object-color=00FF00</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">player-color</td>
+                                <td>棒人間の色指定</td>
+                                <td>6桁カラーコード</td>
+                                <td>000000</td>
+                                <td>?player-color=0000FF</td>
+                            </tr>
+                            <tr>
+                                <td class="param-name">side-text-color</td>
+                                <td>サイドテキストの色指定</td>
+                                <td>6桁カラーコード</td>
+                                <td>FFFFFF</td>
+                                <td>?side-text-color=FFFFFF</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    </div>
+            </section>
+
+            <section>
+                <h2>URLエンコードについて</h2>
+                
+                <p>サイトスワップに英数列以外の記号（カンマ、角括弧など）が含まれる場合、<span class="param-name">encoded-pattern</span>パラメータを使用してURLエンコードされた形式で指定する必要があります。</p>
+                
+                <div class="info-text">
+                    <strong>なぜURLエンコードが必要？</strong><br>
+                    URLには使用できない特殊文字があります。例えば、括弧やカンマなどはURL内で別の意味を持つため、そのまま使用すると正しく解釈されません。これらの文字をURLで安全に使用するために、エンコード（変換）が必要です。
+                </div>
+                
+                <h3>エンコード済みURLの作成方法</h3>
+                
+                <div class="example-item">
+                    <div class="example-title">方法1: 共有機能を使用</div>
+                    <p><a href="https://umejugg.com/siteswapmaster/share" target="_blank" rel="noopener noreferrer">https://umejugg.com/siteswapmaster/share</a> のページで、サイトスワップを入力すると、エンコード済みのURLが自動生成されます。</p>
+                </div>
+                
+                <div class="example-item">
+                    <div class="example-title">方法2: プログラムで生成（開発者向け）</div>
+                    <p>JavaScriptの<code>encodeURIComponent()</code>関数を使用してパターンをエンコードできます。</p>
+                    <div class="example-code">const pattern = "(6x,4)*";
+            const encodedPattern = encodeURIComponent(pattern);
+            const url = `https://umejugg.com/siteswapmaster/embed?encoded-pattern=${encodedPattern}`;
+            // 結果: https://umejugg.com/siteswapmaster/embed?encoded-pattern=(6x%2C4)*</div>
+                </div>
+            </section>
+
+            <section>
+                <h2>使用例</h2>
+                <div class="example-section">
+                    <div class="example-item">
+                        <div class="example-title">Viewer①</div>
+                        <div class="example-code">&lt;iframe 
+                            src="https://umejugg.com/siteswapmaster/viewer?encoded-pattern=(6x%2C4)*&text=none"
+                            style="width: 100%; aspect-ratio: 3 / 6.8; border:0;" 
+                            scrolling="no"&gt;
+                            &lt;/iframe&gt;</div>
+                        <p>サイトスワップ(6x,4)*、テキスト表示なし。(Viewerは速度変更バーあり)</p>
+                        <div style="max-width: 300px;width:100%;  margin-top: 1rem;">
+                            <iframe 
+                            src="https://umejugg.com/siteswapmaster/viewer?encoded-pattern=(6x%2C4)*&text=none"
+                            style="width: 100%; aspect-ratio: 3 / 6.8; border:1px solid #ddd;" 
+                            scrolling="no">
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="example-item">
+                        <div class="example-title">Viewer②</div>
+                        <div class="example-code">&lt;iframe 
+                            src="https://umejugg.com/siteswapmaster/viewer?pattern=441&background-color=2C3E50&object-color=E74C3C&player-color=3498DB&show-header=false"
+                            style="width: 100%; aspect-ratio: 3 / 6; border:0;" 
+                            scrolling="no"&gt;
+                            &lt;/iframe&gt;</div>
+                        <p>サイトスワップ441、ダークブルーの背景、赤いオブジェクト、青い棒人間、ヘッダー無し。(Viewerは速度変更バーあり)</p>
+                        <div style="max-width: 300px;width:100%;  margin-top: 1rem;">
+                            <iframe 
+                            src="https://umejugg.com/siteswapmaster/viewer?pattern=441&background-color=2C3E50&object-color=E74C3C&player-color=3498DB&show-header=false"
+                            style="width: 100%; aspect-ratio: 3 / 6; border:1px solid #ddd;" 
+                            scrolling="no">
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="example-item">
+                        <div class="example-title">埋め込み専用①</div>
+                        <div class="example-code">&lt;iframe 
+            src="https://umejugg.com/siteswapmaster/embed?pattern=97531&speed=120&object=ring&text=bottom&camera=25"
+            style="width: 100%; aspect-ratio: 3 / 5; border:0;" 
+            scrolling="no"&gt;
+            &lt;/iframe&gt;</div>
+                        <p>サイトスワップ97531、速度120、リング、テキストを下部表示、視点を右に25移動</p>
+                        <div style="max-width: 300px;width:100%;  margin-top: 1rem;">
+                            <iframe 
+                            src="https://umejugg.com/siteswapmaster/embed?pattern=97531&speed=120&object=ring&text=bottom&camera=25"
+                            style="width: 100%; aspect-ratio: 3 / 5; border:1px solid #ddd;" 
+                            scrolling="no">
+                            </iframe>
+                        </div>
+                    </div>
+                    
+                    <div class="example-item">
+                        <div class="example-title">埋め込み専用②</div>
+                        <div class="example-code">&lt;iframe 
+            src="https://umejugg.com/siteswapmaster/embed?pattern=534&speed=80&object=club&text=side&show-player=false&background-color=000000&object-color=FFD700"
+            style="width: 100%; aspect-ratio: 3 / 5; border:0;" 
+            scrolling="no"&gt;
+            &lt;/iframe&gt;</div>
+                        <p>サイトスワップ534、速度80、クラブ、棒人間非表示、黒背景に金色オブジェクト、テキストをサイドに表示</p>
+                        <div style="max-width: 300px;width:100%;  margin-top: 1rem;">
+                            <iframe 
+                            src="https://umejugg.com/siteswapmaster/embed?pattern=534&speed=80&object=club&text=side&show-player=false&background-color=000000&object-color=FFD700"
+                            style="width: 100%; aspect-ratio: 3 / 5; border:1px solid #ddd;" 
+                            scrolling="no">
+                            </iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer>
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" class="contact" target="_blank" rel="noopener noreferrer" style="margin-top:7px;">
+                質問・要望
+            </a>
+            <p>&copy; 2021 サイトスワップマスター</p>
+        </footer>
+    </div>
+
+    <script>
+        // アコーディオンの動作
+        document.querySelectorAll('.accordion-header').forEach(header => {
+            header.addEventListener('click', function() {
+                const accordionItem = this.parentElement;
+                accordionItem.classList.toggle('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="サイトスワップで遊ぼう！">
+    <title>サイトスワップマスター</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;800&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="title.png">
+
+    <link rel="stylesheet" href="simulation.css">
+
+    <style>
+        /* simulation.css の色変数を定義（CSSファイルがない場合用） */
+        :root {
+            --bg-color: #F9F7F7;
+            --text-color: #112D4E;
+            --secondary-bg: #DBE2EF;
+            --accent-color: #3F72AF;
+            --accent-hover: #2E5A8E;
+        }
+
+        /* 全体の設定（box-sizingでパディングを含めた幅計算にする） */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* ヘッダー調整 */
+        header {
+            background-color: var(--secondary-bg);
+            width: 100%;
+            padding: 25px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        /* メインコンテナ */
+        .home-container {
+            width: 100%;
+            max-width: 900px;
+            /* 少し広げて4列表示の余裕を持たせる */
+            padding: 20px;
+            /* 画面端の隙間を確保 */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        /* ロゴエリア */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 10px;
+            animation: fadeIn 0.8s ease;
+        }
+
+        .logo-img {
+            width: 120px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(17, 45, 78, 0.15);
+            transition: transform 0.3s ease;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05) rotate(-2deg);
+        }
+
+        h2 {
+            color: var(--text-color);
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 5px;
+            margin-top: 10px;
+            display: inline-block;
+        }
+
+        /* メニューグリッド */
+        .menu-grid {
+            display: grid;
+            gap: 15px;
+            width: 100%;
+            /* デフォルト（PC）は4列。
+               minmaxを少し大きめ(160px)にとって文字折り返しを防ぐ 
+            */
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        /* カード型ボタン */
+        .menu-card {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 20px 5px;
+            /* 横パディングを少し減らして文字スペース確保 */
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            min-height: 110px;
+            /* 高さを揃える */
+        }
+
+        .menu-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .menu-card span {
+            font-weight: 800;
+            font-size: 1rem;
+            white-space: nowrap;
+            /* 強制的に1行にする（画面幅が許す限り） */
+        }
+
+        /* ホバー時の挙動 */
+        .menu-card:hover {
+            transform: translateY(-5px);
+            background-color: var(--accent-color);
+            color: #F9F7F7;
+            box-shadow: 0 10px 20px rgba(63, 114, 175, 0.3);
+        }
+
+        .menu-card:hover i {
+            color: #F9F7F7;
+        }
+
+        /* フッター */
+        footer {
+            background-color: var(--accent-color);
+            width: 100%;
+            text-align: center;
+            color: #F9F7F7;
+            padding: 15px 0;
+            margin-top: auto;
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .ai-credit {
+            font-size: 0.75rem;
+            opacity: 0.8;
+            margin-top: 4px;
+        }
+
+        /* アニメーション */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* レスポンシブ対応：列数を8の約数（4, 2, 1）に制限 */
+
+        /* 画面幅が狭くなったら2列にする（シミュレーションの文字幅確保のため早めに切り替え） */
+        @media (max-width: 768px) {
+            .menu-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .home-container {
+                padding: 20px 25px;
+                /* スマホでの横の隙間を確保 */
+            }
+        }
+
+        /* かなり狭い画面（iPhone SE等）でも2列を維持するか、あるいは1列にする */
+        @media (max-width: 350px) {
+            .menu-grid {
+                grid-template-columns: 1fr;
+                /* 1列 */
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="home">
+            <h1><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+
+    <div class="home-container">
+
+        <div class="logo-section">
+            <div>
+                <h2>MAIN MENU</h2>
+            </div>
+            <p style="font-size: 0.9rem; margin-top: 5px; color: #112D4E;">
+                高精度ジャグリング・シミュレーター
+            </p>
+        </div>
+
+        <nav class="menu-grid">
+            <a href="simulation" class="menu-card">
+                <i class="ri-gamepad-line"></i>
+                <span>シミュレーション</span>
+            </a>
+
+            <a href="generator" class="menu-card">
+                <i class="ri-magic-line"></i>
+                <span>自動生成</span>
+            </a>
+
+            <a href="maker" class="menu-card">
+                <i class="ri-edit-circle-line"></i>
+                <span>作る</span>
+            </a>
+
+            <a href="transition" class="menu-card">
+                <i class="ri-links-line"></i>
+                <span>繋げる</span>
+            </a>
+
+            <a href="details" class="menu-card">
+                <i class="ri-file-list-3-line"></i>
+                <span>確認</span>
+            </a>
+
+            <a href="conversion" class="menu-card">
+                <i class="ri-arrow-left-right-line"></i>
+                <span>変換</span>
+            </a>
+
+            <a href="multi" class="menu-card">
+                <i class="ri-bubble-chart-line"></i>
+                <span>マルチ化</span>
+            </a>
+
+            <a href="share" class="menu-card">
+                <i class="ri-share-circle-line"></i>
+                <span>共有</span>
+            </a>
+        </nav>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2021 サイトスワップマスター</p>
+        <!-- <p class="ai-credit">このトップページは Gemini 3 によって生成しました。</p> -->
+    </footer>
+
+</body>
+
+</html>

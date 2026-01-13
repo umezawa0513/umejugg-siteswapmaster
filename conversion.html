@@ -1,0 +1,328 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="0">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>サイトスワップのボックス化とシャワー化/Conversion to shower and box </title>
+        <style>
+
+            input[type="text"] {
+            size: 10; 
+            padding: 10px; 
+            font-size: 20px; 
+            border: solid 2px #cccccc; 
+            border-radius: 15px; 
+            }
+
+            form{
+                width:100%;
+                padding:0;
+                margin:0;
+            }
+
+            a.cp_btn {
+            display: block;
+            width: 160px;
+            padding: 0.8em;
+            text-align: center;
+            text-decoration: none;
+            color: #EC407A;
+            border: 2px solid #EC407A;
+            border-radius: 3px;
+            transition: .4s;
+            }
+            a.cp_btn:hover {
+            background: #EC407A;
+            color: #fff;
+            }
+
+            div.erer{
+                color: #ff0000;
+            }
+
+            #saitosyousai0{
+                color:#FF00FF;
+                font-size:22px;
+            }
+
+            div.saitosyousai{
+                font-size:18px;
+            }
+
+            #saitoprint{
+                font-size:30px;
+            }
+
+            #saitosyousai1{
+                font-size:30px;
+            }
+            #saitosyousai2{
+                font-size:30px;
+            }
+
+            #haiiro{
+                color:#a9a9a9;
+            }
+        </style>
+        <style>
+            /* CSSコード */
+            @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+        </style>
+        <link rel="stylesheet" href="all.css">
+    </head>
+   
+   
+    <body>
+        <center>  
+            <a href="home">
+                <h1 style="display: flex;justify-content: center;"><img src="title.png" alt="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップ
+                    マスター】" style="border-radius:20px;width:100px;height:auto;margin-top:3px;"></h1>
+                </a>
+            <p>入力されたサイトスワップのボックス化＆シャワー化ができます。(ボールの数が１個増えます)</p>
+        <p><strong>半角英数字</strong>で入力してください。</p>
+        <form>
+        <p><div class="kakunin">
+            <label for="skaku">ボックス化＆シャワー化したいサイトスワップを入力してください。</label>
+            <input type="text" name="skaku" id="skaku">
+        </div></p>
+       <a href="#" class="cp_btn" id="kakuninbtn">読み込む</a>
+       </form>
+        <div class = "erer">
+        <p><output id = "er"　name = "er"></output></p>
+        <p><output id = "er1"　name = "er1"></output></p>
+        </div>
+        <p class = "saitoprint">
+        入力したサイトスワップ→＜<output id = "saitoprint"　name = "saitoprint"></output>＞
+        </p>
+        <hr>
+        <div class = "saitosyousai">
+        <p>ボックス化したサイトスワップ</p>
+        <p>「<output id = "saitosyousai1"　name = "saitosyousai"></output>」</p>
+        <p>シャワー化したサイトスワップ</p>
+        <p>「<output id = "saitosyousai2"　name = "saitosyousai"></output>」</p>
+        </div>
+        <p></p>
+        <a href="home"  class="button smallButton">ホームに戻る</a>
+<hr>
+        <p id = "haiiro">※「対応していない文字が含まれています」と表示された場合は、全角になっていないか、空欄が含まれていないか、を確認してください。</p>
+</center>
+<script>
+    // ボタンの要素を取得
+    var button = document.getElementById("kakuninbtn");
+    
+    // ボタンをクリックした時の処理
+    button.addEventListener("click", function(e) {
+        e.preventDefault();
+
+    //----------------------------------------------------------
+        const convert_num = {
+            "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"a":10,"b":11,"c":12,"d":13,"e":14,
+            "f":15,"g":16,"h":17,"i":18,"j":19,"k":20,"l":21,"m":22,"n":23,"o":24,"p":25,"q":26,"r":27,"s":28,
+            "t":29,"u":30,"v":31,"w":32,"x":33,"y":34,"z":35,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15,"G":16,
+            "H":17,"I":18,"J":19,"K":20,"L":21,"M":22,"N":23,"O":24,"P":25,"Q":26,"R":27,"S":28,"T":29,"U":30,
+            "V":31,"W":32,"X":33,"Y":34,"Z":35,
+        };
+
+        const convert = {0:"0", 1:"1", 2:"2", 3:"3", 4:"4", 5:"5", 6:"6", 7:"7", 8:"8", 9:"9", 10:"a", 11:"b",
+           12:"c",13:"d", 14:"e", 15:"f", 16:"g",17:"h", 18:"i", 19:"j", 20:"k", 21:"l", 22:"m",23:"n",
+           24:"o", 25:"p", 26:"q", 27:"r", 28:"s", 29:"t", 30:"u", 31:"v", 32:"w", 33:"x", 34:"y", 35:"z"
+        };
+
+        function ave_sait(n_l){
+            let sum = 0;
+            for (let i=0; i<n_l.length; i++) {
+                sum += n_l[i];
+            }
+            return (sum / n_l.length);
+        };
+
+        function existsSameValue(a){
+            var sss = new Set(a);
+            return sss.size != a.length;
+        };
+
+        function check_the_numbers(l2){
+            if ((ave_sait(l2))%1 == 0){
+                let t = [];
+                for (let i = 0; i < l2.length; i++) {
+                    t.push(　(Number(l2[i])+i+1) % (l2.length)　)
+                };
+                for (let j = 0; j < l2.length; j++){
+                    if (existsSameValue(t)){
+                        return false;
+                    };
+                };
+                return true;
+            }
+            else{
+                return false;
+            };
+        };
+
+        function in_convert(in_b){
+            if (in_b in convert_num) {
+                //in_bというキーが存在する場合の処理
+                return true;
+            } 
+            else {
+                //in_bというキーが存在しない場合の処理
+                return false;
+            }
+        };
+
+        function check_conv(skaku_str_l_p){
+            let skaku_str_l_check = 0;
+            for (let i = 0 ; i < skaku_str_l_p.length ; i++){
+                if (in_convert(skaku_str_l_p[i])){
+                    skaku_str_l_check += 1;
+                }
+            }
+            if (skaku_str_l_check == skaku_str_l_p.length){
+                return true;
+            }
+            else{
+                return false;
+            }
+        };
+
+        function max_height(ska_s_lh){
+            const heiMax = function (a, b) {return Math.max(a, b);}
+            return ska_s_lh.reduce(heiMax);
+        };
+
+            function str_num(skaku_strp){
+                let skaku_str_lp = skaku_strp.split("");
+                let skaku_num_lp = [];
+                for (let i = 0 ; i < skaku_str_lp.length ; i++){
+                    skaku_num_lp.push(Number(convert_num[skaku_str_lp[i]]));
+                };
+                return skaku_num_lp;
+            };
+
+        function convert_to_alphabet(inl){
+            let inla = [];
+            for (let i = 0 ; i < (inl.length) ; i++){
+                inla.push(convert[inl[i]]);
+            }
+            return inla;
+        };
+
+
+        function kisuunox(s_n_l_p){
+            let kisuunox_l =[];
+            for (let i = 0; i < s_n_l_p.length; i++) {
+                if( s_n_l_p[i] % 2 !== 0 ) {
+                    kisuunox_l.push(i);
+                }
+            };
+            return kisuunox_l;
+        };
+
+        function box_2bai(snlp2){
+            let snlp2p = [];
+            for (let i = 0; i < snlp2.length; i++) {
+                snlp2p.push((Number(snlp2[i])*2));
+            };
+            return convert_to_alphabet(snlp2p);
+        };
+
+
+        function convert_to_box(s_n_l){ //[3,4,5]
+            let kisnl =kisuunox(s_n_l);//[0,2]
+            let box_lp =box_2bai(s_n_l);//[6,8,a]
+
+            for (let i = 0; i < kisnl.length; i++) {
+                box_lp[kisnl[i]] = box_lp[kisnl[i]]+"x";//[6x,8,ax]
+            };
+
+            let box_lp2 = [];
+
+            if (box_lp.length%2 !== 0){
+                box_lp2 = box_lp.concat(box_lp);//[6x,8,ax,6x,8,ax]
+            }
+            else{
+                box_lp2 = box_lp;
+            };
+
+            let box_lp3 =["("];
+            for (let i = 0; i < box_lp2.length; i++) {
+                if (i%2 === 0){
+                    box_lp3.push(String(box_lp2[i]));
+                    box_lp3.push(",2x)(2x,");
+                }
+                else{
+                    box_lp3.push(String(box_lp2[i]));
+                    if (i != box_lp2.length-1){
+                        box_lp3.push(")(");
+                    }
+                    else{
+                       box_lp3.push(")"); 
+                    };
+                };
+            };
+            return box_lp3.join("");
+        };
+
+        function convert_to_shower(s_n_l2){
+            let s_n_l2a = box_2bai(s_n_l2);
+            let shower_lp2 = [];
+            for (let i = 0; i < s_n_l2a.length; i++) {
+                shower_lp2[i] = s_n_l2a[i] + "x";
+            };
+            let shower_lp3 =["("];
+            for (let i = 0; i < shower_lp2.length; i++) {
+                shower_lp3.push(String(shower_lp2[i]));
+                if (i != shower_lp2.length-1){
+                    shower_lp3.push(",2x)(");
+                }
+                else{
+                    shower_lp3.push(",2x)"); 
+                };
+            };
+            return shower_lp3.join("");
+        };
+
+
+
+
+
+
+
+
+        er.value = "";
+        er1.value = "";
+        saitoprint.value = "";
+        saitosyousai1.value = "";
+        saitosyousai2.value = "";
+
+        var skaku_str = document.getElementById("skaku").value;
+        let skaku_str_l = skaku_str.split("");
+        let skaku_num_l = str_num(skaku_str);
+
+        if (check_the_numbers(skaku_num_l)&&(!(max_height(skaku_num_l)>17))){
+            saitoprint.value = skaku_str;
+            saitosyousai1.value = convert_to_box(skaku_num_l);
+            saitosyousai2.value = convert_to_shower(skaku_num_l);
+        }
+        else if (!(check_conv(skaku_str_l))){
+            er.value = "対応していない文字が含まれています";
+        }
+        else if (skaku_str_l == ""){
+            er1.value = "入力欄が空欄です";
+        }
+        else if (skaku_str_l.length > 200){
+            er1.value = "入力値が長すぎます";
+        }
+        else if (max_height(skaku_num_l)>17){
+            er1.value = "最大値をh以下にしてください/Max height <= h"
+        }
+        else{
+            saitoprint.value = skaku_str;
+            er.value = "この数列は投げられません";
+        };
+    });
+</script>
+    </body>
+</html>

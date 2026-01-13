@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップビュワー - Siteswap Viewer</title>
+    <meta name="description" content="入力または共有されたサイトスワップパターンをブラウザで高精度に再生できるビューアです。ジャグリングの動きを直感的に確認できます。">
+    <style>
+        /* CSSコード */
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.5">
+</head>
+<body>
+    <div class="container">
+        <!-- <div id="loading" class="loader"><p>Loading...</p></div> -->
+    <header id="title-wrapper">
+        <a href="home" class="titleText">
+            <h1 style="margin: 5px;"><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+    
+    <main>
+        <section>
+            <div class="error-display">
+                <output id="er"></output>
+            </div>
+
+            <div class="canvas-section">
+                <div id="output-display" class="output-display">
+                    <span>入力パターン : </span>
+                    <span><output id="siteswapDisplay"></output></span>
+                </div>
+                <canvas id="canvas" width="300" height="500"></canvas>
+
+                <div class="range-controls">
+                    <div class="range-item">
+                        <input type="range" id="viewSpeed" class="viewSpeed" min="0" max="200" value="100">
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section id="clubRotSetting" style="display:none"></section>
+        <section id="ringSetting" style="display:none"></section>
+    </main>
+    <footer>
+        <p>&copy; 2021 サイトスワップマスター</p>
+    </footer>
+</div>
+    <script>
+        //window.onload = function() {const spinner = document.getElementById('loading');spinner.classList.add('loaded');}
+    </script>
+    <script src="siteswapProcessor.js?ver=1.1.1"></script>
+    <script src="simulation.min.js?ver=9.2.0"></script><!---->
+    <script>
+        state.enableTimeoutStop = false;
+    </script>
+</body>
+</html>
