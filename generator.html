@@ -113,11 +113,6 @@
             margin-bottom: 16px;
         }
 
-        .result-summary .icon {
-            color: #4CAF50;
-            font-size: 24px;
-        }
-
         .result-summary .count {
             font-size: 18px;
             font-weight: bold;
@@ -154,6 +149,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
+            border: none;
         }
 
         .result-chip:hover {
@@ -247,6 +243,7 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
+            margin-top: 24px;
         }
 
         .generate-btn:hover:not(:disabled) {
@@ -275,6 +272,161 @@
             border-top: 2px solid #DBE2EF;
             margin: 24px 0;
         }
+
+        /* モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #F9F7F7;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 2px solid #DBE2EF;
+            position: sticky;
+            top: 0;
+            background: #F9F7F7;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #3F72AF;
+            font-size: 20px;
+            font-family: monospace;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #112D4E;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* シミュレーションコンテナ */
+        .simulation-container {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .simulation-container iframe {
+            width: 300px;
+            aspect-ratio: 3 / 5;
+            border: none;
+            border-radius: 8px;
+        }
+
+        /* 接続情報 */
+        .connection-info {
+            background: #F9F7F7;
+            border-radius: 10px;
+        }
+
+        .connection-info h4 {
+            color: #3F72AF;
+            margin: 0 0 12px 0;
+            font-size: 16px;
+        }
+
+        .connection-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: #DBE2EF;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .connection-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .connection-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .connection-value {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #112D4E;
+            word-break: break-all;
+        }
+
+        .connection-loading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            color: #666;
+        }
+
+        .connection-error {
+            padding: 12px;
+            background: #ffebee;
+            border-radius: 8px;
+            color: #d32f2f;
+            font-size: 14px;
+        }
+
+        /* シミュレーションページへのリンク */
+        .simulation-link {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: #3F72AF;
+            color: #F9F7F7;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .simulation-link:hover {
+            background: #2E5A8E;
+        }
     </style>
     <link rel="stylesheet" href="simulation.css?ver=9.2.1">
 </head>
@@ -291,6 +443,7 @@
         </header>
 
         <main>
+            <!-- セクション1: 生成フォーム -->
             <section>
                 <h2>パターン生成</h2>
                 <p>条件を指定してサイトスワップパターンを生成できます。</p>
@@ -302,11 +455,9 @@
                         <span class="hint">※10以上はa=10, b=11, ... z=35で入力できます</span>
                     </div>
                 </div>
-            </section>
 
-            <!-- 詳細設定 -->
-            <section>
-                <div class="accordion settings-accordion">
+                <!-- 詳細設定アコーディオン -->
+                <div class="accordion settings-accordion" style="margin-top: 16px;">
                     <div class="accordion-item">
                         <div class="accordion-header">
                             <span>詳細設定</span>
@@ -379,13 +530,8 @@
                         </div>
                     </div>
                 </div>
-            </section>
 
-            <section>
-                <button class="generate-btn" id="generateBtn">
-                    <span>&#10024;</span>
-                    <span>生成</span>
-                </button>
+                <button class="generate-btn" id="generateBtn">生成</button>
 
                 <div class="status-card" id="statusCard">
                     <div class="spinner"></div>
@@ -393,41 +539,31 @@
                 </div>
 
                 <div class="error-card" id="errorCard">
-                    <span>&#9888;</span>
                     <span id="errorMessage"></span>
                 </div>
             </section>
 
-            <!-- 結果セクション -->
+            <!-- セクション2: 結果表示 -->
             <section id="results-section">
-                <hr class="divider">
+                <h2>生成結果</h2>
 
                 <div class="result-summary">
-                    <span class="icon">&#10004;</span>
                     <span class="count">計算結果: <span id="resultCount">0</span>個</span>
                 </div>
-                <p class="result-hint">パターンをクリックすると、シミュレーションページに移動します</p>
+                <p class="result-hint">パターンをクリックすると、シミュレーションと接続サイトスワップを表示します</p>
 
                 <div class="pagination" id="paginationTop">
-                    <button class="btn-outline" id="prevBtnTop" disabled>
-                        <span>&#8592;</span> 前へ
-                    </button>
+                    <button class="btn-outline" id="prevBtnTop" disabled>前へ</button>
                     <span class="page-info" id="pageInfoTop">1〜100件</span>
-                    <button class="btn-outline" id="nextBtnTop">
-                        次へ <span>&#8594;</span>
-                    </button>
+                    <button class="btn-outline" id="nextBtnTop">次へ</button>
                 </div>
 
                 <div class="results-container" id="resultsContainer"></div>
 
                 <div class="pagination" id="paginationBottom">
-                    <button class="btn-outline" id="prevBtnBottom" disabled>
-                        <span>&#8592;</span> 前へ
-                    </button>
+                    <button class="btn-outline" id="prevBtnBottom" disabled>前へ</button>
                     <span class="page-info" id="pageInfoBottom">1〜100件</span>
-                    <button class="btn-outline" id="nextBtnBottom">
-                        次へ <span>&#8594;</span>
-                    </button>
+                    <button class="btn-outline" id="nextBtnBottom">次へ</button>
                 </div>
             </section>
         </main>
@@ -440,6 +576,31 @@
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
         </footer>
+    </div>
+
+    <!-- モーダル -->
+    <div class="modal-overlay" id="patternModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalPatternTitle">-</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="simulation-container">
+                    <iframe id="simulationFrame" src="" scrolling="no"></iframe>
+                </div>
+                <div class="connection-info">
+                    <h4>基底状態からの接続</h4>
+                    <div id="connectionContent">
+                        <div class="connection-loading">
+                            <div class="spinner"></div>
+                            <span>計算中...</span>
+                        </div>
+                    </div>
+                </div>
+                <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -457,6 +618,8 @@
         });
     </script>
     <script src="siteswapGenerator.js?ver=1.0.0"></script>
+    <script src="siteswapProcessor.js?ver=1.1.3"></script>
+    <script src="siteswapLab.js?ver=1.5.0"></script>
     <script>
         // 状態管理
         let results = [];
@@ -479,6 +642,14 @@
         const resultsSection = document.getElementById('results-section');
         const resultsContainer = document.getElementById('resultsContainer');
         const resultCount = document.getElementById('resultCount');
+
+        // モーダル要素
+        const patternModal = document.getElementById('patternModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalPatternTitle = document.getElementById('modalPatternTitle');
+        const simulationFrame = document.getElementById('simulationFrame');
+        const connectionContent = document.getElementById('connectionContent');
+        const simulationLink = document.getElementById('simulationLink');
 
         // ランダムチェックボックスの変更イベント
         isRandomCheckbox.addEventListener('change', function () {
@@ -538,16 +709,107 @@
             const displayItems = results.slice(displayStart, displayStart + displayCount);
 
             displayItems.forEach(pattern => {
-                const chip = document.createElement('a');
+                const chip = document.createElement('button');
                 chip.className = 'result-chip';
                 chip.textContent = pattern;
-                chip.href = 'simulation?pattern=' + encodeURIComponent(pattern);
                 chip.title = 'クリックしてシミュレーション';
+                chip.addEventListener('click', function () {
+                    openPatternModal(pattern);
+                });
                 resultsContainer.appendChild(chip);
             });
 
             updatePagination();
         }
+
+        // モーダルを開く
+        function openPatternModal(pattern) {
+            modalPatternTitle.textContent = pattern;
+
+            // シミュレーションのiframeを設定
+            const encodedPattern = encodeURIComponent(pattern);
+            simulationFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+
+            // シミュレーションページへのリンクを設定
+            simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
+
+            // 接続情報をローディング状態に
+            connectionContent.innerHTML = `
+                <div class="connection-loading">
+                    <div class="spinner"></div>
+                    <span>計算中...</span>
+                </div>
+            `;
+
+            // モーダルを表示
+            patternModal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+
+            // 接続サイトスワップを計算
+            setTimeout(() => {
+                calculateConnection(pattern);
+            }, 100);
+        }
+
+        // 接続サイトスワップを計算
+        function calculateConnection(pattern) {
+            try {
+                // 基底状態からの接続を計算（pattern1を空にすると基底状態が補完される）
+                const result = SiteswapLab.calculateConnectionPattern('', pattern);
+
+                if (!result.isValid || !result.isJugglable) {
+                    connectionContent.innerHTML = `
+                        <div class="connection-error">${result.message || '接続の計算に失敗しました'}</div>
+                    `;
+                    return;
+                }
+
+                const data = result.data;
+
+                connectionContent.innerHTML = `
+                    <div class="connection-item">
+                        <span class="connection-label">基底状態</span>
+                        <span class="connection-value">${data.pattern1}</span>
+                    </div>
+                    <div class="connection-item">
+                        <span class="connection-label">基底状態 → 入力パターン</span>
+                        <span class="connection-value">${data.connection || '(なし)'}</span>
+                    </div>
+                    <div class="connection-item">
+                        <span class="connection-label">入力パターン → 基底状態</span>
+                        <span class="connection-value">${data.reverseConnection || '(なし)'}</span>
+                    </div>
+                    <div class="connection-item">
+                        <span class="connection-label">完全ループ</span>
+                        <span class="connection-value">${data.fullConnection || '(なし)'}</span>
+                    </div>
+                `;
+            } catch (e) {
+                connectionContent.innerHTML = `
+                    <div class="connection-error">エラー: ${e.message}</div>
+                `;
+            }
+        }
+
+        // モーダルを閉じる
+        function closePatternModal() {
+            patternModal.classList.remove('visible');
+            document.body.style.overflow = '';
+            simulationFrame.src = '';
+        }
+
+        // モーダルを閉じるイベント
+        modalClose.addEventListener('click', closePatternModal);
+        patternModal.addEventListener('click', function (e) {
+            if (e.target === patternModal) {
+                closePatternModal();
+            }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && patternModal.classList.contains('visible')) {
+                closePatternModal();
+            }
+        });
 
         // 前のページ
         function showPrevious() {
@@ -671,7 +933,7 @@
                     errorCard.classList.add('visible');
                 } finally {
                     generateBtn.disabled = false;
-                    generateBtn.innerHTML = '<span>&#10024;</span><span>生成</span>';
+                    generateBtn.textContent = '生成';
                     statusCard.classList.remove('visible');
                 }
             }, 50);
