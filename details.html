@@ -1,137 +1,472 @@
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-        <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="0">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>サイトスワップの確認/Siteswap Details</title>
-        <style>
-/*入力された数列がサイトスワップであるかどうか（投げられるか）の確認ができます。また、状態や高さの比などの詳細も調べることができます。*/
-            input[type="text"] {
-            size: 10; /*--幅--*/
-            padding: 10px; /*--余白--*/
-            font-size: 20px; /*--文字サイズ--*/
-            border: solid 2px #cccccc; /*--ボーダー線--*/
-            border-radius: 15px; /*--角丸--*/
-            }
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップの確認/Siteswap Details</title>
+    <meta name="description" content="入力された数列がサイトスワップであるかどうかの確認と詳細情報を表示【サイトスワップマスター】">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=9.2.1">
+    <style>
+        /* 詳細ページ専用スタイル */
+        .result-section {
+            margin-top: 20px;
+        }
 
-            form{
-                width:100%;
-                padding:0;
-                margin:0;
-            }
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: #F9F7F7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
 
-            a.cp_btn {
+        .result-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result-value {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #112D4E;
+            word-break: break-all;
+        }
+
+        .result-value.highlight {
+            font-size: 24px;
+            color: #3F72AF;
+        }
+
+        .status-valid {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .status-invalid {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        /* スピナー */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #DBE2EF;
+            border-top-color: #3F72AF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+        }
+
+        .loading-container.visible {
+            display: flex;
+        }
+
+        /* シミュレーションコンテナ */
+        .simulation-wrapper {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #DBE2EF;
+        }
+
+        .simulation-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .simulation-container iframe {
+            width: 300px;
+            aspect-ratio: 3 / 5;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .simulation-link {
             display: block;
-            width: 160px;
-            padding: 0.8em;
             text-align: center;
+            padding: 12px;
+            background: #3F72AF;
+            color: #F9F7F7;
+            border-radius: 8px;
             text-decoration: none;
-            color: #EC407A;
-            border: 2px solid #EC407A;
-            border-radius: 3px;
-            transition: .4s;
-            }
-            a.cp_btn:hover {
-            background: #EC407A;
-            color: #fff;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+
+        .simulation-link:hover {
+            background: #2E5A8E;
+        }
+
+        /* 接続情報 */
+        .connection-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #DBE2EF;
+        }
+
+        .connection-text {
+            font-size: 14px;
+            color: #112D4E;
+            line-height: 1.8;
+            background: #F9F7F7;
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .connection-text strong {
+            color: #3F72AF;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="loading" class="loader"><p>Loading...</p></div>
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+        </header>
+
+        <main>
+            <section>
+                <h2>サイトスワップの確認</h2>
+                <p>入力された数列がどのようなサイトスワップであるかを確認できます。</p>
+
+                <div class="error-display">
+                    <output id="er"></output>
+                </div>
+
+                <div class="input-container">
+                    <label for="patternInput">確認したいサイトスワップ</label>
+                    <input type="text" id="patternInput" placeholder="例: 531">
+                    <a href="#" class="btn" id="analyzeBtn">確認する</a>
+                </div>
+
+                <div class="loading-container" id="loadingContainer">
+                    <div class="spinner"></div>
+                    <span>解析中...</span>
+                </div>
+
+                <div id="resultSection" class="result-section" style="display: none;">
+                    <h3 style="color: #3F72AF; margin-bottom: 15px;">解析結果</h3>
+
+                    <div class="result-item">
+                        <span class="result-label">入力パターン</span>
+                        <span id="resultPattern" class="result-value highlight">-</span>
+                    </div>
+
+                    <div class="result-item">
+                        <span class="result-label">判定</span>
+                        <span id="resultStatus" class="result-value">-</span>
+                    </div>
+
+                    <div id="detailsSection" style="display: none;">
+                        <h4 style="color: #3F72AF; margin: 20px 0 10px;">詳細情報</h4>
+
+                        <div class="settings-grid">
+                            <div class="setting-item">
+                                <label>ボール数</label>
+                                <span id="resultBallCount" class="result-value">-</span>
+                            </div>
+                            <div class="setting-item">
+                                <label>周期</label>
+                                <span id="resultPeriod" class="result-value">-</span>
+                            </div>
+                            <div class="setting-item">
+                                <label>最大値</label>
+                                <span id="resultMaxHeight" class="result-value">-</span>
+                            </div>
+                            <div class="setting-item">
+                                <label>パターンタイプ</label>
+                                <span id="resultPatternType" class="result-value">-</span>
+                            </div>
+                        </div>
+
+                        <div class="result-item" style="margin-top: 16px;">
+                            <span class="result-label">状態</span>
+                            <span id="resultState" class="result-value">-</span>
+                        </div>
+
+                        <!-- 基底状態からの接続情報 -->
+                        <div class="connection-section" id="connectionSection">
+                            <h4 style="color: #3F72AF; margin-bottom: 10px;">基底状態からの接続</h4>
+                            <div class="loading-container" id="connectionLoadingContainer">
+                                <div class="spinner"></div>
+                                <span>計算中...</span>
+                            </div>
+                            <div id="connectionResult" style="display: none;">
+                                <p id="connectionText" class="connection-text"></p>
+                            </div>
+                        </div>
+
+                        <!-- シミュレーション -->
+                        <div class="simulation-wrapper">
+                            <h4 style="color: #3F72AF; margin-bottom: 10px;">シミュレーション</h4>
+                            <div class="simulation-container">
+                                <iframe id="simulationFrame" src="" scrolling="no"></iframe>
+                            </div>
+                            <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>使い方</h2>
+                <p class="info-text">サイトスワップを入力して「確認する」ボタンを押すと、そのパターンが投げられるかどうかを判定し、詳細情報を表示します。</p>
+                <p class="info-text">シンクロパターンやマルチプレックスにも対応しています。</p>
+            </section>
+        </main>
+
+        <footer>
+            <a href="home" class="back-home-footer">ホームに戻る</a>
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact" class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
+                バグを報告
+            </a>
+            <p>&copy; 2021-2026 サイトスワップマスター</p>
+        </footer>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const spinner = document.getElementById('loading');
+            spinner.classList.add('loaded');
+        }
+    </script>
+    <script src="siteswapProcessor.js?ver=1.1.3"></script>
+    <script src="siteswapLab.js?ver=1.5.0"></script>
+    <script>
+        // DOM要素
+        const patternInput = document.getElementById('patternInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const resultSection = document.getElementById('resultSection');
+        const detailsSection = document.getElementById('detailsSection');
+        const errorDisplay = document.getElementById('er');
+
+        // 結果表示要素
+        const resultPattern = document.getElementById('resultPattern');
+        const resultStatus = document.getElementById('resultStatus');
+        const resultBallCount = document.getElementById('resultBallCount');
+        const resultPeriod = document.getElementById('resultPeriod');
+        const resultMaxHeight = document.getElementById('resultMaxHeight');
+        const resultPatternType = document.getElementById('resultPatternType');
+        const resultState = document.getElementById('resultState');
+
+        // 接続情報要素
+        const connectionSection = document.getElementById('connectionSection');
+        const connectionLoadingContainer = document.getElementById('connectionLoadingContainer');
+        const connectionResult = document.getElementById('connectionResult');
+        const connectionText = document.getElementById('connectionText');
+
+        // シミュレーション要素
+        const simulationFrame = document.getElementById('simulationFrame');
+        const simulationLink = document.getElementById('simulationLink');
+
+        // 数値をアルファベット表記に変換
+        function numToChar(num) {
+            if (num < 10) return String(num);
+            return String.fromCharCode(87 + num); // a=10, b=11, ...
+        }
+
+        // 状態配列を文字列に変換
+        function stateToString(state) {
+            if (!state || state.length === 0) return '-';
+            return '{' + state.map(s => numToChar(s)).join(',') + '}';
+        }
+
+        // エラー表示をクリア
+        function clearError() {
+            errorDisplay.textContent = '';
+        }
+
+        // エラー表示
+        function showError(message) {
+            errorDisplay.textContent = message;
+        }
+
+        // 結果セクションを非表示
+        function hideResults() {
+            resultSection.style.display = 'none';
+            detailsSection.style.display = 'none';
+        }
+
+        // 解析処理
+        function analyze() {
+            clearError();
+            hideResults();
+
+            const pattern = patternInput.value.trim();
+
+            if (pattern === '') {
+                showError('パターンを入力してください。');
+                return;
             }
 
-            div.erer{
-                color: #ff0000;
-            }
+            loadingContainer.classList.add('visible');
 
-            #saitosyousai0{
-                color:#FF00FF;
-                font-size:22px;
-            }
+            setTimeout(() => {
+                try {
+                    const result = SiteswapLab.analyzePattern(pattern);
 
-            div.saitosyousai{
-                font-size:18px;
-            }
+                    loadingContainer.classList.remove('visible');
 
-            #saitoprint{
-                font-size:30px;
-            }
+                    // 入力パターンを表示
+                    resultPattern.textContent = pattern;
+                    resultSection.style.display = 'block';
 
-            #haiiro{
-                color:#a9a9a9;
+                    if (!result.isValid) {
+                        resultStatus.textContent = '無効なパターンです';
+                        resultStatus.className = 'result-value status-invalid';
+                        if (result.message) {
+                            showError(result.message);
+                        }
+                        return;
+                    }
+
+                    if (!result.isJugglable) {
+                        resultStatus.textContent = 'この数列は投げられません';
+                        resultStatus.className = 'result-value status-invalid';
+                        return;
+                    }
+
+                    // 投げられるパターンの場合
+                    resultStatus.textContent = 'この数列は投げられます';
+                    resultStatus.className = 'result-value status-valid';
+
+                    const data = result.data;
+
+                    // 詳細情報を表示
+                    resultBallCount.textContent = data.propCount + '個';
+                    resultPeriod.textContent = data.period;
+                    resultMaxHeight.textContent = numToChar(data.maxHeight);
+                    resultPatternType.textContent = data.isAsync ? 'アシンクロ' : 'シンクロ';
+                    resultState.textContent = stateToString(data.state);
+
+                    detailsSection.style.display = 'block';
+
+                    // シミュレーションを設定
+                    const encodedPattern = encodeURIComponent(pattern);
+                    simulationFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+                    simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
+
+                    // 基底状態からの接続を計算
+                    calculateConnection(pattern, data.propCount, data.isAsync);
+
+                } catch (e) {
+                    loadingContainer.classList.remove('visible');
+                    showError('エラー: ' + e.message);
+                }
+            }, 50);
+        }
+
+        // 基底状態からの接続を計算
+        function calculateConnection(pattern, propCount, isAsync) {
+            connectionLoadingContainer.classList.add('visible');
+            connectionResult.style.display = 'none';
+
+            setTimeout(() => {
+                try {
+                    // 基底状態からの接続を計算（pattern1を空にすると基底状態が補完される）
+                    const result = SiteswapLab.calculateConnectionPattern('', pattern);
+
+                    connectionLoadingContainer.classList.remove('visible');
+
+                    if (!result.isValid || !result.isJugglable) {
+                        connectionText.innerHTML = '接続の計算に失敗しました。';
+                        connectionResult.style.display = 'block';
+                        return;
+                    }
+
+                    const data = result.data;
+                    const groundState = data.pattern1; // 基底状態
+                    const entryConnection = data.connection || '';
+                    const exitConnection = data.reverseConnection || '';
+
+                    let html = '';
+
+                    if (isAsync) {
+                        // アシンクロの場合
+                        const basePatternName = propCount % 2 === 0
+                            ? `${propCount}ボールファウンテン`
+                            : `${propCount}ボールカスケード`;
+
+                        if (entryConnection === '' && exitConnection === '') {
+                            html = `このサイトスワップは、<strong>${basePatternName}</strong>から直接入ることができます。`;
+                        } else {
+                            html = `このサイトスワップは、「<strong>${entryConnection}</strong>」を投げることで<strong>${basePatternName}</strong>から入ることができます。`;
+                            if (exitConnection) {
+                                html += `<br>また、「<strong>${exitConnection}</strong>」を投げることで${basePatternName}に戻ることができます。`;
+                            }
+                        }
+                    } else {
+                        // シンクロの場合
+                        if (entryConnection === '' && exitConnection === '') {
+                            html = `このサイトスワップは、<strong>${groundState}</strong>から直接入ることができます。`;
+                        } else {
+                            html = `このサイトスワップは、「<strong>${entryConnection}</strong>」を投げることで<strong>${groundState}</strong>から入ることができます。`;
+                            if (exitConnection) {
+                                html += `<br>また、「<strong>${exitConnection}</strong>」を投げることで${groundState}に戻ることができます。`;
+                            }
+                        }
+                    }
+
+                    connectionText.innerHTML = html;
+                    connectionResult.style.display = 'block';
+
+                } catch (e) {
+                    connectionLoadingContainer.classList.remove('visible');
+                    connectionText.innerHTML = '接続の計算中にエラーが発生しました。';
+                    connectionResult.style.display = 'block';
+                }
+            }, 100);
+        }
+
+        // イベントリスナー
+        analyzeBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            analyze();
+        });
+
+        // Enterキーで解析
+        patternInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                analyze();
             }
-            canvas {
-                background-color: #5a5a5a;
-                z-index: 3;
-              }
-              
-              .container {
-                width: 100%;
-                height: 500px;
-              }
-        </style>
-        <style>
-            /* CSSコード */
-            @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
-        </style>
-        <link rel="stylesheet" href="all.css">
-    </head>
-   
-   
-    <body>
-        <center> 
-            <a href="home">
-                <h1 style="display: flex;justify-content: center;"><img src="title.png" alt="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップ
-                    マスター】" style="border-radius:20px;width:100px;height:auto;margin-top:3px;"></h1>
-                </a>
-            <p>入力された英数字列がどのようなサイトスワップであるかを確認できます。</p>
-        <p><strong>半角英数字</strong>で入力してください。</p>
-        <form>
-        <p><div class="kakunin">
-            <label for="skaku">確認したい数列を入力してください</label>
-            <input type="text" name="skaku" id="skaku">
-        </div></p>
-       <a href="#" class="cp_btn" id="kakuninbtn">読み込む</a>
-       </form>
-        <div class = "erer">
-        <p><output id = "er" name = "er"></output></p>
-        <p><output id = "er1" name = "er1"></output></p>
-        </div>
-        <p class = "saitoprint">
-        入力した数列→「<output id = "saitoprint" name = "saitoprint"></output>」
-        </p>
-        <div class = "saitosyousai">
-        <p><output id = "saitosyousai0" name = "saitosyousai"></output></p>
-<hr>
-        <p><output id = "saitosyousai1" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai2" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai3" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai4" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai5" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai6" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai7" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai8" name = "saitosyousai"></output></p>
-        <p><output id = "saitosyousai9" name = "saitosyousai"></output></p>
-        </div>
-        <p></p>
-        <div id = "erer" class = "erer">
-            <p><output id = "ercanvs" name = "er"></output></p>
-            </div>
-            <div class="container">
-                <canvas id="canvas" width="300" height="500"></canvas>
-            </div>
-            <div id ="speedrange">
-                <input type="range" name="syousaisettei" id="syousaisettei5" min="0" max="100" value="30">
-            </div>
-            <a href="home"  class="button smallButton">ホームに戻る</a>
-<hr>
-        <p id = "haiiro">※「対応していない文字が含まれています」と表示された場合は、全角になっていないか、空欄が含まれていないか、を確認してください。</p>
-        <p>2021/11/17-ver1.0</p>
-        <p>2022/5/28-ver2.0(項目追加)</p>
-        <p>2022/5/28-ver2.0.1(テキスト修正)</p>
-        <p>2022/7/7-ver2.1(バグ修正)</p>
-        <p>2023/1/18-ver3.0(シミュレーション追加)</p>
-</center>
-<script>
-    let objectColor="#FFFFFF",playerColor="#000000",playerhidden=!1,view_speed=3,s_num_l=null,is=null,s_sy_l=null,is_sy=null,requestId=null,requestId2=null,ballSim=[],ballSimHand=[],ballSimHand2=[],handSim=[],y_ini=400,ballSim_gl,lastTime,co,x1=null,x2=null,x3=null,x4=null,g_ini=10,max_h_pa=null,maxh=30,ii=0,ii2=0,iit,iit2,iit3,iit4,x3mag,x4mag,s_numonly_l,nagekata=[],nagekata2=[];ctx=(canvas=document.getElementById("canvas")).getContext("2d"),width=canvas.width,height=canvas.height;var button=document.getElementById("kakuninbtn");button.addEventListener("click",function(l){l.preventDefault();let i={0:"0",1:"1",2:"2",3:"3",4:"4",5:"5",6:"6",7:"7",8:"8",9:"9",10:"a",11:"b",12:"c",13:"d",14:"e",15:"f",16:"g",17:"h",18:"i",19:"j",20:"k",21:"l",22:"m",23:"n",24:"o",25:"p",26:"q",27:"r",28:"s",29:"t",30:"u",31:"v",32:"w",33:"x",34:"y",35:"z"};function n(l){var n=[];for(let e=0;e<l.length;e++)n.push(i[l[e]]);return n}function e(l){let i=function l(i){let n=[];for(;x(i)!=n.length;)for(let e=1;e<i.length+1&&(n.push(i[i.length-e]),n.length!=x(i));e++);return n}(l),n=[];for(let e=1;e<x(l)+1;e++){let a=e-1,t=e;for(let g=0;g<i.length;g++){if(i[g]==t){n.push(a);break}t+=1}}return n}function a(l){return l=l.map(function(l){return l-1})}function t(l,i){let n=-1,e=0;for(;e<1e5;){var t=new Set(l),g=new Set(i);if(t.isSubset(g))break;l=a(l),i.unshift(n),n+=-1,e+=1}var _=new Set(l),$=new Set(i);let h=[],m=Array.from(h=$.difference(_));m.sort(function(l,i){return l<i?-1:1});let u=[];for(let x=0;x<m.length;x++)u.push(m[x]+(m.length-x));return u}Set.prototype.isSubset=function(l){for(var i of this)if(!l.has(i))return!1;return!0},Set.prototype.difference=function(l){var i=new Set(this);for(var n of l)i.delete(n);return i};let g={0:0,1:1,2:2,3:3,4:4,5:5,6:6,7:7,8:8,9:9,a:10,b:11,c:12,d:13,e:14,f:15,g:16,h:17,i:18,j:19,k:20,l:21,m:22,n:23,o:24,p:25,q:26,r:27,s:28,t:29,u:30,v:31,w:32,x:33,y:34,z:35,A:10,B:11,C:12,D:13,E:14,F:15,G:16,H:17,I:18,J:19,K:20,L:21,M:22,N:23,O:24,P:25,Q:26,R:27,S:28,T:29,U:30,V:31,W:32,X:33,Y:34,Z:35};function _(l){let i=0;for(let n=0;n<l.length;n++)i+=l[n];return i/l.length}function $(l){return new Set(l).size!=l.length}function h(l){let i=[],n=!1;for(let e=0;e<l.length;e++)if("$"==l[e]||"-"==l[e]||"/"==l[e]||"+"==l[e]){if(n)return!1;n=!0}else i.push(l[e]),n=!1;if(n||_(i)%1!=0)return!1;{let a=[];for(let t=0;t<i.length;t++)a.push((Number(i[t])+t+1)%i.length);for(let g=0;g<i.length;g++)if($(a))return!1;return!0}}function m(l){return l in g}function u(l){let i=0;for(let n=0;n<l.length;n++)m(l[n])&&(i+=1);return i==l.length}function x(l){let i=function(l,i){return Math.max(l,i)};return l.reduce(i)}function s(l){return 1==x(l)||0==x(l)||2==x(l)||3==x(l)||4==x(l)?16:80/x(l)}function r(l,i,n,e){let a=l[0]-1,t=l[6],g=l[5];g==t&&(t+=.1);let _=t-g,$=g_ini,h=g+l[2],m=_/(a*iit3);1==l[0]&&(m=_/1);let u=y_ini-$*(a+1)**2/max_h_pa;2==l[0]&&(u=y_ini-$*(a+25.5/(x4mag-x3mag))**2/max_h_pa);let x=(g+t)/2,s=(u-y_ini)/((x-g)*(x-t))*((h+=m*i*view_speed)-g)*(h-t)+y_ini;s<=y_ini+1&&(ctx.beginPath(),ctx.arc(h,s,n,0,2*Math.PI),ctx.fill()),ballSim[e]=[l[0],l[1],h-g,s,l[4],l[5],l[6]]}function o(l,i,n,e){let a=l[4],t=l[3];t==a&&(a+=.1);let g=a-t,_=t+l[1],$,h=(t+a)/2,m=-((y_ini-g_ini*(1+25.5/(x4mag-x3mag))**2/max_h_pa-y_ini)/((h-t)*(h-a)))*((_+=g/(1*iit3)*i*view_speed)-t)*(_-a)+y_ini;ctx.beginPath(),ctx.arc(_,m,n,0,2*Math.PI),ctx.fill(),ballSimHand[e]=[l[0],_-t,m,l[3],l[4]]}function S(l,i,n){let e,a,t=l[4],g=l[3];switch(l[0]){case"RU":e=1,a=-1,"_"==t&&(t=x1),"_"==g&&(g=x2);break;case"RD":e=-1,a=-1,"_"==g&&(g=x1),"_"==t&&(t=x2);break;case"LU":e=1,a=1,"_"==t&&(t=x4),"_"==g&&(g=x3);break;case"LD":e=-1,a=1,"_"==g&&(g=x4),"_"==t&&(t=x3);break;default:console.log("バグ")}g==t&&(t+=.1);let _=t-g,$=g+l[1],h,m=(g+t)/2,u=e*((y_ini-g_ini*(1+25.5/(x4mag-x3mag))**2/max_h_pa-y_ini)/((m-g)*(m-t)))*(($+=_/(1*iit3)*i*view_speed)-g)*($-t)+y_ini;playerhidden||(ctx.beginPath(),ctx.moveTo($,u),ctx.lineTo(width/2+a*(x4mag-x3mag)/.9-($-width/2)/5,y_ini-(x4mag-x3mag)/1.7+(u-y_ini)/7),ctx.stroke(),ctx.beginPath(),ctx.moveTo(width/2+a*(x4mag-x3mag)/.9-($-width/2)/5,y_ini-(x4mag-x3mag)/1.7+(u-y_ini)/7),ctx.lineTo(width/2+a*(x4mag-x3mag)/2,y_ini-(x4mag-x3mag)*1.6),ctx.lineTo(width/2+a*(x4mag-x3mag)/12,y_ini-(x4mag-x3mag)*1.7),ctx.stroke(),ctx.beginPath(),ctx.fillStyle=playerColor,ctx.fill(),ctx.arc(width/2+a*(x4mag-x3mag)/.9-($-width/2)/5,y_ini-(x4mag-x3mag)/1.7+(u-y_ini)/7,(x4mag-x3mag)*.113,0,2*Math.PI),ctx.fill(),ctx.fillStyle=objectColor),handSim[n]=[l[0],$-g,u,g,t]}function f(){playerhidden||(ctx.strokeStyle=playerColor,ctx.beginPath(),ctx.arc(width/2,y_ini-(x4mag-x3mag)*2.5+(x4mag-x3mag)/6,(x4mag-x3mag)/1.5-(x4mag-x3mag)/6,0,2*Math.PI),ctx.stroke(),ctx.beginPath(),ctx.moveTo(width/2,y_ini-(x4mag-x3mag)*2.5+(x4mag-x3mag)/1.5),ctx.lineTo(width/2,y_ini),ctx.lineTo(width/2+(x4mag-x3mag)*.6,y_ini+(x4mag-x3mag)*3/2),ctx.lineTo(width/2+(x4mag-x3mag),y_ini+(x4mag-x3mag)*3),ctx.lineTo(width/2+(x4mag-x3mag)*.9,y_ini+(x4mag-x3mag)*3),ctx.lineTo(width/2+(x4mag-x3mag)*.6,y_ini+(x4mag-x3mag)*3/2),ctx.stroke(),ctx.beginPath(),ctx.moveTo(width/2,y_ini),ctx.lineTo(width/2-(x4mag-x3mag)*.6,y_ini+(x4mag-x3mag)*3/2),ctx.lineTo(width/2-(x4mag-x3mag),y_ini+(x4mag-x3mag)*3),ctx.lineTo(width/2-(x4mag-x3mag)*.9,y_ini+(x4mag-x3mag)*3),ctx.lineTo(width/2-(x4mag-x3mag)*.6,y_ini+(x4mag-x3mag)*3/2),ctx.stroke(),ctx.fillStyle=objectColor)}function b(l){if(!0==is){ctx.fillStyle=objectColor;let i=function l(i){let n=[];for(let e=0;e<i.length;e++)"$"==i[e]||"-"==i[e]||"/"==i[e]||"+"==i[e]?(n.push([i[e+1],i[e]]),e++):n.push([i[e],"#"]);return n}(s_num_l);s_numonly_l=[];for(let n=0;n<i.length;n++)s_numonly_l.push(i[n][0]);let e=x(s_numonly_l);e>=5?(x2=Math.floor(width/2-170/e),x3=Math.floor(width/2+170/e),max_h_pa=g_ini*e**2/(y_ini-maxh)):(x2=Math.floor(width/2-34),x3=Math.floor(width/2+34),max_h_pa=25*g_ini/(y_ini-maxh)),x4=Math.floor((x3-width/2)*1.5+x3),x1=Math.floor(x2-(x3-width/2)*1.5),x4mag=((x3mag=e>=5?width/2+170/e:width/2+34)-width/2)*1.5+x3,ballSim_gl=function l(i){let n=[];i.length%2==1&&(i=i.concat(i));for(let e=0;e<i.length;e++)e%2==0?i[e][0]%2==0?("#"==i[e][1]&&n.push([i[e][0],"RR",0,y_ini,"#",x2,x1]),"/"==i[e][1]&&n.push([i[e][0],"RR",0,y_ini,"/",x1,x2]),"+"==i[e][1]&&n.push([i[e][0],"RR",0,y_ini,"+",x1,x1]),"-"==i[e][1]&&n.push([i[e][0],"RR",0,y_ini,"-",x2,x2])):("#"==i[e][1]&&(1==i[e][0]&&"#"==i[(e+1)%i.length][1]||1==i[e][0]&&"-"==i[(e+1)%i.length][1]?n.push([i[e][0],"RL",0,y_ini,"#",x2,x3]):n.push([i[e][0],"RL",0,y_ini,"#",x2,x4])),"/"==i[e][1]&&(1==i[e][0]&&"/"==i[(e+1)%i.length][1]||1==i[e][0]&&"+"==i[(e+1)%i.length][1]?n.push([i[e][0],"RL",0,y_ini,"/",x1,x4]):n.push([i[e][0],"RL",0,y_ini,"/",x1,x3])),"+"==i[e][1]&&(1==i[e][0]&&"#"==i[(e+1)%i.length][1]||1==i[e][0]&&"-"==i[(e+1)%i.length][1]?n.push([i[e][0],"RL",0,y_ini,"+",x1,x3]):n.push([i[e][0],"RL",0,y_ini,"+",x1,x4])),"-"==i[e][1]&&(1==i[e][0]&&"/"==i[(e+1)%i.length][1]||1==i[e][0]&&"+"==i[(e+1)%i.length][1]?n.push([i[e][0],"RL",0,y_ini,"-",x2,x4]):n.push([i[e][0],"RL",0,y_ini,"-",x2,x3]))):i[e][0]%2==0?("#"==i[e][1]&&n.push([i[e][0],"LL",0,y_ini,"#",x3,x4]),"/"==i[e][1]&&n.push([i[e][0],"LL",0,y_ini,"/",x4,x3]),"+"==i[e][1]&&n.push([i[e][0],"LL",0,y_ini,"+",x4,x4]),"-"==i[e][1]&&n.push([i[e][0],"LL",0,y_ini,"-",x3,x3])):("#"==i[e][1]&&(1==i[e][0]&&"#"==i[(e+1)%i.length][1]||1==i[e][0]&&"-"==i[(e+1)%i.length][1]?n.push([i[e][0],"LR",0,y_ini,"#",x3,x2]):n.push([i[e][0],"LR",0,y_ini,"#",x3,x1])),"/"==i[e][1]&&(1==i[e][0]&&"/"==i[(e+1)%i.length][1]||1==i[e][0]&&"+"==i[(e+1)%i.length][1]?n.push([i[e][0],"LR",0,y_ini,"/",x4,x1]):n.push([i[e][0],"LR",0,y_ini,"/",x4,x2])),"+"==i[e][1]&&(1==i[e][0]&&"#"==i[(e+1)%i.length][1]||1==i[e][0]&&"-"==i[(e+1)%i.length][1]?n.push([i[e][0],"LR",0,y_ini,"+",x4,x2]):n.push([i[e][0],"LR",0,y_ini,"+",x4,x1])),"-"==i[e][1]&&(1==i[e][0]&&"/"==i[(e+1)%i.length][1]||1==i[e][0]&&"+"==i[(e+1)%i.length][1]?n.push([i[e][0],"LR",0,y_ini,"-",x3,x1]):n.push([i[e][0],"LR",0,y_ini,"-",x3,x2])));return n}(i),ballSim=[],ballSimHand=[],ballSimHand2=[],handSim=[],ii=0,iit=1,iit2=0,iit3=0,nagekata=[];for(let a=0;a<36;a++)nagekata.push("_");nagekata2=[];for(let t=0;t<36;t++)nagekata2.push("_");ctx.lineWidth=(x4mag-x3mag)/5}if(!1!=is){lastTime||(lastTime=l);let g=(l-lastTime)/1e3;lastTime=l,ctx.clearRect(0,0,canvas.width,canvas.height),ctx.beginPath(),ctx.fill();let _=[];for(let $=0;$<ballSim.length;$++)ballSim[$][3]>y_ini||_.push(ballSim[$]);ballSim=_;let h=[];for(let m=0;m<ballSimHand.length;m++)ballSimHand[m][2]<y_ini||h.push(ballSimHand[m]);ballSimHand=h;let u=[];for(let y=0;y<handSim.length;y++)(handSim[y][2]>=y_ini&&"RU"!=handSim[y][0]&&"LU"!=handSim[y][0]||handSim[y][2]<=y_ini&&"RD"!=handSim[y][0]&&"LD"!=handSim[y][0])&&u.push(handSim[y]);handSim=u,f();for(let p=0;p<handSim.length;p++)S(handSim[p],g,p);for(let d=0;d<ballSim.length;d++)r(ballSim[d],g,s(s_numonly_l),d);for(let c=0;c<ballSimHand.length;c++)o(ballSimHand[c],g,s(s_numonly_l),c);(iit+=g*view_speed)-iit2>1&&(nagekata.shift(),nagekata.push("_"),nagekata[ballSim_gl[ii%ballSim_gl.length][0]]=ballSim_gl[ii%ballSim_gl.length][6],nagekata2.shift(),nagekata2.push("_"),nagekata2[ballSim_gl[ii%ballSim_gl.length][0]]=ballSim_gl[ii%ballSim_gl.length][0],1!=nagekata2[1]&&"_"!=nagekata[1]&&ballSimHand.push([nagekata2[1],0,y_ini,nagekata[1],ballSim_gl[(ii+1)%ballSim_gl.length][5]]),0!=ballSim_gl[ii%ballSim_gl.length][0]&&ballSim.push(ballSim_gl[ii%ballSim_gl.length]),1==ballSim_gl[(ii+1)%ballSim_gl.length][0]&&(nagekata[2]=ballSim_gl[(ii+1)%ballSim_gl.length][6]),ii%2==0?(handSim.push(["RU",0,y_ini,ballSim_gl[ii%ballSim_gl.length][5],nagekata[2]]),handSim.push(["LD",0,y_ini,nagekata[1],ballSim_gl[(ii+1)%ballSim_gl.length][5]])):(handSim.push(["RD",0,y_ini,nagekata[1],ballSim_gl[(ii+1)%ballSim_gl.length][5]]),handSim.push(["LU",0,y_ini,ballSim_gl[ii%ballSim_gl.length][5],nagekata[2]])),ii+=1,iit3=iit-iit2,iit2=iit),requestId=requestAnimationFrame(b)}!1==is&&(requestId=null,ctx.clearRect(0,0,canvas.width,canvas.height)),is=null}function y(l,i){s_num_l=l,is=i,null==requestId&&(requestId=requestAnimationFrame(b))}function p(l){if(!0==is_sy){ctx.fillStyle=objectColor;let i=x(s_numonly_l=function l(i){console.log(i);let n=[];for(let e=0;e<i.length;e++)n.push(i[e][0][1]),n.push(i[e][1][1]);return n}(s_sy_l));i>=5?(x2=Math.floor(width/2-170/i),x3=Math.floor(width/2+170/i),max_h_pa=g_ini*i**2/(y_ini-maxh)):(x2=Math.floor(width/2-34),x3=Math.floor(width/2+34),max_h_pa=25*g_ini/(y_ini-maxh)),x4=Math.floor((x3-width/2)*1.5+x3),x1=Math.floor(x2-(x3-width/2)*1.5),x4mag=((x3mag=i>=5?width/2+170/i:width/2+34)-width/2)*1.5+x3,ballSim_gl=function l(i){let n=[];for(let e=0;e<i.length;e++)for(let a=0;a<i[e].length;a++)0==a?"notx"==i[e][a][2]?("#"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"#",x2,x1]),"/"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"/",x1,x2]),"+"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"+",x1,x1]),"-"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"-",x2,x2])):("#"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"#",x2,x4]),"/"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"/",x1,x3]),"+"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"+",x1,x4]),"-"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"-",x2,x3])):"notx"==i[e][a][2]?("#"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"#",x3,x4]),"/"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"/",x4,x3]),"+"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"+",x4,x4]),"-"==i[e][a][0]&&n.push([i[e][a][1],"notx",0,y_ini,"-",x3,x3])):("#"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"#",x3,x1]),"/"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"/",x4,x2]),"+"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"+",x4,x1]),"-"==i[e][a][0]&&n.push([i[e][a][1],"x",0,y_ini,"-",x3,x2]));return n}(s_sy_l),console.log(JSON.stringify(ballSim_gl)),ballSim=[],ballSimHand=[],ballSimHand2=[],handSim=[],ii=0,ii2=0,iit=1,iit2=0,iit3=0,iit4=0,nagekata=[];for(let n=0;n<36;n++)nagekata.push("_");nagekata2=[];for(let e=0;e<36;e++)nagekata2.push("_");ctx.lineWidth=(x4mag-x3mag)/5}if(!1!=is_sy){lastTime||(lastTime=l);let a=(l-lastTime)/1e3;lastTime=l,ctx.clearRect(0,0,canvas.width,canvas.height),ctx.beginPath(),ctx.fill();let t=[];for(let g=0;g<ballSim.length;g++)ballSim[g][3]>y_ini||t.push(ballSim[g]);ballSim=t;let _=[];for(let $=0;$<ballSimHand.length;$++)ballSimHand[$][2]<y_ini||_.push(ballSimHand[$]);ballSimHand=_;let h=[];for(let m=0;m<handSim.length;m++)(handSim[m][2]>=y_ini&&"RU"!=handSim[m][0]&&"LU"!=handSim[m][0]||handSim[m][2]<=y_ini&&"RD"!=handSim[m][0]&&"LD"!=handSim[m][0])&&h.push(handSim[m]);handSim=h,f();for(let u=0;u<handSim.length;u++)S(handSim[u],a,u);for(let b=0;b<ballSim.length;b++)r(ballSim[b],a,s(s_numonly_l),b);for(let y=0;y<ballSimHand.length;y++)o(ballSimHand[y],a,s(s_numonly_l),y);(iit+=a*view_speed)-iit2>1&&(ii%2==0&&(nagekata.shift(),nagekata.push("_"),nagekata2.shift(),nagekata2.push("_"),"notx"==ballSim_gl[ii%ballSim_gl.length][1]?nagekata[ballSim_gl[ii%ballSim_gl.length][0]/2]=ballSim_gl[ii%ballSim_gl.length][6]:nagekata2[ballSim_gl[ii%ballSim_gl.length][0]/2]=ballSim_gl[ii%ballSim_gl.length][6],"x"==ballSim_gl[(ii+1)%ballSim_gl.length][1]?nagekata[ballSim_gl[(ii+1)%ballSim_gl.length][0]/2]=ballSim_gl[(ii+1)%ballSim_gl.length][6]:nagekata2[ballSim_gl[(ii+1)%ballSim_gl.length][0]/2]=ballSim_gl[(ii+1)%ballSim_gl.length][6]),0!=ballSim_gl[ii%ballSim_gl.length][0]&&ii%2==0&&ballSim.push(ballSim_gl[ii%ballSim_gl.length]),0!=ballSim_gl[(ii+1)%ballSim_gl.length][0]&&ii%2==0&&ballSim.push(ballSim_gl[(ii+1)%ballSim_gl.length]),ii%2==1&&("_"!=nagekata[1]&&ballSimHand.push([nagekata[1],0,y_ini,nagekata[1],ballSim_gl[(ii+1)%ballSim_gl.length][5]]),"_"!=nagekata2[1]&&ballSimHand.push([nagekata2[1],0,y_ini,nagekata2[1],ballSim_gl[(ii+2)%ballSim_gl.length][5]])),ii%2==0?(handSim.push(["RU",0,y_ini,ballSim_gl[ii%ballSim_gl.length][5],nagekata[1]]),handSim.push(["LU",0,y_ini,ballSim_gl[(ii+1)%ballSim_gl.length][5],nagekata2[1]])):(handSim.push(["RD",0,y_ini,nagekata[1],ballSim_gl[(ii+1)%ballSim_gl.length][5]]),handSim.push(["LD",0,y_ini,nagekata2[1],ballSim_gl[(ii+2)%ballSim_gl.length][5]])),ii+=1,ii2++,iit3=iit-iit2,iit2=iit),requestId2=requestAnimationFrame(p)}!1==is_sy&&(requestId2=null,ctx.clearRect(0,0,canvas.width,canvas.height)),is_sy=null}function d(l,i){s_sy_l=function l(i){let n=[],e=[],a=[];for(let t=0;t<i.length;t++)switch(i[t]){case"(":break;case")":e.push(n),n="";break;default:n+=i[t]}let _=[];for(let $=0;$<e.length;$++){a=[],a=e[$].split(",");let h=[];for(let m=0;m<a.length;m++){let u=[];u=a[m].split("");let x=[];"$"==u[0]||"-"==u[0]||"/"==u[0]||"+"==u[0]?(3==u.length&&(x=[u[0],u[1],"x"]),2==u.length&&(x=[u[0],u[1],"notx"])):(2==u.length&&(x=["#",u[0],"x"]),1==u.length&&(x=["#",u[0],"notx"])),x[1]=g[x[1]],h.push(x)}_.push(h)}return console.log(JSON.stringify(_)),_}(l),is_sy=i,null==requestId2&&(requestId2=requestAnimationFrame(p))}document.querySelector("#syousaisettei5").addEventListener("input",function l(i){view_speed=i.target.value/10},!1),er.value="",er1.value="",saitoprint.value="",saitosyousai0.value="",saitosyousai1.value="",saitosyousai2.value="",saitosyousai3.value="",saitosyousai4.value="",saitosyousai5.value="",saitosyousai6.value="",saitosyousai7.value="",saitosyousai8.value="",saitosyousai9.value="";var c,k,v,R,L,T=document.getElementById("skaku").value;let w=T.split(""),H=[];for(let I=0;I<w.length;I++)H.push(g[w[I]]);if(ercanvs.value="",!function l(i){let n=i.split(""),e=[];for(let a=0;a<n.length;a++)e.push(g[n[a]]);h(e)?(d(n,!1),y(e,!0)):function l(i){if("("!=i[0])return!1;let n=[];for(let e=0;e<i.length;e++)if("/"==i[e]||"+"==i[e]||"-"==i[e]){if(!("("==i[e-1]||","==i[e-1]))return!1}else n.push(i[e]);console.log(JSON.stringify(n));let a="",t=[],_="(";for(let $=0;$<n.length;$++)if(n[$]==_)switch(n[$]){case"(":_=",";break;case",":_=")",t.push(a),a="";break;case")":_="(",t.push(a),a="";break;default:console.log("バグ")}else switch(n[$]){case"(":case",":case")":return!1;default:a+=n[$]}return h(function l(i){let n=[];for(let e=0;e<i.length;e++){let a=i[e].split("");"x"==a[a.length-1]&&e%2==0?n.push(g[a[0]]+1):"x"==a[a.length-1]&&e%2==1?n.push(g[a[0]]-1):n.push(g[a[0]])}return n}(t))}(n)?(y(e,!1),d(n,!0)):(u(n)&&(""==n||n.length),y(e,!1),d(n,!1))}(T),h(H)){saitoprint.value=T,saitosyousai0.value="この数列は投げられます",saitosyousai1.value="---このサイトスワップの詳細---",saitosyousai2.value=`ボールの数:${_(H)}`,saitosyousai3.value=`周期数:${H.length}`,saitosyousai4.value=`最大値:${i[x(H)]}`,saitosyousai5.value=`最小値:${i[function l(i){let n=function(l,i){return Math.min(l,i)};return i.reduce(n)}(H)]}`,saitosyousai6.value=`状態:{${e(H)}}`,saitosyousai7.value=`二進状態数:${function l(i){let n=[],e=0;for(let a=0;a<x(i)+1;a++)a==i[e]?(n.push(1),e+=1):n.push(0);return n.reverse().join("")}(e(H))}`;let P,q,D;saitosyousai8.value=`高さの比:${function l(i){let n="";for(let e=0;e<i.length;e++)n+=String(i[e]),e!=i.length-1&&(n+=":");return n}((R=P=v=(v=k=H).map(function(l){return(l-1)*(l-1)}),L=function l(i){let n=(l,i)=>i?n(i,l%i):l,e=i[0];for(let a=1;a<i.length;a++)e=n(e,i[a]);return e}(P),R=R.map(function(l){return l/L})))}`,saitosyousai9.value=`${c=H,q=n(t(e([_(c)]),e(c))).join(""),D=n(t(e(c),e([_(c)]))).join(""),q==[]&&D==[]?_(c)%2==0?`このサイトスワップは、${_(c)}ボールファウンテンから直接入ることができます。`:`このサイトスワップは、${_(c)}ボールカスケードから直接入ることができます。`:_(c)%2==0?`このサイトスワップは、「${q}」を投げることで${_(c)}ボールファウンテンから入ることができます。また、「${D}」を投げることでファウンテンに戻ることができます。`:`このサイトスワップは、「${q}」を投げることで${_(c)}ボールカスケードから入ることができます。また、「${D}」を投げることでカスケードに戻ることができます。`}`}else u(w)?""==w?er.value="入力欄が空欄です":w.length>200?er1.value="入力値が長すぎます":(saitoprint.value=T,saitosyousai0.value="この数列は投げられません"):er.value="対応していない文字が含まれています"});
-</script>
-    </body>
+        });
+
+        // URLパラメータから初期値を取得
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialPattern = urlParams.get('pattern') || urlParams.get('encoded-pattern');
+        if (initialPattern) {
+            patternInput.value = decodeURIComponent(initialPattern);
+            // ページ読み込み後に自動解析
+            window.addEventListener('load', function() {
+                setTimeout(analyze, 100);
+            });
+        }
+    </script>
+</body>
 </html>
