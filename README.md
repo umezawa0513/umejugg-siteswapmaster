@@ -24,6 +24,7 @@
 このプロジェクトは静的なHTML、JavaScript、CSSで構成されています。
 
 - **Webで利用する**: [https://umejugg.com/siteswapmaster/home](https://umejugg.com/siteswapmaster/home)
+- **Webサイトに埋め込む**: [埋め込み方法のドキュメント](https://umejugg.com/siteswapmaster/embed-document)
 - **ローカルで実行する**:
   1. このリポジトリをクローンまたはダウンロードします。
   2. `home.html` をブラウザで開いてください。
