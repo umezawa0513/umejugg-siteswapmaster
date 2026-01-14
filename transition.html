@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -90,7 +91,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-container {
@@ -240,9 +243,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <div id="loading" class="loader"><p>Loading...</p></div>
+        <div id="loading" class="loader">
+            <p>Loading...</p>
+        </div>
         <header id="title-wrapper">
             <a href="home" class="titleText">
                 <h1><span>サイトスワップ</span><span>マスター</span></h1>
@@ -262,12 +268,12 @@
                     <div class="input-group">
                         <div class="input-item">
                             <label for="pattern1">サイトスワップ1</label>
-                            <input type="text" id="pattern1" placeholder="例: 531">
+                            <input type="text" id="pattern1" placeholder="例: 3">
                         </div>
                         <div class="arrow-text">↓ 接続 ↓</div>
                         <div class="input-item">
                             <label for="pattern2">サイトスワップ2</label>
-                            <input type="text" id="pattern2" placeholder="例: 441">
+                            <input type="text" id="pattern2" placeholder="例: 51">
                         </div>
                     </div>
                     <a href="#" class="btn" id="calculateBtn">計算する</a>
@@ -326,10 +332,13 @@
                             <span>計算中...</span>
                         </div>
 
-                        <div id="allConnectionsError" style="color: #d32f2f; display:none; margin: 10px 0; padding: 10px; background: #ffebee; border-radius: 4px;"></div>
+                        <div id="allConnectionsError"
+                            style="color: #d32f2f; display:none; margin: 10px 0; padding: 10px; background: #ffebee; border-radius: 4px;">
+                        </div>
 
                         <div id="allConnectionsResult" style="display: none; margin-top: 15px;">
-                            <h4 style="color: #3F72AF; margin-bottom: 10px;"><span id="searchDirection"></span>（<span id="totalConnections">0</span>個）</h4>
+                            <h4 style="color: #3F72AF; margin-bottom: 10px;"><span id="searchDirection"></span>（<span
+                                    id="totalConnections">0</span>個）</h4>
                             <div id="connectionsList" style="margin-bottom: 10px;"></div>
                             <div id="pagination" style="display:none; text-align: center; margin-top: 10px;">
                                 <button id="prevPage" class="setting-btn">前へ</button>
@@ -344,14 +353,16 @@
             <section>
                 <h2>使い方</h2>
                 <p class="info-text">二つのサイトスワップを入力して「計算する」ボタンを押すと、それらを繋げるための接続パターンが計算されます。</p>
-                <p class="info-text"><strong>空欄</strong>にすると、そのボール数の<strong>基底状態</strong>（3ボールなら「3」、4ボールなら「4」など）が自動的に補完されます。</p>
+                <p class="info-text">
+                    <strong>空欄</strong>にすると、そのボール数の<strong>基底状態</strong>（3ボールなら「3」、4ボールなら「4」など）が自動的に補完されます。</p>
                 <p class="info-text">シンクロパターンやマルチプレックスにも対応しています。</p>
             </section>
         </main>
 
         <footer>
             <a href="home" class="back-home-footer">ホームに戻る</a>
-            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact" class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact"
+                class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
                 バグを報告
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
@@ -375,7 +386,7 @@
     </div>
 
     <script>
-        window.onload = function() {
+        window.onload = function () {
             const spinner = document.getElementById('loading');
             spinner.classList.add('loaded');
         }
@@ -467,12 +478,12 @@
 
         // モーダルを閉じるイベント
         modalClose.addEventListener('click', closePatternModal);
-        patternModal.addEventListener('click', function(e) {
+        patternModal.addEventListener('click', function (e) {
             if (e.target === patternModal) {
                 closePatternModal();
             }
         });
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape' && patternModal.classList.contains('visible')) {
                 closePatternModal();
             }
@@ -529,7 +540,7 @@
         }
 
         // 完全ループクリック時
-        resultFullConnection.addEventListener('click', function(e) {
+        resultFullConnection.addEventListener('click', function (e) {
             e.preventDefault();
             if (currentFullConnection) {
                 openPatternModal(currentFullConnection);
@@ -614,29 +625,29 @@
         }
 
         // イベントリスナー
-        calculateBtn.addEventListener('click', function(e) {
+        calculateBtn.addEventListener('click', function (e) {
             e.preventDefault();
             calculate();
         });
 
-        searchAll1to2Btn.addEventListener('click', function(e) {
+        searchAll1to2Btn.addEventListener('click', function (e) {
             e.preventDefault();
             searchAll('1to2');
         });
 
-        searchAll2to1Btn.addEventListener('click', function(e) {
+        searchAll2to1Btn.addEventListener('click', function (e) {
             e.preventDefault();
             searchAll('2to1');
         });
 
-        prevPageBtn.addEventListener('click', function() {
+        prevPageBtn.addEventListener('click', function () {
             if (currentPage > 0) {
                 currentPage--;
                 displayConnections();
             }
         });
 
-        nextPageBtn.addEventListener('click', function() {
+        nextPageBtn.addEventListener('click', function () {
             const totalPages = Math.ceil(allConnections.length / itemsPerPage);
             if (currentPage < totalPages - 1) {
                 currentPage++;
@@ -646,7 +657,7 @@
 
         // Enterキーで計算
         [pattern1Input, pattern2Input].forEach(input => {
-            input.addEventListener('keypress', function(e) {
+            input.addEventListener('keypress', function (e) {
                 if (e.key === 'Enter') {
                     calculate();
                 }
@@ -654,4 +665,5 @@
         });
     </script>
 </body>
+
 </html>
