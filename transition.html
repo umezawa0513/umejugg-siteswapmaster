@@ -73,13 +73,6 @@
             margin: 10px 0;
         }
 
-        .hint-text {
-            font-size: 14px;
-            color: #666;
-            text-align: center;
-            margin-top: 10px;
-        }
-
         .sub-hint {
             font-size: 12px;
             color: #999;
@@ -127,24 +120,123 @@
             margin-top: 10px;
         }
 
-        .btn-secondary {
+        /* 完全ループのリンクスタイル */
+        .full-loop-link {
             display: inline-block;
-            padding: 10px 20px;
-            background-color: #DBE2EF;
+            padding: 8px 16px;
+            background: #DBE2EF;
+            border-radius: 12px;
+            font-family: monospace;
+            font-size: 20px;
+            font-weight: bold;
             color: #112D4E;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-            border: none;
             cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
         }
 
-        .btn-secondary:hover {
-            background-color: #3F72AF;
+        .full-loop-link:hover {
+            background: #3F72AF;
             color: #F9F7F7;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
+        }
+
+        /* モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #F9F7F7;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 2px solid #DBE2EF;
+            position: sticky;
+            top: 0;
+            background: #F9F7F7;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #3F72AF;
+            font-size: 20px;
+            font-family: monospace;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #112D4E;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .simulation-container {
+            width: 100%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .simulation-container iframe {
+            width: 300px;
+            aspect-ratio: 3 / 5;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .simulation-link {
+            display: block;
+            text-align: center;
+            padding: 12px;
+            background: #3F72AF;
+            color: #F9F7F7;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .simulation-link:hover {
+            background: #2E5A8E;
         }
     </style>
 </head>
@@ -161,7 +253,6 @@
             <section>
                 <h2>サイトスワップを繋げる</h2>
                 <p>入力された二つのサイトスワップを繋げるための接続パターンを計算します。</p>
-                <p class="hint-text"><strong>半角英数字</strong>で入力してください</p>
 
                 <div class="error-display">
                     <output id="er"></output>
@@ -170,12 +261,12 @@
                 <div class="input-container">
                     <div class="input-group">
                         <div class="input-item">
-                            <label for="pattern1">サイトスワップ1（空欄で基底状態）</label>
+                            <label for="pattern1">サイトスワップ1</label>
                             <input type="text" id="pattern1" placeholder="例: 531">
                         </div>
                         <div class="arrow-text">↓ 接続 ↓</div>
                         <div class="input-item">
-                            <label for="pattern2">サイトスワップ2（空欄で基底状態）</label>
+                            <label for="pattern2">サイトスワップ2</label>
                             <input type="text" id="pattern2" placeholder="例: 441">
                         </div>
                     </div>
@@ -217,7 +308,7 @@
                         <h4 style="color: #3F72AF; margin-bottom: 10px;">結合したサイトスワップ</h4>
                         <div class="result-item">
                             <span class="result-label">完全ループ（クリックでシミュレーション）</span>
-                            <a href="#" id="resultFullConnection" class="result-value highlight" style="text-decoration: none;" target="_blank">-</a>
+                            <a href="#" id="resultFullConnection" class="full-loop-link">-</a>
                         </div>
                     </div>
 
@@ -226,8 +317,8 @@
                         <h4 style="color: #3F72AF; margin-bottom: 10px;">他の接続パターン</h4>
                         <p class="sub-hint">最短周期での探索</p>
                         <div class="btn-group">
-                            <a href="#" class="btn-secondary" id="searchAll1to2Btn">サイトスワップ1→2 を探す</a>
-                            <a href="#" class="btn-secondary" id="searchAll2to1Btn">サイトスワップ2→1 を探す</a>
+                            <a href="#" class="btn" id="searchAll1to2Btn">サイトスワップ1→2 を探す</a>
+                            <a href="#" class="btn" id="searchAll2to1Btn">サイトスワップ2→1 を探す</a>
                         </div>
 
                         <div class="loading-container" id="allLoadingContainer">
@@ -267,6 +358,22 @@
         </footer>
     </div>
 
+    <!-- モーダル -->
+    <div class="modal-overlay" id="patternModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalPatternTitle">-</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="simulation-container">
+                    <iframe id="simulationFrame" src="" scrolling="no"></iframe>
+                </div>
+                <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+            </div>
+        </div>
+    </div>
+
     <script>
         window.onload = function() {
             const spinner = document.getElementById('loading');
@@ -291,6 +398,13 @@
         const resultReverseConnection = document.getElementById('resultReverseConnection');
         const resultFullConnection = document.getElementById('resultFullConnection');
 
+        // モーダル要素
+        const patternModal = document.getElementById('patternModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalPatternTitle = document.getElementById('modalPatternTitle');
+        const simulationFrame = document.getElementById('simulationFrame');
+        const simulationLink = document.getElementById('simulationLink');
+
         // 他の接続用要素
         const searchAll1to2Btn = document.getElementById('searchAll1to2Btn');
         const searchAll2to1Btn = document.getElementById('searchAll2to1Btn');
@@ -310,6 +424,9 @@
         let currentPage = 0;
         const itemsPerPage = 20;
 
+        // 現在の完全ループパターン
+        let currentFullConnection = '';
+
         // エラー表示をクリア
         function clearError() {
             errorDisplay.textContent = '';
@@ -324,6 +441,42 @@
         function hideResults() {
             resultSection.style.display = 'none';
         }
+
+        // モーダルを開く
+        function openPatternModal(pattern) {
+            modalPatternTitle.textContent = pattern;
+
+            // シミュレーションのiframeを設定
+            const encodedPattern = encodeURIComponent(pattern);
+            simulationFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+
+            // シミュレーションページへのリンクを設定
+            simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
+
+            // モーダルを表示
+            patternModal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // モーダルを閉じる
+        function closePatternModal() {
+            patternModal.classList.remove('visible');
+            document.body.style.overflow = '';
+            simulationFrame.src = '';
+        }
+
+        // モーダルを閉じるイベント
+        modalClose.addEventListener('click', closePatternModal);
+        patternModal.addEventListener('click', function(e) {
+            if (e.target === patternModal) {
+                closePatternModal();
+            }
+        });
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && patternModal.classList.contains('visible')) {
+                closePatternModal();
+            }
+        });
 
         // 計算処理
         function calculate() {
@@ -364,13 +517,8 @@
                     resultReverseConnection.textContent = data.reverseConnection || '(なし)';
                     resultFullConnection.textContent = data.fullConnection || '(なし)';
 
-                    // シミュレーションリンクを設定
-                    if (data.fullConnection) {
-                        const encodedPattern = encodeURIComponent(data.fullConnection);
-                        resultFullConnection.href = `simulation?encoded-pattern=${encodedPattern}`;
-                    } else {
-                        resultFullConnection.href = '#';
-                    }
+                    // 完全ループを保存
+                    currentFullConnection = data.fullConnection || '';
 
                     resultSection.style.display = 'block';
                 } catch (e) {
@@ -379,6 +527,14 @@
                 }
             }, 50);
         }
+
+        // 完全ループクリック時
+        resultFullConnection.addEventListener('click', function(e) {
+            e.preventDefault();
+            if (currentFullConnection) {
+                openPatternModal(currentFullConnection);
+            }
+        });
 
         // 他の接続を探す処理
         function searchAll(direction) {
