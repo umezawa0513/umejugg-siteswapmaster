@@ -12,8 +12,8 @@
         /* CSSコード */
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
     </style>
-    <link rel="stylesheet" href="simulation.css?ver=8.7.1">
-    <link rel="stylesheet" href="syncModal.css?ver=8.7.1">
+    <link rel="stylesheet" href="simulation.css?ver=9.2.1">
+    <link rel="stylesheet" href="syncModal.css?ver=9.2.0">
 </head>
 <body>
     <div class="container">
@@ -76,16 +76,12 @@
         <!-- 詳細設定 -->
         <section>
             <div>
-                <h2>詳細設定</h2>
+                <h2>設定</h2>
                 <div class="settings-grid">
                     <div class="setting-item">
                         <label for="objectSelect">オブジェクト選択</label>
                         <select id="objectSelect" class="objectsyurui">
                         </select>
-                    </div>
-                    <div class="setting-item">
-                        <label for="isPlayerVisible">棒人間を表示</label>
-                        <input type="checkbox" id="isPlayerVisible">
                     </div>
                     <div class="setting-item">
                         <label for="isTextVisible">テキストを表示</label>
@@ -95,35 +91,136 @@
                         <label for="isRandomColor">ランダムカラー</label>
                         <input type="checkbox" id="isRandomColor">
                     </div>
+                </div>
+                
+                <!-- その他の設定をアコーディオンに -->
+                <div class="accordion settings-accordion">
+                    <div class="accordion-item">
+                        <div class="accordion-header">
+                            <span>その他の設定</span>
+                            <span class="accordion-icon">▼</span>
+                        </div>
+                        <div class="accordion-content">
+                            <div class="settings-grid">
+                                <div class="setting-item">
+                                    <label for="isPlayerVisible">棒人間を表示</label>
+                                    <input type="checkbox" id="isPlayerVisible">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="isNotStopWhenMovCam">視点移動時も継続</label>
+                                    <input type="checkbox" id="isNotStopWhenMovCam">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="backgroundColorSelect">背景の色</label>
+                                    <input type="color" id="backgroundColorSelect">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="objectColor">オブジェクトの色</label>
+                                    <input type="color" id="objectColor">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="playerColor">棒人間の色</label>
+                                    <input type="color" id="playerColor">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="textColor">テキストの色</label>
+                                    <input type="color" id="textColor">
+                                </div>
+                                <div class="setting-item">
+                                    <label for="resetSpeedBtn">速度をリセット</label>
+                                    <a href="#" id="resetSpeedBtn" class="setting-btn">リセット</a>
+                                </div>
+                                <div class="setting-item">
+                                    <label for="resetCameraBtn">視点をリセット</label>
+                                    <a href="#" id="resetCameraBtn" class="setting-btn">リセット</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- サイトスワップの特徴 -->
+        <section id="pattern-features">
+            <h2>このサイトスワップの特徴</h2>
+            
+            <!-- エラーメッセージ表示 -->
+            <div id="pattern-error" style="color: #d32f2f; display:none; margin: 10px 0; padding: 10px; background: #ffebee; border-radius: 4px;"></div>
+            
+            <!-- ローディングインジケーター -->
+            <div id="pattern-loading" style="display:none; text-align:center; margin: 15px 0;">
+                <div class="spinner"></div>
+                <div style="margin-top: 8px; color: #666;">計算中...</div>
+            </div>
+            
+            <div id="features-result" style="display:none;">
+                <div class="settings-grid">
                     <div class="setting-item">
-                        <label for="isNotStopWhenMovCam">視点移動時も継続</label>
-                        <input type="checkbox" id="isNotStopWhenMovCam">
+                        <label>入力パターン</label>
+                        <span id="feature-inputPattern" class="feature-value">-</span>
                     </div>
                     <div class="setting-item">
-                        <label for="backgroundColorSelect">背景の色</label>
-                        <input type="color" id="backgroundColorSelect">
+                        <label>ボール数</label>
+                        <span id="feature-propCount" class="feature-value">-</span>
                     </div>
                     <div class="setting-item">
-                        <label for="objectColor">オブジェクトの色</label>
-                        <input type="color" id="objectColor">
+                        <label>最大高さ</label>
+                        <span id="feature-maxHeight" class="feature-value">-</span>
                     </div>
                     <div class="setting-item">
-                        <label for="playerColor">棒人間の色</label>
-                        <input type="color" id="playerColor">
+                        <label>周期</label>
+                        <span id="feature-period" class="feature-value">-</span>
                     </div>
                     <div class="setting-item">
-                        <label for="textColor">テキストの色</label>
-                        <input type="color" id="textColor">
+                        <label>パターンタイプ</label>
+                        <span id="feature-patternType" class="feature-value">-</span>
                     </div>
                     <div class="setting-item">
-                        <label for="resetSpeedBtn">速度をリセット</label>
-                        <a href="#" id="resetSpeedBtn" class="setting-btn">リセット</a>
+                        <label>状態</label>
+                        <span id="feature-state" class="feature-value">-</span>
                     </div>
-                    <div class="setting-item">
-                        <label for="resetCameraBtn">視点をリセット</label>
-                        <a href="#" id="resetCameraBtn" class="setting-btn">リセット</a>
+                </div>
+                <div id="connection-info" style="margin-top: 20px; display:none;">
+                    <h3 style="color: #3F72AF; margin-top: 10px; margin-bottom: 10px;">基底状態からの接続</h3>
+                    <div class="settings-grid">
+                        <div class="setting-item" style="grid-column: 1 / -1;">
+                            <label>基底状態</label>
+                            <span id="feature-groundState" class="feature-value" style="word-break: break-all;">-</span>
+                        </div>
+                        <div class="setting-item" style="grid-column: 1 / -1;">
+                            <label>基底状態→入力パターン</label>
+                            <span id="feature-connectionPattern" class="feature-value" style="word-break: break-all;">-</span>
+                        </div>
+                        <div class="setting-item" style="grid-column: 1 / -1;">
+                            <label>入力パターン→基底状態</label>
+                            <span id="feature-reverseConnection" class="feature-value" style="word-break: break-all;">-</span>
+                        </div>
+                        <div class="setting-item" style="grid-column: 1 / -1;">
+                            <label>完全ループ</label>
+                            <span id="feature-fullConnection" class="feature-value" style="word-break: break-all;">-</span>
+                        </div>
+                    </div>
+                    <a href="#" class="btn" id="showAllConnectionsBtn" style="margin-top: 10px;">他の接続</a>
+                    
+                    <!-- 他の接続用のエラーメッセージ表示 -->
+                    <div id="all-connections-error" style="color: #d32f2f; display:none; margin: 10px 0; padding: 10px; background: #ffebee; border-radius: 4px;"></div>
+                    
+                    <!-- 他の接続用のローディングインジケーター -->
+                    <div id="all-connections-loading" style="display:none; text-align:center; margin: 15px 0;">
+                        <div class="spinner"></div>
+                        <div style="margin-top: 8px; color: #666;">計算中...</div>
                     </div>
                     
+                    <div id="all-connections" style="display:none; margin-top: 15px;">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px;">基底状態からの他の入り方（<span id="total-connections">0</span>個）</h4>
+                        <div id="connections-list" style="margin-bottom: 10px;"></div>
+                        <div id="pagination" style="display:none; text-align: center;">
+                            <button id="prevPage" class="setting-btn">前へ</button>
+                            <span id="pageInfo" style="margin: 0 15px; font-weight: bold;">1 / 1</span>
+                            <button id="nextPage" class="setting-btn">次へ</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -151,6 +248,11 @@
                                 <span class="version-date">実装予定</span>
                                 <span class="version-number">ver10.0</span>
                                 <span class="version-description">ミルズメス、ウインドミル等の指定機能</span>
+                            </div>
+                            <div class="version-item">
+                                <span class="version-date">2026/1/8</span>
+                                <span class="version-number">ver9.3</span>
+                                <span class="version-description">接続計算機能追加</span>
                             </div>
                             <div class="version-item">
                                 <span class="version-date">2026/1/4</span>
@@ -301,20 +403,22 @@
         <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact" class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
                 バグを報告
         </a>
-        <p>&copy; 2021 サイトスワップマスター</p>
+        <p>&copy; 2021-2026 サイトスワップマスター</p>
     </footer>
 </div>
     <script>
         window.onload = function() {const spinner = document.getElementById('loading');spinner.classList.add('loaded');}
-        // アコーディオンの動作
-        document.querySelector('.accordion-header').addEventListener('click', function() {
-            const accordionItem = this.parentElement;
-            accordionItem.classList.toggle('active');
+        // アコーディオンの動作（複数対応）
+        document.querySelectorAll('.accordion-header').forEach(function(header) {
+            header.addEventListener('click', function() {
+                const accordionItem = this.parentElement;
+                accordionItem.classList.toggle('active');
+            });
         });
     </script>
     <script src="syncPatternInput.js?ver=1.0.1"></script>
-    <script src="siteswapProcessor.js?ver=1.1.1"></script>
-    <script src="simulation.min.js?ver=9.2.0"></script><!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
-    <script src="siteswapLab.js?ver=1.0.0"></script>
+    <script src="siteswapProcessor.js?ver=1.1.3"></script>
+    <script src="simulation.min.js?ver=9.2.3"></script><!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
+    <script src="siteswapLab.js?ver=1.5.0"></script>
 </body>
 </html>
