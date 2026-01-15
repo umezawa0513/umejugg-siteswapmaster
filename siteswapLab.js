@@ -4,7 +4,7 @@
  * siteswapProcessor.js に依存します
  */
 class SiteswapLab {
-    static VERSION = "1.5.1";
+    static VERSION = "1.5.2";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000; // 最大結果数
 
@@ -31,6 +31,18 @@ class SiteswapLab {
         }
     }
 
+    /**
+     * patternDataがマルチプレックスを含むかどうかを判定
+     * @param {Array} patternData - パターンデータ配列
+     * @returns {boolean} マルチプレックスを含む場合true
+     */
+    static hasMultiplex(patternData) {
+        if (!patternData || !Array.isArray(patternData)) {
+            return false;
+        }
+        return patternData.some(beat => beat.numData && beat.numData.length > 1);
+    }
+
     static analyzePattern(pattern) {
         try {
             const processor = new SiteswapProcessor();
@@ -55,6 +67,7 @@ class SiteswapLab {
                 propCount: processor.patternData.propCount,
                 period: processor.patternData.data.length,
                 isAsync: processor.patternData.isAsync,
+                hasMultiplex: this.hasMultiplex(processor.patternData.data),
                 patternData: processor.patternData.data,
                 state: state
             };
@@ -1392,6 +1405,11 @@ class SiteswapLab {
 
             if (!processor.patternData.isAsync) {
                 return this.#createResult(false, false, "シンクロパターンはマルチ化できません");
+            }
+
+            // マルチプレックスを含むパターンは変換不可
+            if (this.hasMultiplex(processor.patternData.data)) {
+                return this.#createResult(false, false, "マルチプレックスを含むパターンはマルチ化できません");
             }
 
             // 最大値チェック（12以下のみ対応）
