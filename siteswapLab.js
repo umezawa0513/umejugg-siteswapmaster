@@ -265,7 +265,8 @@ class SiteswapLab {
      * @param {string} pattern2 - 目標パターン
      * @returns {Object} {isValid, message, processor1, processor2, validation1, validation2}
      */
-    static #preprocessConnectionPatterns(pattern1, pattern2) {
+    static #preprocessConnectionPatterns(pattern1, pattern2, options = {}) {
+        const { skipJugglabilityCheck = false } = options;
         const CONVERT = SiteswapProcessor.CONVERT;
 
         // 空欄チェックと補完
@@ -285,7 +286,7 @@ class SiteswapLab {
             const targetPattern = isEmpty1 ? pattern2 : pattern1;
             const validation = processor.validate(targetPattern);
 
-            if (!validation.isValid || !validation.isJugglable) {
+            if (!validation.isValid || (!skipJugglabilityCheck && !validation.isJugglable)) {
                 return { isValid: false, message: `パターンが無効です - ${validation.message || '不明なエラー'}` };
             }
 
@@ -341,7 +342,7 @@ class SiteswapLab {
             return { isValid: false, message: `パターン1が無効です - ${validation1.message || '不明なエラー'}` };
         }
 
-        if (!validation1.isJugglable) {
+        if (!skipJugglabilityCheck && !validation1.isJugglable) {
             return { isValid: false, message: `パターン1は投げられません - ${validation1.message || '不明なエラー'}` };
         }
 
@@ -349,7 +350,7 @@ class SiteswapLab {
             return { isValid: false, message: `パターン2が無効です - ${validation2.message || '不明なエラー'}` };
         }
 
-        if (!validation2.isJugglable) {
+        if (!skipJugglabilityCheck && !validation2.isJugglable) {
             return { isValid: false, message: `パターン2は投げられません - ${validation2.message || '不明なエラー'}` };
         }
 
@@ -384,12 +385,14 @@ class SiteswapLab {
      * 2つのサイトスワップパターン間の接続投げを計算
      * @param {string} pattern1 - 基本パターン（空文字列の場合は基底状態が自動補完される）
      * @param {string} pattern2 - 目標パターン（空文字列の場合は基底状態が自動補完される）
+     * @param {Object} options - オプション設定
+     * @param {boolean} options.skipJugglabilityCheck - trueの場合、isJugglable判定をスキップする（デフォルト: false）
      * @returns {Object} 接続情報を含む結果オブジェクト
      */
-    static calculateConnectionPattern(pattern1, pattern2) {
+    static calculateConnectionPattern(pattern1, pattern2, options = {}) {
         try {
             // 前処理（バリデーションと空欄補完）
-            const preprocessResult = this.#preprocessConnectionPatterns(pattern1, pattern2);
+            const preprocessResult = this.#preprocessConnectionPatterns(pattern1, pattern2, options);
 
             if (!preprocessResult.isValid) {
                 return this.#createResult(false, false, preprocessResult.message);
@@ -524,12 +527,14 @@ class SiteswapLab {
      * @param {string} pattern1 - 基本パターン（空文字列の場合は基底状態が自動補完される）
      * @param {string} pattern2 - 目標パターン（空文字列の場合は基底状態が自動補完される）
      * @param {boolean} useThrows2 - calculateAllThrows2を使用するか（デフォルトtrue、テスト用）
+     * @param {Object} options - オプション設定
+     * @param {boolean} options.skipJugglabilityCheck - trueの場合、isJugglable判定をスキップする（デフォルト: false）
      * @returns {Object} すべての接続情報を含む結果オブジェクト
      */
-    static calculateAllConnectionPatterns(pattern1, pattern2, useThrows2 = true) {
+    static calculateAllConnectionPatterns(pattern1, pattern2, useThrows2 = true, options = {}) {
         try {
             // 前処理（バリデーションと空欄補完）
-            const preprocessResult = this.#preprocessConnectionPatterns(pattern1, pattern2);
+            const preprocessResult = this.#preprocessConnectionPatterns(pattern1, pattern2, options);
 
             if (!preprocessResult.isValid) {
                 return this.#createResult(false, false, preprocessResult.message);

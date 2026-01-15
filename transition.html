@@ -276,6 +276,12 @@
                             <input type="text" id="pattern2" placeholder="例: 51">
                         </div>
                     </div>
+                    <div class="option-item" style="margin-bottom: 15px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 14px; color: #666;">
+                            <input type="checkbox" id="skipJugglabilityCheck">
+                            <span>投げられるかどうかの判定をスキップする</span>
+                        </label>
+                    </div>
                     <a href="#" class="btn" id="calculateBtn">計算する</a>
                 </div>
 
@@ -397,6 +403,7 @@
         // DOM要素
         const pattern1Input = document.getElementById('pattern1');
         const pattern2Input = document.getElementById('pattern2');
+        const skipJugglabilityCheckbox = document.getElementById('skipJugglabilityCheck');
         const calculateBtn = document.getElementById('calculateBtn');
         const loadingContainer = document.getElementById('loadingContainer');
         const resultSection = document.getElementById('resultSection');
@@ -510,7 +517,8 @@
             // 少し遅延させてUIを更新
             setTimeout(() => {
                 try {
-                    const result = SiteswapLab.calculateConnectionPattern(pattern1, pattern2);
+                    const options = { skipJugglabilityCheck: skipJugglabilityCheckbox.checked };
+                    const result = SiteswapLab.calculateConnectionPattern(pattern1, pattern2, options);
 
                     loadingContainer.classList.remove('visible');
 
@@ -563,7 +571,8 @@
 
             setTimeout(() => {
                 try {
-                    const result = SiteswapLab.calculateAllConnectionPatterns(fromPattern, toPattern);
+                    const options = { skipJugglabilityCheck: skipJugglabilityCheckbox.checked };
+                    const result = SiteswapLab.calculateAllConnectionPatterns(fromPattern, toPattern, true, options);
 
                     allLoadingContainer.classList.remove('visible');
 
