@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップ接続パターン計算ガイド - サイトスワップマスター</title>
+    <meta name="description" content="サイトスワップの接続パターンを計算する手順を詳しく解説">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+
+        main {
+            max-width: 1000px !important;
+        }
+
+        .info-text ul li {
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .table_component {
+            overflow: auto;
+            width: 100%;
+        }
+
+        .table_component table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+
+        .table_component caption {
+            caption-side: top;
+            text-align: left;
+        }
+
+        .table_component th {
+            border: 1px solid #dededf;
+            background-color: #3F72AF;
+            color: #F9F7F7;
+            padding: 5px;
+        }
+
+        .table_component td {
+            border: 1px solid #dededf;
+            background-color: #F9F7F7;
+            color: #112D4E;
+            padding: 5px;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            background: #f1f8ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #3F72AF;
+            font-weight: bold;
+        }
+
+        .example-code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            color: #495057;
+        }
+
+        .example-item {
+            background: #F9F7F7;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #3F72AF;
+            margin-bottom: 12px;
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: #3F72AF;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-text {
+            background: #F9F7F7;
+            border-left: 4px solid #3F72AF;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .step-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .step-title {
+            font-weight: 700;
+            color: #1976D2;
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        .calculation-example {
+            background: #ffffff;
+            border: 2px solid #3F72AF;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .calculation-step {
+            margin: 1rem 0;
+            padding: 0.5rem;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .formula {
+            font-family: 'Courier New', monospace;
+            background: #ffffff;
+            padding: 0.5rem;
+            border-left: 3px solid #3F72AF;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+
+        .result-highlight {
+            background: #e8f5e9;
+            padding: 0.5rem;
+            border-radius: 4px;
+            border-left: 3px solid #4CAF50;
+            margin: 0.5rem 0;
+        }
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.5">
+</head>
+
+<body>
+    <div class="container">
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+            <div class="subtitle">サイトスワップ接続パターン計算ガイド</div>
+        </header>
+
+        <main>
+            <section>
+                <h2>概要</h2>
+                <p>サイトスワップの接続パターンを計算する手順を詳しく解説します。2つのサイトスワップを滑らかに接続するためには、適切な遷移パターンを見つける必要があります。
+                </p>
+
+                <div class="info-text">
+                    <strong>接続パターンとは？</strong><br>
+                    接続パターンは、あるサイトスワップから別のサイトスワップへ移行する際に使用する中間のスローパターンです。適切な接続パターンを計算することで、スムーズな遷移が可能になります。
+                </div>
+
+                <div class="info-text">
+                    <strong>このガイドで学べること</strong><br>
+                    <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                        <li>接続パターンの基本概念</li>
+                        <li>ステート（状態）の理解と計算方法</li>
+                        <li>遷移パターンの導出手順</li>
+                        <li>実際の計算例</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section>
+                <h2>基本概念</h2>
+
+                <h3>ステート（状態）とは</h3>
+                <p>ステートは、ジャグリング中の各時点において、どのビートで何個のオブジェクトが手に届くかを表す情報です。これは接続パターンを計算する上で最も重要な概念です。</p>
+
+                <div class="info-text">
+                    <strong>ステートの表記</strong><br>
+                    ステートは通常、ビット列や数値の配列で表現されます。例えば、「101」は1ビート後と3ビート後にオブジェクトが来ることを示します。
+                </div>
+
+                <h3>接続の条件</h3>
+                <p>2つのサイトスワップを接続するには、以下の条件を満たす必要があります：</p>
+                <ul>
+                    <li>開始パターンの出口ステートと終了パターンの入口ステートを把握する</li>
+                    <li>これらのステート間を結ぶ有効な遷移パターンを見つける</li>
+                    <li>オブジェクトの個数が一致している</li>
+                </ul>
+            </section>
+
+            <section>
+                <h2>計算手順</h2>
+
+                <div class="step-box">
+                    <div class="step-title">ステップ1: 各パターンのステートを計算</div>
+                    <p>まず、接続したい2つのサイトスワップそれぞれについて、入口ステートと出口ステートを計算します。</p>
+
+                    <div class="calculation-example">
+                        <h4>計算例：パターン「531」のステート</h4>
+                        <div class="calculation-step">
+                            <strong>初期状態:</strong> <span class="formula">S₀ = [1, 1, 1]</span>
+                            <p style="margin: 0.5rem 0;">（3個のボールが次のビートで到着する状態）</p>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>スロー「5」後:</strong> <span class="formula">S₁ = [1, 0, 1, 0, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>スロー「3」後:</strong> <span class="formula">S₂ = [0, 1, 1, 0, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>スロー「1」後:</strong> <span class="formula">S₃ = [1, 1, 0, 0, 1]</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">ステップ2: ステート遷移グラフの作成</div>
+                    <p>開始パターンの出口ステートから終了パターンの入口ステートへの経路を見つけるために、ステート遷移グラフを作成します。</p>
+
+                    <div class="info-text">
+                        <strong>遷移グラフとは</strong><br>
+                        各ステートをノードとし、有効なスロー値によって接続されたグラフです。このグラフ上で最短経路を見つけることで、最も効率的な接続パターンを導出できます。
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">ステップ3: 経路探索と遷移パターンの導出</div>
+                    <p>グラフ探索アルゴリズム（幅優先探索など）を使用して、開始ステートから目標ステートへの経路を見つけます。</p>
+
+                    <div class="calculation-example">
+                        <h4>探索例</h4>
+                        <div class="calculation-step">
+                            <strong>開始ステート:</strong> <span class="formula">A = [1, 0, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>目標ステート:</strong> <span class="formula">B = [1, 1, 0]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>探索可能なスロー値:</strong> 0, 1, 2, 3, 4, 5...
+                        </div>
+                        <div class="result-highlight">
+                            <strong>結果の遷移パターン例:</strong> <span class="formula">4, 2, 3</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-box">
+                    <div class="step-title">ステップ4: 接続パターンの検証</div>
+                    <p>計算された遷移パターンが有効かどうかを検証します。</p>
+
+                    <div class="warning-box">
+                        <h4>検証項目</h4>
+                        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                            <li>各スローで衝突が発生しないか</li>
+                            <li>オブジェクトの個数が保存されているか</li>
+                            <li>実際にジャグリング可能なパターンか</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>具体的な計算例</h2>
+
+                <div class="example-item">
+                    <div class="example-title">例1: 「3」から「531」への接続</div>
+                    <p>最も基本的な接続パターンの計算例です。</p>
+
+                    <div class="calculation-example">
+                        <div class="calculation-step">
+                            <strong>「3」の出口ステート:</strong> <span class="formula">[1, 1, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>「531」の入口ステート:</strong> <span class="formula">[1, 1, 1]</span>
+                        </div>
+                        <div class="result-highlight">
+                            <strong>接続パターン:</strong> ステートが同じため、直接接続可能<br>
+                            遷移: <span class="formula">3 → 531</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-title">例2: 「441」から「534」への接続</div>
+                    <p>異なるステートを持つパターン間の接続計算です。</p>
+
+                    <div class="calculation-example">
+                        <div class="calculation-step">
+                            <strong>「441」の出口ステート:</strong> <span class="formula">[1, 0, 1, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>「534」の入口ステート:</strong> <span class="formula">[1, 1, 1]</span>
+                        </div>
+                        <div class="calculation-step">
+                            <strong>遷移計算:</strong><br>
+                            ステップ1: [1, 0, 1, 1] → スロー「5」→ [0, 1, 1, 0, 1]<br>
+                            ステップ2: [0, 1, 1, 0, 1] → スロー「3」→ [1, 1, 0, 1]<br>
+                            ステップ3: [1, 1, 0, 1] → スロー「4」→ [1, 1, 1]
+                        </div>
+                        <div class="result-highlight">
+                            <strong>接続パターン:</strong> <span class="formula">534</span><br>
+                            完全な遷移: <span class="formula">441 → 534 → 534</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-title">例3: 個数が異なるパターンの接続</div>
+                    <p>「3」（3個）から「5」（5個）への接続は、オブジェクトを追加する必要があります。</p>
+
+                    <div class="warning-box">
+                        <h4>注意事項</h4>
+                        <p>オブジェクト数が異なる場合、単純な接続パターンでは対応できません。マルチプレックススロー（複数個同時投げ）や、段階的な追加が必要になります。</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>高度なテクニック</h2>
+
+                <h3>最短接続パターンの探索</h3>
+                <p>複数の接続パターンが存在する場合、最短のものを見つける方法について説明します。</p>
+
+                <div class="info-text">
+                    <strong>幅優先探索（BFS）の利用</strong><br>
+                    幅優先探索を使用することで、最短の遷移パターンを確実に見つけることができます。深さ優先探索よりも効率的です。
+                </div>
+
+                <h3>美しい接続パターンの選択</h3>
+                <p>計算的に有効な接続パターンは複数存在することがあります。その中から、ジャグリング的に美しいパターンを選択する基準：</p>
+                <ul>
+                    <li>スロー値の変化が滑らか</li>
+                    <li>高すぎるスロー（9以上）を避ける</li>
+                    <li>リズムが取りやすいパターン</li>
+                    <li>左右のバランスが良い</li>
+                </ul>
+
+                <h3>逆算による検証</h3>
+                <div class="example-code">
+// 接続パターンの検証手順（擬似コード）
+function verifyTransition(pattern1, transition, pattern2) {
+    state1 = getExitState(pattern1);
+    state2 = getEntryState(pattern2);
+
+    currentState = state1;
+    for (throw in transition) {
+        currentState = applyThrow(currentState, throw);
+    }
+
+    return currentState == state2;
+}
+                </div>
+            </section>
+
+            <section>
+                <h2>よくある質問</h2>
+
+                <div class="example-item">
+                    <div class="example-title">Q: すべてのパターン間で接続は可能ですか？</div>
+                    <p>A: 同じオブジェクト数であれば、理論上すべてのパターン間で接続可能です。ただし、接続パターンの長さは異なります。</p>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-title">Q: 計算が複雑すぎる場合は？</div>
+                    <p>A: サイトスワップマスターのツールを使用することで、自動的に最適な接続パターンを計算できます。手動計算は理解を深めるためのものです。</p>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-title">Q: 非同期パターンの接続は？</div>
+                    <p>A: 非同期パターン（左右の手のタイミングが異なる）の場合、ステートの計算方法が少し異なります。左右の手を別々に追跡する必要があります。</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>参考資料</h2>
+                <div class="info-text">
+                    <strong>関連ツール</strong><br>
+                    <ul style="margin: 0.5rem 0 0 0; padding-left: 1.5rem;">
+                        <li><a href="https://umejugg.com/siteswapmaster/simulation" target="_blank" rel="noopener noreferrer">多機能シミュレーター</a> - パターンの動作確認</li>
+                        <li><a href="https://umejugg.com/siteswapmaster/maker" target="_blank" rel="noopener noreferrer">サイトスワップメーカー</a> - パターン生成ツール</li>
+                    </ul>
+                </div>
+
+                <div class="info-text">
+                    <strong>さらに学ぶ</strong><br>
+                    サイトスワップの理論について、より深く学びたい場合は、学術論文や専門書を参照してください。特に状態遷移グラフとグラフ理論の知識が役立ちます。
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" class="contact"
+                target="_blank" rel="noopener noreferrer" style="margin-top:7px;">
+                質問・要望
+            </a>
+            <p>&copy; 2021 サイトスワップマスター</p>
+        </footer>
+    </div>
+</body>
+
+</html>
