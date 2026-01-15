@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -67,7 +68,9 @@
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .loading-container {
@@ -140,9 +143,12 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
-        <div id="loading" class="loader"><p>Loading...</p></div>
+        <div id="loading" class="loader">
+            <p>Loading...</p>
+        </div>
         <header id="title-wrapper">
             <a href="home" class="titleText">
                 <h1><span>サイトスワップ</span><span>マスター</span></h1>
@@ -242,15 +248,16 @@
 
         <footer>
             <a href="home" class="back-home-footer">ホームに戻る</a>
-            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact" class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
-                バグを報告
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact"
+                class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
+                質問・要望
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
         </footer>
     </div>
 
     <script>
-        window.onload = function() {
+        window.onload = function () {
             const spinner = document.getElementById('loading');
             spinner.classList.add('loaded');
         }
@@ -445,13 +452,13 @@
         }
 
         // イベントリスナー
-        analyzeBtn.addEventListener('click', function(e) {
+        analyzeBtn.addEventListener('click', function (e) {
             e.preventDefault();
             analyze();
         });
 
         // Enterキーで解析
-        patternInput.addEventListener('keypress', function(e) {
+        patternInput.addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
                 analyze();
             }
@@ -463,10 +470,11 @@
         if (initialPattern) {
             patternInput.value = decodeURIComponent(initialPattern);
             // ページ読み込み後に自動解析
-            window.addEventListener('load', function() {
+            window.addEventListener('load', function () {
                 setTimeout(analyze, 100);
             });
         }
     </script>
 </body>
+
 </html>
