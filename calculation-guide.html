@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>接続パターン計算ガイド - サイトスワップマスター</title>
+    <meta name="description" content="サイトスワップの接続パターンを計算する手順を解説します">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+
+        main {
+            max-width: 1000px !important;
+        }
+
+        .info-text ul li {
+            word-break: break-all;
+            line-height: 1.6;
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: center;
+        }
+
+        .table_component {
+            overflow: auto;
+            width: 100%;
+        }
+
+        .table_component table {
+            border: 1px solid #dededf;
+            height: 100%;
+            width: 100%;
+            table-layout: auto;
+            border-collapse: collapse;
+            border-spacing: 1px;
+            text-align: center;
+        }
+
+        .table_component caption {
+            caption-side: top;
+            text-align: left;
+        }
+
+        .table_component th {
+            border: 1px solid #dededf;
+            background-color: #3F72AF;
+            color: #F9F7F7;
+            padding: 5px;
+        }
+
+        .table_component td {
+            border: 1px solid #dededf;
+            background-color: #F9F7F7;
+            color: #112D4E;
+            padding: 5px;
+        }
+
+        .param-name {
+            font-family: 'Courier New', monospace;
+            background: #f1f8ff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #3F72AF;
+            font-weight: bold;
+        }
+
+        .example-code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+            color: #495057;
+        }
+
+        .example-item a {
+            word-break: break-all;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .info-text {
+            background: #F9F7F7;
+            border-left: 4px solid #3F72AF;
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .warning-box {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+
+        .warning-box h4 {
+            color: #856404;
+            margin-top: 0;
+        }
+
+        .example-item {
+            background: #F9F7F7;
+            padding: 1rem;
+            border-radius: 8px;
+            border-left: 4px solid #3F72AF;
+            margin-bottom: 12px;
+        }
+
+        .example-title {
+            font-weight: 700;
+            color: #3F72AF;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            background: #3F72AF;
+            color: #fff;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            margin: 0 0 0.5rem 0;
+            color: #112D4E;
+        }
+
+        .formula-box {
+            background: #112D4E;
+            color: #F9F7F7;
+            padding: 1rem;
+            border-radius: 8px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .highlight {
+            background: #DBE2EF;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #112D4E;
+        }
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=8.5">
+</head>
+
+<body>
+    <div class="container">
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+            <div class="subtitle">接続パターン計算ガイド</div>
+        </header>
+
+        <main>
+            <section>
+                <h2>概要</h2>
+                <p>サイトスワップの接続パターン（トランジション）とは、あるサイトスワップから別のサイトスワップへスムーズに移行するためのパターンのことです。
+                    このガイドでは、接続パターンを計算する手順を解説します。</p>
+
+                <div class="info-text">
+                    <strong>接続パターンとは？</strong><br>
+                    例えば、3ボールカスケード（333...）から441パターンへ移行する際、いきなり切り替えることはできません。
+                    スムーズに移行するためには、特定の「接続パターン」を間に挟む必要があります。
+                </div>
+
+                <div class="info-text">
+                    <strong>なぜ計算が必要？</strong><br>
+                    サイトスワップでは、各数字がボールの「次に投げるまでの拍数」を表しています。
+                    パターンを切り替える際、ボールの着地タイミングが正しく接続されていないと、衝突や空白が生じてしまいます。
+                </div>
+            </section>
+
+            <section>
+                <h2>基本的な考え方</h2>
+
+                <p>接続パターンの計算には、「状態（ステート）」という概念を使用します。</p>
+
+                <div class="example-item">
+                    <div class="example-title">状態（ステート）とは</div>
+                    <p>ある時点で、各拍にボールが何個着地する予定かを示す情報です。
+                        例えば、3ボールカスケードの状態は <span class="param-name">111</span> と表されます。
+                        これは「次の3拍それぞれに1個ずつボールが着地する」ことを意味します。</p>
+                </div>
+
+                <div class="formula-box">
+                    状態A → 接続パターン → 状態B
+                </div>
+
+                <p>接続パターンを見つけるには、開始パターンの状態から目標パターンの状態へ移行する経路を計算します。</p>
+            </section>
+
+            <section>
+                <h2>計算手順</h2>
+
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <h4>開始パターンの状態を求める</h4>
+                        <p>現在実行中のサイトスワップの状態を特定します。</p>
+                        <div class="example-code">
+例：3ボールカスケード（333）
+状態：111（3拍先まで各1個のボールが着地予定）
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <h4>目標パターンの状態を求める</h4>
+                        <p>移行先のサイトスワップの状態を特定します。</p>
+                        <div class="example-code">
+例：441パターン
+状態：201（1拍目に2個、2拍目に0個、3拍目に1個）
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <h4>状態遷移を計算する</h4>
+                        <p>開始状態から目標状態への有効な遷移経路を探索します。</p>
+                        <div class="example-code">
+111 → ??? → 201
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <h4>接続パターンを導出する</h4>
+                        <p>遷移経路から実際に投げる数値列を求めます。</p>
+                        <div class="example-code">
+結果：333 → 45 → 441441...
+接続パターンは「45」
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>具体例</h2>
+
+                <div class="example-item">
+                    <div class="example-title">例1：カスケード（3）→ 441</div>
+                    <div class="table_component" role="region" tabindex="0">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>手順</th>
+                                    <th>状態</th>
+                                    <th>投げる値</th>
+                                    <th>説明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>開始</td>
+                                    <td>111</td>
+                                    <td>-</td>
+                                    <td>カスケードの安定状態</td>
+                                </tr>
+                                <tr>
+                                    <td>遷移1</td>
+                                    <td>110</td>
+                                    <td>4</td>
+                                    <td>4を投げて状態変化</td>
+                                </tr>
+                                <tr>
+                                    <td>遷移2</td>
+                                    <td>201</td>
+                                    <td>5</td>
+                                    <td>5を投げて目標状態へ</td>
+                                </tr>
+                                <tr>
+                                    <td>完了</td>
+                                    <td>201</td>
+                                    <td>4</td>
+                                    <td>441パターン開始</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="margin-top: 1rem;">接続パターン：<span class="param-name">45</span></p>
+                </div>
+
+                <div class="example-item">
+                    <div class="example-title">例2：441 → カスケード（3）</div>
+                    <div class="table_component" role="region" tabindex="0">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>手順</th>
+                                    <th>状態</th>
+                                    <th>投げる値</th>
+                                    <th>説明</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>開始</td>
+                                    <td>201</td>
+                                    <td>-</td>
+                                    <td>441の安定状態</td>
+                                </tr>
+                                <tr>
+                                    <td>遷移1</td>
+                                    <td>120</td>
+                                    <td>2</td>
+                                    <td>2を投げて状態変化</td>
+                                </tr>
+                                <tr>
+                                    <td>遷移2</td>
+                                    <td>111</td>
+                                    <td>3</td>
+                                    <td>3を投げて目標状態へ</td>
+                                </tr>
+                                <tr>
+                                    <td>完了</td>
+                                    <td>111</td>
+                                    <td>3</td>
+                                    <td>カスケード開始</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <p style="margin-top: 1rem;">接続パターン：<span class="param-name">23</span></p>
+                </div>
+            </section>
+
+            <section>
+                <h2>よくある接続パターン</h2>
+
+                <p>以下は、よく使われる接続パターンの一覧です。</p>
+
+                <div class="table_component" role="region" tabindex="0">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>開始パターン</th>
+                                <th>目標パターン</th>
+                                <th>接続パターン</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3（カスケード）</td>
+                                <td>441</td>
+                                <td>45</td>
+                            </tr>
+                            <tr>
+                                <td>441</td>
+                                <td>3（カスケード）</td>
+                                <td>23</td>
+                            </tr>
+                            <tr>
+                                <td>3（カスケード）</td>
+                                <td>531</td>
+                                <td>52</td>
+                            </tr>
+                            <tr>
+                                <td>531</td>
+                                <td>3（カスケード）</td>
+                                <td>34</td>
+                            </tr>
+                            <tr>
+                                <td>3（カスケード）</td>
+                                <td>423</td>
+                                <td>4</td>
+                            </tr>
+                            <tr>
+                                <td>423</td>
+                                <td>3（カスケード）</td>
+                                <td>2</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="warning-box">
+                    <h4>注意</h4>
+                    <p>上記の値は仮のものです。実際の計算結果は異なる場合があります。正確な値は専用の計算ツールを使用するか、手計算で確認してください。</p>
+                </div>
+            </section>
+
+            <section>
+                <h2>計算のコツ</h2>
+
+                <div class="info-text">
+                    <strong>平均値の法則</strong><br>
+                    接続パターンの数値の平均は、元のパターンのボール数と等しくなります。
+                    例えば、3ボールの場合、接続パターンの平均も3になります。
+                </div>
+
+                <div class="info-text">
+                    <strong>最短経路を見つける</strong><br>
+                    複数の接続パターンが存在する場合、一般的には最も短いものが実行しやすいです。
+                    ただし、パフォーマンスの見栄えを考慮して、あえて長いトランジションを選ぶこともあります。
+                </div>
+
+                <div class="info-text">
+                    <strong>対称性を利用する</strong><br>
+                    多くのパターンでは、入る接続と出る接続が対称的な関係にあります。
+                    一方を覚えれば、もう一方も推測しやすくなります。
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" class="contact"
+                target="_blank" rel="noopener noreferrer" style="margin-top:7px;">
+                質問・要望
+            </a>
+            <p>&copy; 2021 サイトスワップマスター</p>
+        </footer>
+    </div>
+</body>
+
+</html>
