@@ -1,303 +1,334 @@
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-        <meta http-equiv="Pragma" content="no-cache">
-        <meta http-equiv="Expires" content="0">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>サイトスワップのマルチ化</title>
-        <style>
+<!DOCTYPE html>
+<html lang="ja">
 
-            input[type="text"] {
-            size: 10; 
-            padding: 10px; 
-            font-size: 20px; 
-            border: solid 2px #cccccc; 
-            border-radius: 15px; 
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>サイトスワップのマルチ化 - サイトスワップマスター</title>
+    <meta name="description" content="サイトスワップをマルチプレックスに変換（ボール数2倍）【サイトスワップマスター】">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
+    </style>
+    <link rel="stylesheet" href="simulation.css?ver=9.2.1">
+    <style>
+        /* マルチ化ページ専用スタイル */
+        .result-section {
+            margin-top: 20px;
+        }
+
+        .result-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            padding: 12px;
+            background: #F9F7F7;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .result-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .result-value {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #112D4E;
+            word-break: break-all;
+        }
+
+        .result-value.highlight {
+            font-size: 24px;
+            color: #3F72AF;
+        }
+
+        .status-valid {
+            color: #2e7d32;
+            font-weight: bold;
+        }
+
+        .status-invalid {
+            color: #d32f2f;
+            font-weight: bold;
+        }
+
+        /* スピナー */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 3px solid #DBE2EF;
+            border-top-color: #3F72AF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
             }
+        }
 
-            form{
-                width:100%;
-                padding:0;
-                margin:0;
-            }
+        .loading-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            padding: 20px;
+        }
 
-            a.cp_btn {
+        .loading-container.visible {
+            display: flex;
+        }
+
+        /* シミュレーションコンテナ */
+        .simulation-wrapper {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #DBE2EF;
+        }
+
+        .simulation-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        .simulation-container iframe {
+            width: 300px;
+            aspect-ratio: 3 / 5;
+            border: none;
+            border-radius: 8px;
+        }
+
+        .simulation-link {
             display: block;
-            width: 160px;
-            padding: 0.8em;
             text-align: center;
+            padding: 12px;
+            background: #3F72AF;
+            color: #F9F7F7;
+            border-radius: 8px;
             text-decoration: none;
-            color: #EC407A;
-            border: 2px solid #EC407A;
-            border-radius: 3px;
-            transition: .4s;
-            }
-            a.cp_btn:hover {
-            background: #EC407A;
-            color: #fff;
-            }
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
 
-            div.erer{
-                color: #ff0000;
-            }
+        .simulation-link:hover {
+            background: #2E5A8E;
+        }
 
-            #saitosyousai0{
-                color:#FF00FF;
-                font-size:22px;
-            }
+        /* 変換情報 */
+        .conversion-info {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin: 16px 0;
+            flex-wrap: wrap;
+        }
 
-            div.saitosyousai{
-                font-size:18px;
-            }
+        .conversion-arrow {
+            font-size: 24px;
+            color: #3F72AF;
+        }
 
-            #saitoprint{
-                font-size:30px;
-            }
+        .ball-count {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            padding: 8px 16px;
+            background: #DBE2EF;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #112D4E;
+        }
+    </style>
+</head>
 
-            #saitosyousai1{
-                font-size:30px;
-                user-select:text;
-            }
-
-            #haiiro{
-                color:#a9a9a9;
-            }
-        </style>
-        <style>
-            /* CSSコード */
-            @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
-        </style>
-        <link rel="stylesheet" href="all.css">
-    </head>
-   
-   
-    <body>
-        <center>  
-            <a href="home">
-                <h1 style="display: flex;justify-content: center;"><img src="title.png" alt="ブラウザで高精度で多機能なジャグリングのシミュレーションができる【サイトスワップ
-                    マスター】" style="border-radius:20px;width:100px;height:auto;margin-top:3px;"></h1>
-                </a>
-            <p>入力されたサイトスワップをマルチ化できます。(ボールの数が２倍に増えます)</p>
-        <p><strong>半角英数字</strong>で入力してください。</p>
-        <form>
-        <p><div class="kakunin">
-            <label for="saitkakunin">マルチ化したいサイトスワップを入力してください。</label>
-            <input type="text" name="skaku" id="skaku">
-        </div></p>
-       <a href="#" class="cp_btn" id="kakuninbtn">読み込む</a>
-       </form>
-        <div class = "erer">
-        <p><output id = "er" name = "er"></output></p>
-        <p><output id = "er1" name = "er1"></output></p>
+<body>
+    <div class="container">
+        <div id="loading" class="loader">
+            <p>Loading...</p>
         </div>
-        <p class = "saitoprint">
-        入力したサイトスワップ→＜<output id = "saitoprint" name = "saitoprint"></output>＞
-        </p>
-        <hr>
-        <div class = "saitosyousai">
-        <p>マルチ化したサイトスワップ</p>
-        <p><output id = "saitosyousai1" name = "saitosyousai"></output></p>
-        </div>
-        <p></p>
-        <a href="home"  class="button smallButton">ホームに戻る</a>
-<hr>
-        <p id = "haiiro">※「対応していない文字が含まれています」と表示された場合は、全角になっていないか、空欄が含まれていないか、を確認してください。</p></center>
-<script>
-    // ボタンの要素を取得
-    var button = document.getElementById("kakuninbtn");
-    
-    // ボタンをクリックした時の処理
-    button.addEventListener("click", function(e) {
-        e.preventDefault();
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+        </header>
 
-    //----------------------------------------------------------
-        const convert_num = {
-            "0":0,"1":1,"2":2,"3":3,"4":4,"5":5,"6":6,"7":7,"8":8,"9":9,"a":10,"b":11,"c":12,"d":13,"e":14,
-            "f":15,"g":16,"h":17,"i":18,"j":19,"k":20,"l":21,"m":22,"n":23,"o":24,"p":25,"q":26,"r":27,"s":28,
-            "t":29,"u":30,"v":31,"w":32,"x":33,"y":34,"z":35,"A":10,"B":11,"C":12,"D":13,"E":14,"F":15,"G":16,
-            "H":17,"I":18,"J":19,"K":20,"L":21,"M":22,"N":23,"O":24,"P":25,"Q":26,"R":27,"S":28,"T":29,"U":30,
-            "V":31,"W":32,"X":33,"Y":34,"Z":35,
-        };
+        <main>
+            <section>
+                <h2>サイトスワップのマルチ化</h2>
+                <p>入力されたサイトスワップをマルチプレックスに変換します。ボールの数が2倍になります。</p>
 
-        const convert = {0:"0", 1:"1", 2:"2", 3:"3", 4:"4", 5:"5", 6:"6", 7:"7", 8:"8", 9:"9", 10:"a", 11:"b",
-           12:"c",13:"d", 14:"e", 15:"f", 16:"g",17:"h", 18:"i", 19:"j", 20:"k", 21:"l", 22:"m",23:"n",
-           24:"o", 25:"p", 26:"q", 27:"r", 28:"s", 29:"t", 30:"u", 31:"v", 32:"w", 33:"x", 34:"y", 35:"z"
-        };
+                <div class="error-display">
+                    <output id="er"></output>
+                </div>
 
-        const convert_to_mult_d = {
-            0:"?_[22]_2_",
-            1:"[11]_[22]_2_",
-            2:"[22]_[22]_[22]_",
-            3:"[75]_[22]_2_",
-            4:"[a8]_[22]_2_",
-            5:"[db]_[22]_2_",
-            6:"[ge]_[22]_2_",
-            7:"[jh]_[22]_2_",
-            8:"[mk]_[22]_2_",
-            9:"[pn]_[22]_2_",
-            10:"[sq]_[22]_2_",
-            11:"[vt]_[22]_2_",
-            12:"[yw]_[22]_2_",
+                <div class="input-container">
+                    <label for="patternInput">マルチ化したいサイトスワップ</label>
+                    <input type="text" id="patternInput" placeholder="例: 531">
+                    <a href="#" class="btn" id="convertBtn">変換する</a>
+                </div>
+
+                <div class="loading-container" id="loadingContainer">
+                    <div class="spinner"></div>
+                    <span>変換中...</span>
+                </div>
+
+                <div id="resultSection" class="result-section" style="display: none;">
+                    <h3 style="color: #3F72AF; margin-bottom: 15px;">変換結果</h3>
+
+                    <div class="result-item">
+                        <span class="result-label">入力パターン</span>
+                        <span id="resultPattern" class="result-value">-</span>
+                    </div>
+
+                    <div class="conversion-info">
+                        <span class="ball-count"><span id="originalBallCount">0</span>個</span>
+                        <span class="conversion-arrow">→</span>
+                        <span class="ball-count"><span id="newBallCount">0</span>個</span>
+                    </div>
+
+                    <div class="result-item">
+                        <span class="result-label">マルチ化したサイトスワップ</span>
+                        <span id="resultMultiplex" class="result-value highlight">-</span>
+                    </div>
+
+                    <!-- シミュレーション -->
+                    <div class="simulation-wrapper">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px;">シミュレーション</h4>
+                        <div class="simulation-container">
+                            <iframe id="simulationFrame" src="" scrolling="no"></iframe>
+                        </div>
+                        <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2>使い方</h2>
+                <p class="info-text">アシンクロサイトスワップを入力して「変換する」ボタンを押すと、マルチプレックスパターンに変換されます。</p>
+                <p class="info-text">最大値はc(12)以下にしてください。</p>
+            </section>
+        </main>
+
+        <footer>
+            <a href="home" class="back-home-footer">ホームに戻る</a>
+            <a href="https://www.twitter.com/messages/compose?recipient_id=869867240644005889" id="contact"
+                class="contact" aria-label="contact" target="_blank" rel="noopener noreferrer">
+                質問・要望
+            </a>
+            <p>&copy; 2021-2026 サイトスワップマスター</p>
+        </footer>
+    </div>
+
+    <script>
+        window.onload = function () {
+            const spinner = document.getElementById('loading');
+            spinner.classList.add('loaded');
+        }
+    </script>
+    <script src="siteswapProcessor.js?ver=1.1.3"></script>
+    <script src="siteswapLab.js?ver=1.5.1"></script>
+    <script>
+        // DOM要素
+        const patternInput = document.getElementById('patternInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const loadingContainer = document.getElementById('loadingContainer');
+        const resultSection = document.getElementById('resultSection');
+        const errorDisplay = document.getElementById('er');
+
+        // 結果表示要素
+        const resultPattern = document.getElementById('resultPattern');
+        const resultMultiplex = document.getElementById('resultMultiplex');
+        const originalBallCount = document.getElementById('originalBallCount');
+        const newBallCount = document.getElementById('newBallCount');
+
+        // シミュレーション要素
+        const simulationFrame = document.getElementById('simulationFrame');
+        const simulationLink = document.getElementById('simulationLink');
+
+        // エラー表示をクリア
+        function clearError() {
+            errorDisplay.textContent = '';
         }
 
-        function ave_sait(n_l){
-            let sum = 0;
-            for (let i=0; i<n_l.length; i++) {
-                sum += n_l[i];
-            }
-            return (sum / n_l.length);
-        };
+        // エラー表示
+        function showError(message) {
+            errorDisplay.textContent = message;
+        }
 
-        function existsSameValue(a){
-            var sss = new Set(a);
-            return sss.size != a.length;
-        };
+        // 結果セクションを非表示
+        function hideResults() {
+            resultSection.style.display = 'none';
+        }
 
-        function check_the_numbers(l2){
-            if ((ave_sait(l2))%1 == 0){
-                let t = [];
-                for (let i = 0; i < l2.length; i++) {
-                    t.push( (Number(l2[i])+i+1) % (l2.length) );
-                };
-                for (let j = 0; j < l2.length; j++){
-                    if (existsSameValue(t)){
-                        return false;
-                    };
-                };
-                return true;
-            }
-            else{
-                return false;
-            };
-        };
+        // 変換処理
+        function convert() {
+            clearError();
+            hideResults();
 
-        function in_convert(in_b){
-            if (in_b in convert_num) {
-                //in_bというキーが存在する場合の処理
-                return true;
-            } 
-            else {
-                //in_bというキーが存在しない場合の処理
-                return false;
-            }
-        };
+            const pattern = patternInput.value.trim();
 
-        function check_conv(skaku_str_l_p){
-            let skaku_str_l_check = 0;
-            for (let i = 0 ; i < skaku_str_l_p.length ; i++){
-                if (in_convert(skaku_str_l_p[i])){
-                    skaku_str_l_check += 1;
-                }
+            if (pattern === '') {
+                showError('パターンを入力してください。');
+                return;
             }
-            if (skaku_str_l_check == skaku_str_l_p.length){
-                return true;
-            }
-            else{
-                return false;
-            }
-        };
 
-        function max_height(ska_s_lh){
-            const heiMax = function (a, b) {return Math.max(a, b);}
-            return ska_s_lh.reduce(heiMax);
-        };
+            loadingContainer.classList.add('visible');
 
-            function str_num(skaku_strp){
-                let skaku_str_lp = skaku_strp.split("");
-                let skaku_num_lp = [];
-                for (let i = 0 ; i < skaku_str_lp.length ; i++){
-                    skaku_num_lp.push(Number(convert_num[skaku_str_lp[i]]));
-                };
-                return skaku_num_lp;
-            };
+            setTimeout(() => {
+                try {
+                    const result = SiteswapLab.convertToMultiplex(pattern);
 
-        function convert_to_alphabet(inl){
-            let inla = [];
-            for (let i = 0 ; i < (inl.length) ; i++){
-                inla.push(convert[inl[i]]);
-            }
-            return inla;
-        };
+                    loadingContainer.classList.remove('visible');
 
-        function convert_to_multiple_f(s_n_l3){
-            let s_n_l3a = [];
-            for (let i = 0; i < s_n_l3.length; i++) {
-                s_n_l3a.push(convert_to_mult_d[s_n_l3[i]]);
-            }
-            let s_n_l3b = (s_n_l3a.join("")).split("_");
-            s_n_l3b.pop();
-            for (let i = 0; i < s_n_l3b.length; i++) {
-                if (s_n_l3b[i]=="?"){
-                    if(i-2<0){
-                        s_n_l3b[s_n_l3b.length+(i-2)]="0";
-                    }else{
-                        s_n_l3b[i-2]="0";
-                    };
-                    if(i-4<0){
-                        if(s_n_l3b.length+i-4<0){
-                            s_n_l3b[s_n_l3b.length+s_n_l3b.length+i-4]="0";
-                        }else{
-                            s_n_l3b[s_n_l3b.length+i-4]="0"; 
-                        }
-                    }else{
-                        s_n_l3b[i-4]="0";
+                    if (!result.isValid || !result.isJugglable) {
+                        showError(result.message || 'このパターンは変換できません');
+                        return;
                     }
+
+                    const data = result.data;
+
+                    // 結果を表示
+                    resultPattern.textContent = data.originalPattern;
+                    resultMultiplex.textContent = data.multiplexPattern;
+                    originalBallCount.textContent = data.originalBallCount;
+                    newBallCount.textContent = data.newBallCount;
+
+                    resultSection.style.display = 'block';
+
+                    // シミュレーションを設定
+                    const encodedPattern = encodeURIComponent(data.multiplexPattern);
+                    simulationFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+                    simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
+
+                } catch (e) {
+                    loadingContainer.classList.remove('visible');
+                    showError('エラー: ' + e.message);
                 }
-                if(s_n_l3b[i]=="[11]"){
-                    if(i-1<0){
-                        s_n_l3b[s_n_l3b.length+(i-1)]="0"; 
-                    }else{
-                        s_n_l3b[i-1]="0";
-                    }
-                }
+            }, 50);
+        }
+
+        // イベントリスナー
+        convertBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            convert();
+        });
+
+        // Enterキーで変換
+        patternInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                convert();
             }
-            for (let i = 0; i < s_n_l3b.length; i++) {
-                if(s_n_l3b[i]=="?"){
-                    s_n_l3b[i]="0";
-                }
-            }
+        });
+    </script>
+</body>
 
-            return s_n_l3b.join("");
-        }
-
-
-
-
-
-
-
-
-        er.value = "";
-        er1.value = "";
-        saitoprint.value = "";
-        saitosyousai1.value = "";
-
-        var skaku_str = document.getElementById("skaku").value;
-        let skaku_str_l = skaku_str.split("");
-        let skaku_num_l = str_num(skaku_str);
-
-        if (check_the_numbers(skaku_num_l)&&(!(max_height(skaku_num_l)>12))){
-            saitoprint.value = skaku_str;
-            saitosyousai1.value = `「${convert_to_multiple_f(skaku_num_l)}」`;
-        }
-        else if (!(check_conv(skaku_str_l))){
-            er.value = "対応していない文字が含まれています";
-        }
-        else if (skaku_str_l == ""){
-            er1.value = "入力欄が空欄です";
-        }
-        else if (skaku_str_l.length > 200){
-            er1.value = "入力値が長すぎます";
-        }
-        else if (max_height(skaku_num_l)>12){
-            er1.value = "最大値をc以下にしてください"
-        }
-        else{
-            saitoprint.value = skaku_str;
-            er.value = "この数列は投げられません";
-        };
-    });
-</script>
-    </body>
 </html>
