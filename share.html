@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -15,52 +16,56 @@
     <link rel="stylesheet" href="simulation.css?ver=8.5">
     <link rel="stylesheet" href="syncModal.css?ver=8.5">
 </head>
+
 <body>
     <div class="container">
-        <div id="loading" class="loader"><p>Loading...</p></div>
-    <header id="title-wrapper">
-        <a href="home" class="titleText">
-            <h1 style="margin: 5px;"><span>サイトスワップ</span><span>マスター</span></h1>
-        </a>
-    </header>
-    
-    <main>
-        <section>
-            <div class="error-display">
-                <output id="er"></output>
-            </div>
-            <div class="input-container">
-                <label for="siteswapInput">共有したいパターンを入力してください</label>
-                <div class="input-box">
-                    <input type="text" name="siteswapInput" id="siteswapInput" placeholder="例: 97531">
-                    <a href="#" id="openSyncModal" class="btn sync-btn"><span>簡単</span><span>入力</span></a>
-                </div>
-                <div id="log" class="log log-div"></div>
-                <a href="#" class="btn" id="loadSiteswapBtn">読み込む</a>
-            </div>
-            <div class="canvas-section">
-                <div id="output-display" class="output-display">
-                    <span>入力パターン : </span>
-                    <span><output id="siteswapDisplay"></output></span>
-                </div>
-                <canvas id="canvas" width="300" height="500"></canvas>
+        <div id="loading" class="loader">
+            <p>Loading...</p>
+        </div>
+        <header id="title-wrapper">
+            <a href="home" class="titleText">
+                <h1 style="margin: 5px;"><span>サイトスワップ</span><span>マスター</span></h1>
+            </a>
+        </header>
 
-                <div class="range-controls">
-                    <div class="range-item">
-                        <input type="range" id="viewSpeed" class="viewSpeed" min="0" max="200" value="100">
+        <main>
+            <section>
+                <div class="error-display">
+                    <output id="er"></output>
+                </div>
+                <div class="input-container">
+                    <label for="siteswapInput">共有したいパターンを入力してください</label>
+                    <div class="input-box">
+                        <input type="text" name="siteswapInput" id="siteswapInput" placeholder="例: 97531">
+                        <a href="#" id="openSyncModal" class="btn sync-btn"><span>簡単</span><span>入力</span></a>
+                    </div>
+                    <div id="log" class="log log-div"></div>
+                    <a href="#" class="btn" id="loadSiteswapBtn">読み込む</a>
+                </div>
+                <div class="canvas-section">
+                    <div id="output-display" class="output-display">
+                        <span>入力パターン : </span>
+                        <span><output id="siteswapDisplay"></output></span>
+                    </div>
+                    <canvas id="canvas" width="300" height="500"></canvas>
+
+                    <div class="range-controls">
+                        <div class="range-item">
+                            <input type="range" id="viewSpeed" class="viewSpeed" min="0" max="200" value="100">
+                        </div>
                     </div>
                 </div>
-            </div>
-        </section>
-        <section id="clubRotSetting" style="display:none"></section>
-        <section id="ringSetting" style="display:none"></section>
-    </main>
-    <footer>
-        <p>&copy; 2021 サイトスワップマスター</p>
-    </footer>
-</div>
+            </section>
+            <section id="clubRotSetting" style="display:none"></section>
+            <section id="ringSetting" style="display:none"></section>
+        </main>
+        <footer>
+            <a href="home" class="back-home-footer">ホームに戻る</a>
+            <p>&copy; 2021-2026 サイトスワップマスター</p>
+        </footer>
+    </div>
     <script>
-        window.onload = function() {const spinner = document.getElementById('loading');spinner.classList.add('loaded');}
+        window.onload = function () { const spinner = document.getElementById('loading'); spinner.classList.add('loaded'); }
     </script>
     <script src="siteswapProcessor.js?ver=1.1.0"></script>
     <script src="simulation.min.js?ver=9.0.1"></script><!---->
@@ -70,14 +75,14 @@
             const section = document.querySelector(".canvas-section");
             const logDiv = document.getElementById("log");
             const syncGenerateBtn = document.getElementById("syncGenerateBtn");
-        
+
             // URL表示用の要素を作成
             const linkContainer = document.createElement("div");
             linkContainer.id = "shareLinkContainer";
             linkContainer.style.margin = "15px 0";
             linkContainer.style.textAlign = "center"; // 中央寄せ
             section.parentNode.insertBefore(linkContainer, section);
-        
+
             function updateUrl() {
                 const value = input.value.trim();
 
@@ -95,11 +100,11 @@
                     //linkContainer.textContent = "入力が空です。";
                     return;
                 }
-        
+
                 // エンコードしてクエリパラメータに追加
                 const encoded = encodeURIComponent(value);
                 const newUrl = `${baseUrl}?encoded-pattern=${encoded}`;
-        
+
                 // 表示を更新
                 linkContainer.innerHTML = `
                     <div style="display:inline-flex; gap:5px; align-items:center;flex-direction: column;">
@@ -109,7 +114,7 @@
                     </div>
                     <div><span id="copyMsg" style="color:green; font-size:0.9em;"></span></div>
                 `;
-        
+
                 // コピー処理
                 const copyBtn = document.getElementById("copyBtn");
                 const copyMsg = document.getElementById("copyMsg");
@@ -122,23 +127,24 @@
                     setTimeout(() => copyMsg.textContent = "", 2000);
                 });
             }
-        
+
             // 入力のたびにURLを更新
-            if(input){
+            if (input) {
                 input.addEventListener("input", updateUrl);
             }
             // log領域クリック時にも更新
-            if(logDiv){
+            if (logDiv) {
                 logDiv.addEventListener("click", updateUrl);
             }
 
             if (syncGenerateBtn) {
                 syncGenerateBtn.addEventListener("click", updateUrl);
             }
-        
+
             // ページロード時に一度実行
             updateUrl();
         });
     </script>
 </body>
+
 </html>
