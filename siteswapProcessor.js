@@ -1,3 +1,8 @@
+/**
+ * SiteswapProcessor class
+ * サイトスワップパターンの検証（バリデーション）と、内部データ形式への変換を行うクラス
+ * このクラスは独立しており、他のライブラリに依存しません
+ */
 // Version information
 const PROCESSOR_VERSION = '1.1.3';
 

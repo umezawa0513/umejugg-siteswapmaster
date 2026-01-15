@@ -1,3 +1,8 @@
+/**
+ * SiteswapLab class
+ * サイトスワップの解析、変換、接続計算などの高度なロジックを提供するクラス
+ * siteswapProcessor.js に依存します
+ */
 class SiteswapLab {
     static VERSION = "1.5.0";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
