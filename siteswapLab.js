@@ -4,7 +4,7 @@
  * siteswapProcessor.js に依存します
  */
 class SiteswapLab {
-    static VERSION = "1.5.0";
+    static VERSION = "1.5.2";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000; // 最大結果数
 
@@ -31,6 +31,18 @@ class SiteswapLab {
         }
     }
 
+    /**
+     * patternDataがマルチプレックスを含むかどうかを判定
+     * @param {Array} patternData - パターンデータ配列
+     * @returns {boolean} マルチプレックスを含む場合true
+     */
+    static hasMultiplex(patternData) {
+        if (!patternData || !Array.isArray(patternData)) {
+            return false;
+        }
+        return patternData.some(beat => beat.numData && beat.numData.length > 1);
+    }
+
     static analyzePattern(pattern) {
         try {
             const processor = new SiteswapProcessor();
@@ -55,6 +67,7 @@ class SiteswapLab {
                 propCount: processor.patternData.propCount,
                 period: processor.patternData.data.length,
                 isAsync: processor.patternData.isAsync,
+                hasMultiplex: this.hasMultiplex(processor.patternData.data),
                 patternData: processor.patternData.data,
                 state: state
             };
@@ -1370,6 +1383,222 @@ class SiteswapLab {
     static _testCalculateAllThrows(groups, stateDifference, isSync = false) {
         const startTime = performance.now();
         return this.#calculateAllThrows(groups, stateDifference, isSync, startTime, this.#TIMEOUT);
+    }
+
+    /**
+     * アシンクロパターンをマルチプレックスパターンに変換（ボール数が2倍になる）
+     * @param {string} pattern - 変換するアシンクロパターン
+     * @returns {Object} 変換結果を含むオブジェクト
+     */
+    static convertToMultiplex(pattern) {
+        try {
+            const processor = new SiteswapProcessor();
+            const validationResult = processor.validate(pattern);
+
+            if (!validationResult.isValid || !validationResult.isJugglable) {
+                return this.#createResult(
+                    validationResult.isValid,
+                    validationResult.isJugglable,
+                    validationResult.message
+                );
+            }
+
+            if (!processor.patternData.isAsync) {
+                return this.#createResult(false, false, "シンクロパターンはマルチ化できません");
+            }
+
+            // マルチプレックスを含むパターンは変換不可
+            if (this.hasMultiplex(processor.patternData.data)) {
+                return this.#createResult(false, false, "マルチプレックスを含むパターンはマルチ化できません");
+            }
+
+            // 最大値チェック（12以下のみ対応）
+            if (processor.patternData.maxHeight > 12) {
+                return this.#createResult(false, false, "最大値はc(12)以下にしてください");
+            }
+
+            const CONVERT = SiteswapProcessor.CONVERT;
+            const data = processor.patternData.data;
+
+            // マルチ化変換テーブル
+            const MULTI_TABLE = {
+                0: { throws: ['?', '[22]', '2'], needsAdjust: true },
+                1: { throws: ['[11]', '[22]', '2'], needsAdjust: true },
+                2: { throws: ['[22]', '[22]', '[22]'], needsAdjust: false },
+                3: { throws: ['[75]', '[22]', '2'], needsAdjust: false },
+                4: { throws: ['[a8]', '[22]', '2'], needsAdjust: false },
+                5: { throws: ['[db]', '[22]', '2'], needsAdjust: false },
+                6: { throws: ['[ge]', '[22]', '2'], needsAdjust: false },
+                7: { throws: ['[jh]', '[22]', '2'], needsAdjust: false },
+                8: { throws: ['[mk]', '[22]', '2'], needsAdjust: false },
+                9: { throws: ['[pn]', '[22]', '2'], needsAdjust: false },
+                10: { throws: ['[sq]', '[22]', '2'], needsAdjust: false },
+                11: { throws: ['[vt]', '[22]', '2'], needsAdjust: false },
+                12: { throws: ['[yw]', '[22]', '2'], needsAdjust: false }
+            };
+
+            // 各投げをマルチ化
+            const result = [];
+            for (const beat of data) {
+                const num = beat.numData[0].num;
+                const multiData = MULTI_TABLE[num];
+                if (multiData) {
+                    result.push(...multiData.throws);
+                }
+            }
+
+            // 0や1による前方要素の調整処理
+            for (let i = 0; i < result.length; i++) {
+                if (result[i] === '?') {
+                    // 0の場合: 2つ前と4つ前を0に
+                    const idx2 = (i - 2 + result.length) % result.length;
+                    const idx4 = (i - 4 + result.length) % result.length;
+                    result[idx2] = '0';
+                    result[idx4] = '0';
+                    result[i] = '0';
+                }
+                if (result[i] === '[11]') {
+                    // 1の場合: 1つ前を0に
+                    const idx1 = (i - 1 + result.length) % result.length;
+                    result[idx1] = '0';
+                }
+            }
+
+            const multiplexPattern = result.join('');
+
+            const conversionData = {
+                originalPattern: pattern,
+                multiplexPattern: multiplexPattern,
+                originalBallCount: processor.patternData.propCount,
+                newBallCount: processor.patternData.propCount * 2
+            };
+
+            return this.#createResult(true, true, null, conversionData);
+        } catch (error) {
+            return this.#createResult(false, false, error.message || "マルチ変換中にエラーが発生しました");
+        }
+    }
+
+    /**
+     * アシンクロパターンをボックスパターンに変換（ボール数が1増える）
+     * @param {string} pattern - 変換するアシンクロパターン
+     * @returns {Object} 変換結果を含むオブジェクト
+     */
+    static convertToBox(pattern) {
+        try {
+            const processor = new SiteswapProcessor();
+            const validationResult = processor.validate(pattern);
+
+            if (!validationResult.isValid || !validationResult.isJugglable) {
+                return this.#createResult(
+                    validationResult.isValid,
+                    validationResult.isJugglable,
+                    validationResult.message
+                );
+            }
+
+            if (!processor.patternData.isAsync) {
+                return this.#createResult(false, false, "シンクロパターンはボックス化できません");
+            }
+
+            // 最大値チェック（17以下のみ対応）
+            if (processor.patternData.maxHeight > 17) {
+                return this.#createResult(false, false, "最大値はh(17)以下にしてください");
+            }
+
+            const CONVERT = SiteswapProcessor.CONVERT;
+            const data = processor.patternData.data;
+
+            // 数値を2倍にして、奇数ならxを付ける
+            const doubled = data.map(beat => {
+                const num = beat.numData[0].num;
+                const doubledNum = num * 2;
+                const char = CONVERT[doubledNum] || doubledNum.toString();
+                return num % 2 === 1 ? char + 'x' : char;
+            });
+
+            // 奇数長なら2回繰り返す
+            let values = doubled;
+            if (values.length % 2 !== 0) {
+                values = [...doubled, ...doubled];
+            }
+
+            // (右手,2x)(2x,左手)形式に変換
+            const boxParts = [];
+            for (let i = 0; i < values.length; i += 2) {
+                const right = values[i];
+                const left = values[i + 1];
+                boxParts.push(`(${right},2x)(2x,${left})`);
+            }
+
+            const boxPattern = boxParts.join('');
+
+            const conversionData = {
+                originalPattern: pattern,
+                boxPattern: boxPattern,
+                originalBallCount: processor.patternData.propCount,
+                newBallCount: processor.patternData.propCount + 1
+            };
+
+            return this.#createResult(true, true, null, conversionData);
+        } catch (error) {
+            return this.#createResult(false, false, error.message || "ボックス変換中にエラーが発生しました");
+        }
+    }
+
+    /**
+     * アシンクロパターンをシャワーパターンに変換（ボール数が1増える）
+     * @param {string} pattern - 変換するアシンクロパターン
+     * @returns {Object} 変換結果を含むオブジェクト
+     */
+    static convertToShower(pattern) {
+        try {
+            const processor = new SiteswapProcessor();
+            const validationResult = processor.validate(pattern);
+
+            if (!validationResult.isValid || !validationResult.isJugglable) {
+                return this.#createResult(
+                    validationResult.isValid,
+                    validationResult.isJugglable,
+                    validationResult.message
+                );
+            }
+
+            if (!processor.patternData.isAsync) {
+                return this.#createResult(false, false, "シンクロパターンはシャワー化できません");
+            }
+
+            // 最大値チェック（17以下のみ対応）
+            if (processor.patternData.maxHeight > 17) {
+                return this.#createResult(false, false, "最大値はh(17)以下にしてください");
+            }
+
+            const CONVERT = SiteswapProcessor.CONVERT;
+            const data = processor.patternData.data;
+
+            // 数値を2倍にして、すべてxを付ける
+            const doubled = data.map(beat => {
+                const num = beat.numData[0].num;
+                const doubledNum = num * 2;
+                const char = CONVERT[doubledNum] || doubledNum.toString();
+                return char + 'x';
+            });
+
+            // (値x,2x)形式に変換
+            const showerParts = doubled.map(val => `(${val},2x)`);
+            const showerPattern = showerParts.join('');
+
+            const conversionData = {
+                originalPattern: pattern,
+                showerPattern: showerPattern,
+                originalBallCount: processor.patternData.propCount,
+                newBallCount: processor.patternData.propCount + 1
+            };
+
+            return this.#createResult(true, true, null, conversionData);
+        } catch (error) {
+            return this.#createResult(false, false, error.message || "シャワー変換中にエラーが発生しました");
+        }
     }
 }
 

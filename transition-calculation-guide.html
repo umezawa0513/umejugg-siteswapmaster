@@ -167,6 +167,92 @@
             border-radius: 4px;
             color: #112D4E;
         }
+
+        /* 目次スタイル */
+        .toc {
+            background: #F9F7F7;
+            border: 2px solid #3F72AF;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .toc h3 {
+            margin: 0 0 1rem 0;
+            color: #3F72AF;
+            border-bottom: 2px solid #3F72AF;
+            padding-bottom: 0.5rem;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .toc-list li {
+            margin: 0.5rem 0;
+        }
+
+        .toc-list a {
+            color: #112D4E;
+            text-decoration: none;
+            display: block;
+            padding: 8px 12px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .toc-list a:hover {
+            background: #DBE2EF;
+            color: #3F72AF;
+            transform: translateX(5px);
+        }
+
+        .toc-list .toc-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #3F72AF;
+            color: #F9F7F7;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 12px;
+            margin-right: 10px;
+        }
+
+        /* スムーズスクロール */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        section[id] {
+            scroll-margin-top: 20px;
+        }
+
+        /* 完全版セクション追加スタイル */
+        .sync-example {
+            background: #e8f4f8;
+            border-left: 4px solid #17a2b8;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .multi-example {
+            background: #f8e8f4;
+            border-left: 4px solid #9c27b0;
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1rem 0;
+        }
+
+        .sync-example h5,
+        .multi-example h5 {
+            margin: 0 0 0.5rem 0;
+            color: inherit;
+        }
     </style>
     <link rel="stylesheet" href="simulation.css?ver=8.5">
 </head>
@@ -181,8 +267,24 @@
         </header>
 
         <main>
+            <!-- 目次 -->
             <section>
-                <h2>概要</h2>
+                <div class="toc">
+                    <h3>目次</h3>
+                    <ol class="toc-list">
+                        <li><a href="#overview"><span class="toc-number">1</span>概要</a></li>
+                        <li><a href="#basic-concept"><span class="toc-number">2</span>基本的な考え方</a></li>
+                        <li><a href="#simple-procedure"><span class="toc-number">3</span>計算手順【簡易版】</a></li>
+                        <li><a href="#full-procedure"><span class="toc-number">4</span>計算手順【完全版】</a></li>
+                        <li><a href="#examples"><span class="toc-number">5</span>具体例</a></li>
+                        <li><a href="#common-patterns"><span class="toc-number">6</span>よくある接続パターン</a></li>
+                        <li><a href="#tips"><span class="toc-number">7</span>計算のコツ</a></li>
+                    </ol>
+                </div>
+            </section>
+
+            <section id="overview">
+                <h2>1. 概要</h2>
                 <p>サイトスワップの接続パターンとは、あるサイトスワップから別のサイトスワップへ移行するためのパターンのことです。サイトスワップを切り替える際、ボールの着地タイミングが正しく接続されていないと、衝突や空白が生じてしまいます。
                     このガイドでは、接続パターンを計算する手順を解説します。</p>
                 <div class="info-text">
@@ -197,8 +299,8 @@
                         style="color: #3F72AF; text-decoration: underline;">GitHub (siteswapLab.js)</a> から確認できます。</p>
             </section>
 
-            <section>
-                <h2>基本的な考え方</h2>
+            <section id="basic-concept">
+                <h2>2. 基本的な考え方</h2>
 
                 <p>接続パターンの計算には、「状態（state）」という概念を使用します。</p>
 
@@ -209,8 +311,6 @@
                     <p>この状態は、0拍後に1つ、1拍後に1つ、2拍後に1つ手に落ちてくるという意味になります。</p>
                 </div>
 
-                <!-- <p>サイトスワップでは、各数字が「各拍から見て、次に投げるまでの拍数」を表しています。それに対して、状態は、「ある拍での次に投げるまでの拍数」を表します。</p> -->
-
                 <p>例えば、サイトスワップ「3」（3ボールカスケード）の状態は<span class="param-name">{0,1,2}</span> ですが、サイトスワップ「51」（3ボールシャワー）の状態は
                     <span class="param-name">{0,1,3}</span>
                     であり、状態が異なります。このとき、サイトスワップ「51」では3拍後にボールが手に落ちてきてほしいが、サイトスワップ「3」では2拍後にボールが手に落ちてくる予定のため、1拍早くボールが落ちてきてしまうということになります。
@@ -218,17 +318,11 @@
                 <p>このように、サイトスワップごとに特有の「状態」があり、状態が一致しないパターンへはそのまま移行することができません。
                 </p>
                 <p>そのため、「3」のあとに「4」を投げることによって、状態を{0,1,3}に変更し、接続を可能にすることができます。(つまり、3拍後にボールが落ちてくるようになる)</p>
-
-                <!-- <div class="formula-box">
-                    状態A → 接続パターン → 状態B
-                </div> -->
-
-                <!-- <p>接続パターンを見つけるには、開始サイトスワップの状態から目標サイトスワップの状態へ移行する経路を計算します。</p> -->
             </section>
 
-            <section>
-                <h2>計算手順【簡易版】</h2>
-                <p>計算手順【簡易版】では、マルチを含まないアシンクロサイトスワップのみを対象とします。マルチサイトスワップやシンクロサイトスワップは、計算手順【完全版】で計算できます。</p>
+            <section id="simple-procedure">
+                <h2>3. 計算手順【簡易版】</h2>
+                <p>計算手順【簡易版】では、マルチを含まないアシンクロサイトスワップのみを対象とします。マルチサイトスワップやシンクロサイトスワップは、<a href="#full-procedure" style="color: #3F72AF;">計算手順【完全版】</a>で計算できます。</p>
                 <p>5ボールサイトスワップ「744」から「915」へ移行する際の接続パターンを計算する手順を説明します。</p>
                 <div class="step-item">
                     <span class="step-number">1</span>
@@ -285,8 +379,129 @@
                 </div>
             </section>
 
-            <section>
-                <h2>具体例</h2>
+            <section id="full-procedure">
+                <h2>4. 計算手順【完全版】</h2>
+                <p>完全版では、マルチプレックス（同時に複数のボールを投げる）とシンクロパターン（両手同時投げ）にも対応した計算手順を解説します。</p>
+
+                <div class="info-text">
+                    <strong>完全版の対応範囲</strong><br>
+                    <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+                        <li>アシンクロパターン（通常の交互投げ）</li>
+                        <li>シンクロパターン（両手同時投げ）</li>
+                        <li>マルチプレックス（同時に複数投げ）</li>
+                        <li>上記の組み合わせ</li>
+                    </ul>
+                </div>
+
+                <h3>4.1 シンクロパターンの変換</h3>
+                <p>シンクロパターンは、計算のために一度アシンクロ形式に変換します。</p>
+
+                <div class="sync-example">
+                    <h5>シンクロ→アシンクロ変換の例</h5>
+                    <p>シンクロパターン <span class="param-name">(4,4)</span> は以下のようにアシンクロに変換されます：</p>
+                    <div class="example-code">
+                        (4,4) → 44（各手の値をそのまま並べる）
+                        (4x,2x) → 53（クロス投げは値を調整: 右手4x→5-1=4→5, 左手2x→2+1=3）
+                    </div>
+                    <p>変換ルール：</p>
+                    <ul>
+                        <li>右手（偶数インデックス）のクロス(x)は値を+1</li>
+                        <li>左手（奇数インデックス）のクロス(x)は値を-1</li>
+                    </ul>
+                </div>
+
+                <h3>4.2 マルチプレックスの状態計算</h3>
+                <p>マルチプレックスパターンでは、同じタイミングで複数のボールが着地することがあります。</p>
+
+                <div class="multi-example">
+                    <h5>マルチプレックスの状態の例</h5>
+                    <p>パターン <span class="param-name">[54]23</span> の状態計算：</p>
+                    <div class="example-code">
+                        [54]23 の各投げ：
+                        - 拍0: [54] → 5と4を同時に投げる
+                        - 拍1: 2
+                        - 拍2: 3
+
+                        状態計算：
+                        - 5は5拍後に着地 → 状態に5-1=4を追加
+                        - 4は4拍後に着地 → 状態に4-1=3を追加
+                        - 2は2拍後に着地 → 状態に2-1=1を追加
+                        - 3は3拍後に着地 → 状態に3-1=2を追加
+
+                        状態: {0, 1, 2, 3, 4}（5ボール）
+                    </div>
+                </div>
+
+                <h3>4.3 接続投げの計算アルゴリズム</h3>
+
+                <div class="step-item">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <h4>状態のシフト</h4>
+                        <p>開始状態を1ずつ減らしながら、目標状態の部分集合になるまで繰り返します。</p>
+                        <div class="example-code">
+                            開始状態: {0,1,2} → {-1,0,1} → {-2,-1,0} → ...
+                            各ステップで-1になった要素の数を記録
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <h4>差分の計算</h4>
+                        <p>シフト後の状態と目標状態の差分を計算します。</p>
+                        <div class="example-code">
+                            シフト後の正の値: {0,1}
+                            目標状態: {0,1,3}
+                            差分: {3}（目標にあってシフト後にない値）
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <h4>投げ値の決定</h4>
+                        <p>各拍で投げる値を、差分配列から計算します。</p>
+                        <div class="example-code">
+                            総拍数: 2
+                            拍0での投げ = 差分値 + (総拍数 - 拍番号)
+                            例: 差分{3} → 3 + 2 = 5（拍0で5を投げる）
+                        </div>
+                    </div>
+                </div>
+
+                <h3>4.4 シンクロパターンの特殊制約</h3>
+                <p>シンクロパターンでは、偶数拍（右手）で「1」を投げることができません（1は左手に渡すことを意味し、シンクロでは両手同時なので不可能）。</p>
+
+                <div class="warning-box">
+                    <h4>シンクロの制約</h4>
+                    <p>シンクロパターン同士の接続では：</p>
+                    <ul>
+                        <li>接続パターンの長さは偶数になる</li>
+                        <li>偶数位置（右手）では1を投げられない</li>
+                        <li>アシンクロで計算後、シンクロ形式に再変換</li>
+                    </ul>
+                </div>
+
+                <h3>4.5 計算結果のシンクロ変換</h3>
+                <p>アシンクロ形式で計算した接続パターンを、シンクロ形式に戻します。</p>
+
+                <div class="sync-example">
+                    <h5>アシンクロ→シンクロ変換の例</h5>
+                    <div class="example-code">
+                        アシンクロ接続: 53
+                        シンクロ変換:
+                        - 位置0（右手）: 5 → 奇数なので4x
+                        - 位置1（左手）: 3 → 奇数なので4x
+                        結果: (4x,4x)
+                    </div>
+                </div>
+            </section>
+
+            <section id="examples">
+                <h2>5. 具体例</h2>
 
                 <div class="example-item">
                     <div class="example-title">例1：カスケード（3）→ 441</div>
@@ -373,10 +588,24 @@
                     </div>
                     <p style="margin-top: 1rem;">接続パターン：<span class="param-name">23</span></p>
                 </div>
+
+                <div class="example-item">
+                    <div class="example-title">例3：シンクロパターン (4,4) → (4x,4x)</div>
+                    <p>シンクロパターン同士の接続例です。</p>
+                    <div class="example-code">
+                        (4,4) の状態: {0,1,2,3}（4ボール）
+                        (4x,4x) の状態: {0,2}（偶数のみ、2ボール）
+                        ※ボール数が異なるため接続不可
+
+                        同じボール数の例：
+                        (6,6) → (6x,4x)(4,6x) の接続
+                        アシンクロ変換して計算後、シンクロに戻す
+                    </div>
+                </div>
             </section>
 
-            <section>
-                <h2>よくある接続パターン</h2>
+            <section id="common-patterns">
+                <h2>6. よくある接続パターン</h2>
 
                 <p>以下は、よく使われる接続パターンの一覧です。</p>
 
@@ -430,8 +659,8 @@
                 </div>
             </section>
 
-            <section>
-                <h2>計算のコツ</h2>
+            <section id="tips">
+                <h2>7. 計算のコツ</h2>
 
                 <div class="info-text">
                     <strong>平均値の法則</strong><br>
@@ -449,6 +678,12 @@
                     <strong>対称性を利用する</strong><br>
                     多くのパターンでは、入る接続と出る接続が対称的な関係にあります。
                     一方を覚えれば、もう一方も推測しやすくなります。
+                </div>
+
+                <div class="info-text">
+                    <strong>シンクロパターンのヒント</strong><br>
+                    シンクロパターンでは、接続の長さが常に偶数になります。
+                    また、(4x,2x)のようなクロス投げが接続に含まれることが多いです。
                 </div>
             </section>
         </main>
