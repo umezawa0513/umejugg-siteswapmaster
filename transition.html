@@ -505,8 +505,8 @@
             allConnectionsResult.style.display = 'none';
             allConnectionsError.style.display = 'none';
 
-            const pattern1 = SiteswapProcessor.normalizePattern(pattern1Input.value.trim());
-            const pattern2 = SiteswapProcessor.normalizePattern(pattern2Input.value.trim());
+            const pattern1 = SiteswapLab.normalizePattern(pattern1Input.value.trim());
+            const pattern2 = SiteswapLab.normalizePattern(pattern2Input.value.trim());
 
             // 両方空欄チェック
             if (pattern1 === '' && pattern2 === '') {
@@ -562,8 +562,8 @@
             allConnectionsResult.style.display = 'none';
             allLoadingContainer.classList.add('visible');
 
-            const pattern1 = SiteswapProcessor.normalizePattern(pattern1Input.value.trim());
-            const pattern2 = SiteswapProcessor.normalizePattern(pattern2Input.value.trim());
+            const pattern1 = SiteswapLab.normalizePattern(pattern1Input.value.trim());
+            const pattern2 = SiteswapLab.normalizePattern(pattern2Input.value.trim());
 
             // direction: '1to2' or '2to1'
             const fromPattern = direction === '1to2' ? pattern1 : pattern2;
