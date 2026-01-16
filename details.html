@@ -325,7 +325,7 @@
             clearError();
             hideResults();
 
-            const pattern = patternInput.value.trim();
+            const pattern = SiteswapLab.normalizePattern(patternInput.value.trim());
 
             if (pattern === '') {
                 showError('パターンを入力してください。');
