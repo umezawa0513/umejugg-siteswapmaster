@@ -291,6 +291,10 @@ class SiteswapLab {
     static #preprocessConnectionPatterns(pattern1, pattern2) {
         const CONVERT = SiteswapProcessor.CONVERT;
 
+        // 全角を半角に正規化
+        pattern1 = SiteswapProcessor.normalizePattern(pattern1 || '');
+        pattern2 = SiteswapProcessor.normalizePattern(pattern2 || '');
+
         // 空欄チェックと補完
         const isEmpty1 = !pattern1 || pattern1.trim() === '';
         const isEmpty2 = !pattern2 || pattern2.trim() === '';
