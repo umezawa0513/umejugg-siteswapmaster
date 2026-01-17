@@ -29,22 +29,6 @@ class SiteswapMaker {
     }
 
     /**
-     * 入力値（文字または数値）を数値に変換
-     * @param {string|number} value - 変換する値
-     * @returns {number|null} 変換された数値、無効な場合はnull
-     */
-    static charToNum(value) {
-        if (typeof value === 'number') {
-            return value >= 0 && value <= 35 ? value : null;
-        }
-        if (typeof value === 'string' && value.length === 1) {
-            const num = SiteswapProcessor.VALID_THROW_CHARS[value];
-            return typeof num === 'number' ? num : null;
-        }
-        return null;
-    }
-
-    /**
      * 数値を文字に変換
      * @param {number} num - 変換する数値
      * @returns {string} 変換された文字
@@ -141,7 +125,16 @@ class SiteswapMaker {
      */
     add(throwValue) {
         // 数値に変換
-        const num = SiteswapMaker.charToNum(throwValue);
+        let num;
+        if (typeof throwValue === 'number') {
+            num = (throwValue >= 0 && throwValue <= 35) ? throwValue : null;
+        } else if (typeof throwValue === 'string' && throwValue.length === 1) {
+            const converted = SiteswapProcessor.VALID_THROW_CHARS[throwValue];
+            num = (typeof converted === 'number') ? converted : null;
+        } else {
+            num = null;
+        }
+
         if (num === null) {
             this.error = '無効な値です';
             return false;

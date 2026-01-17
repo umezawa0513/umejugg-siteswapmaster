@@ -612,9 +612,9 @@
                 return;
             }
 
-            // 数値変換（SiteswapMakerを使用）
-            let balls = SiteswapMaker.charToNum(ballInput);
-            if (balls === null) {
+            // 数値変換（SiteswapProcessor.VALID_THROW_CHARSを使用）
+            let balls = SiteswapProcessor.VALID_THROW_CHARS[ballInput];
+            if (typeof balls !== 'number') {
                 balls = parseInt(ballInput);
             }
 
