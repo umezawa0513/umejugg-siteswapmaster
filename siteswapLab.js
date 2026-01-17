@@ -21,16 +21,6 @@ class SiteswapLab {
         };
     }
 
-    /**
-     * 全角文字を半角に変換する
-     * SiteswapProcessor.normalizePatternのラッパーメソッド
-     * @param {string} input - 変換する文字列
-     * @returns {string} 半角に変換された文字列
-     */
-    static normalizePattern(input) {
-        return SiteswapProcessor.normalizePattern(input);
-    }
-
     static validatePattern(pattern) {
         try {
             const processor = new SiteswapProcessor();
