@@ -120,29 +120,13 @@ class SiteswapMaker {
 
     /**
      * 投げを追加する
-     * @param {number|string} throwValue - 追加する数値（'a', 'b' 等の文字も許容）
+     * @param {number} throwValue - 追加する数値（0-35）
      * @returns {boolean} 追加に成功したか
      */
     add(throwValue) {
-        // 数値に変換
-        let num;
-        if (typeof throwValue === 'number') {
-            num = (throwValue >= 0 && throwValue <= 35) ? throwValue : null;
-        } else if (typeof throwValue === 'string' && throwValue.length === 1) {
-            const converted = SiteswapProcessor.VALID_THROW_CHARS[throwValue];
-            num = (typeof converted === 'number') ? converted : null;
-        } else {
-            num = null;
-        }
-
-        if (num === null) {
-            this.error = '無効な値です';
-            return false;
-        }
-
         // 投げられるかチェック
         const available = this.getPossibleThrows();
-        if (!available.includes(num)) {
+        if (!available.includes(throwValue)) {
             this.error = 'この値は現在投げることができません';
             return false;
         }
@@ -154,10 +138,10 @@ class SiteswapMaker {
         });
 
         // パターンに追加
-        this.currentThrows.push(num);
+        this.currentThrows.push(throwValue);
 
         // 状態を更新
-        this.currentState = SiteswapMaker.updateState(this.currentState, num);
+        this.currentState = SiteswapMaker.updateState(this.currentState, throwValue);
 
         this.error = null;
         return true;
