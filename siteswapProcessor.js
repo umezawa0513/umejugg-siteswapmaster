@@ -4,7 +4,7 @@
  * このクラスは独立しており、他のライブラリに依存しません
  */
 // Version information
-const PROCESSOR_VERSION = '1.1.3';
+const PROCESSOR_VERSION = '1.1.4';
 
 class Pattern {
     constructor() {
@@ -109,6 +109,44 @@ class SiteswapProcessor {
             isJugglable: isJugglable,
             message: message
         }
+    }
+
+    /**
+     * 全角文字を半角に変換する
+     * VALID_THROW_CHARSに対応する全角文字を半角に変換します
+     * @param {string} input - 変換する文字列
+     * @returns {string} 半角に変換された文字列
+     */
+    static normalizePattern(input) {
+        if (!input || typeof input !== 'string') {
+            return input;
+        }
+
+        // 全角→半角の変換マッピング
+        const fullToHalfMap = {
+            // 全角数字→半角数字
+            '０': '0', '１': '1', '２': '2', '３': '3', '４': '4',
+            '５': '5', '６': '6', '７': '7', '８': '8', '９': '9',
+            // 全角小文字アルファベット→半角小文字
+            'ａ': 'a', 'ｂ': 'b', 'ｃ': 'c', 'ｄ': 'd', 'ｅ': 'e',
+            'ｆ': 'f', 'ｇ': 'g', 'ｈ': 'h', 'ｉ': 'i', 'ｊ': 'j',
+            'ｋ': 'k', 'ｌ': 'l', 'ｍ': 'm', 'ｎ': 'n', 'ｏ': 'o',
+            'ｐ': 'p', 'ｑ': 'q', 'ｒ': 'r', 'ｓ': 's', 'ｔ': 't',
+            'ｕ': 'u', 'ｖ': 'v', 'ｗ': 'w', 'ｘ': 'x', 'ｙ': 'y', 'ｚ': 'z',
+            // 全角大文字アルファベット→半角大文字
+            'Ａ': 'A', 'Ｂ': 'B', 'Ｃ': 'C', 'Ｄ': 'D', 'Ｅ': 'E',
+            'Ｆ': 'F', 'Ｇ': 'G', 'Ｈ': 'H', 'Ｉ': 'I', 'Ｊ': 'J',
+            'Ｋ': 'K', 'Ｌ': 'L', 'Ｍ': 'M', 'Ｎ': 'N', 'Ｏ': 'O',
+            'Ｐ': 'P', 'Ｑ': 'Q', 'Ｒ': 'R', 'Ｓ': 'S', 'Ｔ': 'T',
+            'Ｕ': 'U', 'Ｖ': 'V', 'Ｗ': 'W', 'Ｘ': 'X', 'Ｙ': 'Y', 'Ｚ': 'Z',
+            // 全角記号→半角記号
+            '－': '-', '／': '/', '＋': '+',
+            '（': '(', '，': ',', '）': ')',
+            '［': '[', '］': ']', '＊': '*'
+        };
+
+        // 文字列を1文字ずつ変換
+        return input.split('').map(char => fullToHalfMap[char] || char).join('');
     }
 
     /**

@@ -4,7 +4,7 @@
  * siteswapProcessor.js に依存します
  */
 class SiteswapLab {
-    static VERSION = "1.5.2";
+    static VERSION = "1.5.4";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000; // 最大結果数
 
@@ -280,6 +280,10 @@ class SiteswapLab {
      */
     static #preprocessConnectionPatterns(pattern1, pattern2) {
         const CONVERT = SiteswapProcessor.CONVERT;
+
+        // 全角を半角に正規化
+        pattern1 = SiteswapProcessor.normalizePattern(pattern1 || '');
+        pattern2 = SiteswapProcessor.normalizePattern(pattern2 || '');
 
         // 空欄チェックと補完
         const isEmpty1 = !pattern1 || pattern1.trim() === '';
@@ -1501,6 +1505,11 @@ class SiteswapLab {
                 return this.#createResult(false, false, "シンクロパターンはボックス化できません");
             }
 
+            // マルチプレックスを含むパターンは変換不可
+            if (this.hasMultiplex(processor.patternData.data)) {
+                return this.#createResult(false, false, "マルチプレックスを含むパターンはボックス化できません");
+            }
+
             // 最大値チェック（17以下のみ対応）
             if (processor.patternData.maxHeight > 17) {
                 return this.#createResult(false, false, "最大値はh(17)以下にしてください");
@@ -1566,6 +1575,11 @@ class SiteswapLab {
 
             if (!processor.patternData.isAsync) {
                 return this.#createResult(false, false, "シンクロパターンはシャワー化できません");
+            }
+
+            // マルチプレックスを含むパターンは変換不可
+            if (this.hasMultiplex(processor.patternData.data)) {
+                return this.#createResult(false, false, "マルチプレックスを含むパターンはシャワー化できません");
             }
 
             // 最大値チェック（17以下のみ対応）

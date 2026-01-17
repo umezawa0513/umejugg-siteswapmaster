@@ -263,7 +263,7 @@
         }
     </script>
     <script src="siteswapProcessor.js?ver=1.1.3"></script>
-    <script src="siteswapLab.js?ver=1.5.0"></script>
+    <script src="siteswapLab.js?ver=1.5.3"></script>
     <script>
         // DOM要素
         const patternInput = document.getElementById('patternInput');
@@ -325,7 +325,7 @@
             clearError();
             hideResults();
 
-            const pattern = patternInput.value.trim();
+            const pattern = SiteswapProcessor.normalizePattern(patternInput.value.trim());
 
             if (pattern === '') {
                 showError('パターンを入力してください。');
