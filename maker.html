@@ -484,7 +484,7 @@
     </script>
     <script src="siteswapProcessor.js?ver=1.1.4"></script>
     <script src="siteswapLab.js?ver=1.5.4"></script>
-    <script src="siteswapMaker.js?ver=1.1.0"></script>
+    <script src="siteswapMaker.js?ver=1.2.0"></script>
     <script>
         // DOM要素
         const ballCountInput = document.getElementById('ballCountInput');
@@ -605,28 +605,12 @@
         function startCreation() {
             clearError();
 
-            // 入力値の検証
-            const ballInput = ballCountInput.value.trim();
-            if (ballInput === '') {
-                showError('ボールの数を入力してください');
-                return;
-            }
-
-            // 数値変換
-            let balls = SiteswapProcessor.VALID_THROW_CHARS[ballInput];
-            if (typeof balls !== 'number') {
-                balls = parseInt(ballInput);
-            }
-
-            if (isNaN(balls) || balls < 0 || balls > 35) {
-                showError('ボールの数は0〜35の範囲で入力してください');
-                return;
-            }
-
             // SiteswapMakerインスタンス作成（バリデーションはクラス内で実行）
-            const before = beforePatternInput.value.trim();
-            const after = afterPatternInput.value.trim();
-            maker = new SiteswapMaker(balls, before, after);
+            maker = new SiteswapMaker(
+                ballCountInput.value,
+                beforePatternInput.value,
+                afterPatternInput.value
+            );
 
             if (maker.error) {
                 showError(maker.error);

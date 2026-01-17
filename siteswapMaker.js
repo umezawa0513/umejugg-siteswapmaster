@@ -4,15 +4,15 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.1.0";
+    static VERSION = "1.2.0";
 
     /**
-     * @param {number} propCount - ボールの数
+     * @param {number|string} propCount - ボールの数（数値または文字列）
      * @param {string} startPattern - 初期状態を決定するサイトスワップ（空の場合は基底状態）
      * @param {string} endPattern - 目標（終了時）の状態を決定するサイトスワップ（空の場合は基底状態）
      */
     constructor(propCount, startPattern = "", endPattern = "") {
-        this.propCount = propCount;
+        this.propCount = null;
         this.startPattern = startPattern;
         this.endPattern = endPattern;
 
@@ -24,8 +24,56 @@ class SiteswapMaker {
 
         this.error = null; // エラーメッセージ
 
+        // propCountのバリデーションと変換
+        if (!this._validateAndSetPropCount(propCount)) {
+            return;
+        }
+
         // 初期化処理
         this.initialize();
+    }
+
+    /**
+     * propCountのバリデーションと設定
+     * @private
+     * @param {number|string} propCount - ボールの数
+     * @returns {boolean} 成功したか
+     */
+    _validateAndSetPropCount(propCount) {
+        // 空文字列チェック
+        if (propCount === '' || propCount === null || propCount === undefined) {
+            this.error = 'ボールの数を入力してください';
+            return false;
+        }
+
+        let balls;
+        if (typeof propCount === 'number') {
+            balls = propCount;
+        } else if (typeof propCount === 'string') {
+            const trimmed = propCount.trim();
+            if (trimmed === '') {
+                this.error = 'ボールの数を入力してください';
+                return false;
+            }
+            // 1文字の場合はVALID_THROW_CHARSで変換を試みる
+            if (trimmed.length === 1) {
+                const converted = SiteswapProcessor.VALID_THROW_CHARS[trimmed];
+                balls = (typeof converted === 'number') ? converted : parseInt(trimmed);
+            } else {
+                balls = parseInt(trimmed);
+            }
+        } else {
+            this.error = 'ボールの数が無効です';
+            return false;
+        }
+
+        if (isNaN(balls) || balls < 0 || balls > 35) {
+            this.error = 'ボールの数は0〜35の範囲で入力してください';
+            return false;
+        }
+
+        this.propCount = balls;
+        return true;
     }
 
     /**
