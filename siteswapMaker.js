@@ -29,15 +29,6 @@ class SiteswapMaker {
     }
 
     /**
-     * 数値を文字に変換
-     * @param {number} num - 変換する数値
-     * @returns {string} 変換された文字
-     */
-    static numToChar(num) {
-        return SiteswapProcessor.CONVERT[num] || num.toString();
-    }
-
-    /**
      * 基底状態を取得
      * @param {number} balls - ボール数
      * @returns {number[]} 基底状態の配列
@@ -170,7 +161,7 @@ class SiteswapMaker {
      * @returns {string} 文字列（例: "53"）
      */
     getCurrentPatternString() {
-        return this.currentThrows.map(SiteswapMaker.numToChar).join('');
+        return this.currentThrows.map(n => SiteswapProcessor.CONVERT[n]).join('');
     }
 
     /**
@@ -272,9 +263,9 @@ class SiteswapMaker {
         let connectionStr = "";
         for (const item of result) {
             if (item.length > 1) {
-                connectionStr += "[" + item.map(v => SiteswapMaker.numToChar(v)).join("") + "]";
+                connectionStr += "[" + item.map(v => SiteswapProcessor.CONVERT[v]).join("") + "]";
             } else {
-                connectionStr += SiteswapMaker.numToChar(item[0]);
+                connectionStr += SiteswapProcessor.CONVERT[item[0]];
             }
         }
 

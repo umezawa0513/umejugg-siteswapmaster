@@ -529,7 +529,7 @@
             for (let i = 0; i <= 35; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'number-btn';
-                btn.textContent = SiteswapMaker.numToChar(i);
+                btn.textContent = SiteswapProcessor.CONVERT[i];
                 btn.disabled = !available.includes(i);
                 btn.addEventListener('click', () => addNumber(i));
                 numberButtonsEl.appendChild(btn);
