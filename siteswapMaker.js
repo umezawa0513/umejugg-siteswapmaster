@@ -71,6 +71,32 @@ class SiteswapMaker {
     initialize() {
         this.error = null;
 
+        // startPatternのバリデーション
+        if (this.startPattern && this.startPattern.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直前のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
+        // endPatternのバリデーション
+        if (this.endPattern && this.endPattern.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直後のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
         // 初期状態の計算
         this.currentState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
         this.targetState = SiteswapMaker.calculatePatternState(this.endPattern, this.propCount);

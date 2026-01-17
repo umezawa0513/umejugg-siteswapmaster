@@ -612,7 +612,7 @@
                 return;
             }
 
-            // 数値変換（SiteswapProcessor.VALID_THROW_CHARSを使用）
+            // 数値変換
             let balls = SiteswapProcessor.VALID_THROW_CHARS[ballInput];
             if (typeof balls !== 'number') {
                 balls = parseInt(ballInput);
@@ -623,36 +623,15 @@
                 return;
             }
 
-            // 前後のパターン検証（SiteswapMakerを使用）
+            // SiteswapMakerインスタンス作成（バリデーションはクラス内で実行）
             const before = beforePatternInput.value.trim();
             const after = afterPatternInput.value.trim();
-
-            if (before !== '') {
-                const validation = SiteswapMaker.validatePattern(before, balls);
-                if (!validation.isValid || !validation.isJugglable) {
-                    showError('直前のサイトスワップが無効です: ' + (validation.message || ''));
-                    return;
-                }
-                if (validation.message) {
-                    showError(`直前のサイトスワップ: ${validation.message}`);
-                    return;
-                }
-            }
-
-            if (after !== '') {
-                const validation = SiteswapMaker.validatePattern(after, balls);
-                if (!validation.isValid || !validation.isJugglable) {
-                    showError('直後のサイトスワップが無効です: ' + (validation.message || ''));
-                    return;
-                }
-                if (validation.message) {
-                    showError(`直後のサイトスワップ: ${validation.message}`);
-                    return;
-                }
-            }
-
-            // SiteswapMakerインスタンス作成
             maker = new SiteswapMaker(balls, before, after);
+
+            if (maker.error) {
+                showError(maker.error);
+                return;
+            }
 
             // セクション切り替え
             step1Section.style.display = 'none';
