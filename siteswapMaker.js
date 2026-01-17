@@ -4,6 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
+    static VERSION = "1.0.0";
     /**
      * @param {number} propCount - ボールの数
      * @param {string} startPattern - 初期状態を決定するサイトスワップ（空の場合は基底状態）
