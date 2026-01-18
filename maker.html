@@ -583,9 +583,30 @@
             // プレビュー更新
             const previewPattern = maker.getCurrentPatternString() + completion;
             if (previewPattern) {
-                previewFrame.src = `embed?encoded-pattern=${encodeURIComponent(previewPattern)}`;
+                updateSimulation(previewFrame, previewPattern);
             }
         }
+
+        /**
+         * シミュレーターの更新
+         * iframeが読み込まれていれば animation.start() を呼び、そうでなければ src を設定する
+         */
+        function updateSimulation(iframe, pattern) {
+            try {
+                if (iframe.contentWindow && iframe.contentWindow.animation && typeof iframe.contentWindow.animation.start === 'function') {
+                    iframe.contentWindow.animation.start(pattern);
+                    return;
+                }
+            } catch (e) {
+                console.warn('Simulator update error:', e);
+            }
+            // iframeが未ロード、またはエラーの場合はsrcを更新
+            const newSrc = `embed?encoded-pattern=${encodeURIComponent(pattern)}`;
+            if (iframe.src.indexOf(newSrc) === -1) { // 既にある程度一致していれば更新しない等の工夫も可能だが単純比較
+                iframe.src = newSrc;
+            }
+        }
+
 
         // 完成
         function complete() {
@@ -595,13 +616,14 @@
 
             // シミュレーション設定
             const encodedPattern = encodeURIComponent(finalPatternStr);
-            finalFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+            updateSimulation(finalFrame, finalPatternStr);
             simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
 
             // セクション切り替え
             step2Section.style.display = 'none';
             step3Section.style.display = 'block';
         }
+
 
         // 新規作成開始
         function startCreation() {
@@ -623,9 +645,18 @@
             step1Section.style.display = 'none';
             step2Section.style.display = 'block';
 
+            // シミュレーターの初回読み込み（直前のサイトスワップ、または基底状態）
+            // maker.currentState から基底状態を推定、または startPattern を使用
+            let initialPattern = maker.startPattern;
+            if (!initialPattern || initialPattern.trim() === '') {
+                initialPattern = SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
+            }
+            previewFrame.src = `embed?encoded-pattern=${encodeURIComponent(initialPattern)}`;
+
             // UI初期化
             updateUI();
         }
+
 
         // リセット
         function resetToStart() {
