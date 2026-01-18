@@ -390,6 +390,15 @@
                         <span class="step">3. 完成</span>
                     </div>
 
+                    <!-- リアルタイムシミュレーション（作成中） -->
+                    <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">プレビュー</h4>
+                        <div class="simulation-container">
+                            <iframe id="previewFrame" src="" scrolling="no"
+                                style="box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>
+                        </div>
+                    </div>
+
                     <div class="pattern-display">
                         <div class="label">作成中のサイトスワップ</div>
                         <div class="value"><span id="currentPattern">_</span><span class="cursor">|</span></div>
@@ -412,14 +421,6 @@
                         <span class="result-label">終了時の追加</span>
                         <span id="completionPattern" class="result-value">-</span>
                     </div>
-
-                    <!-- リアルタイムシミュレーション -->
-                    <div class="simulation-wrapper">
-                        <h4 style="color: #3F72AF; margin-bottom: 10px;">プレビュー</h4>
-                        <div class="simulation-container">
-                            <iframe id="previewFrame" src="" scrolling="no"></iframe>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ステップ3: 完成 -->
@@ -430,6 +431,16 @@
                         <span class="step completed">3. 完成</span>
                     </div>
 
+                    <!-- 完成シミュレーション -->
+                    <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">シミュレーション</h4>
+                        <div class="simulation-container">
+                            <iframe id="finalFrame" src="" scrolling="no"
+                                style="box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>
+                        </div>
+                        <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+                    </div>
+
                     <div class="completion-info">
                         <div class="message">オリジナルサイトスワップが完成しました！</div>
                         <div class="final-pattern" id="finalPattern">-</div>
@@ -437,15 +448,6 @@
 
                     <div class="action-buttons">
                         <a href="#" class="btn-secondary" id="newPatternBtn">新しく作成</a>
-                    </div>
-
-                    <!-- 完成シミュレーション -->
-                    <div class="simulation-wrapper">
-                        <h4 style="color: #3F72AF; margin-bottom: 10px;">シミュレーション</h4>
-                        <div class="simulation-container">
-                            <iframe id="finalFrame" src="" scrolling="no"></iframe>
-                        </div>
-                        <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
                     </div>
                 </div>
             </section>
