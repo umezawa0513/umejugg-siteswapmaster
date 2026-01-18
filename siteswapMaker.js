@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.2.0";
+    static VERSION = "1.2.1";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -40,32 +40,22 @@ class SiteswapMaker {
      * @returns {boolean} 成功したか
      */
     _validateAndSetPropCount(propCount) {
-        // 空文字列チェック
         if (propCount === '' || propCount === null || propCount === undefined) {
             this.error = 'ボールの数を入力してください';
             return false;
         }
 
-        let balls;
-        if (typeof propCount === 'number') {
-            balls = propCount;
-        } else if (typeof propCount === 'string') {
-            const trimmed = propCount.trim();
-            if (trimmed === '') {
-                this.error = 'ボールの数を入力してください';
-                return false;
-            }
-            // 1文字の場合はVALID_THROW_CHARSで変換を試みる
-            if (trimmed.length === 1) {
-                const converted = SiteswapProcessor.VALID_THROW_CHARS[trimmed];
-                balls = (typeof converted === 'number') ? converted : parseInt(trimmed);
-            } else {
-                balls = parseInt(trimmed);
-            }
-        } else {
-            this.error = 'ボールの数が無効です';
+        let input = String(propCount).trim();
+        if (input === '') {
+            this.error = 'ボールの数を入力してください';
             return false;
         }
+
+        // 全角数字を半角に変換、およびアルファベットを数値に変換
+        input = this._convertFullWidthToHalfWidth(input);
+        input = this._convertAlphabetToNumber(input);
+
+        const balls = parseInt(input);
 
         if (isNaN(balls) || balls < 0 || balls > 35) {
             this.error = 'ボールの数は0〜35の範囲で入力してください';
@@ -75,6 +65,45 @@ class SiteswapMaker {
         this.propCount = balls;
         return true;
     }
+
+    /**
+     * 全角数字を半角に変換
+     * @private
+     * @param {string} input - 入力文字列
+     * @returns {string} 変換後の文字列
+     */
+    _convertFullWidthToHalfWidth(input) {
+        const fullWidthNumbers = '０１２３４５６７８９';
+        const halfWidthNumbers = '0123456789';
+        let result = input;
+        for (let i = 0; i < fullWidthNumbers.length; i++) {
+            result = result.split(fullWidthNumbers[i]).join(halfWidthNumbers[i]);
+        }
+        return result;
+    }
+
+    /**
+     * アルファベット(a-z, A-Z)を数値(10-35)形式の文字列に変換
+     * @private
+     * @param {string} input - 入力文字列
+     * @returns {string} 変換後の文字列
+     */
+    _convertAlphabetToNumber(input) {
+        let result = '';
+        for (let i = 0; i < input.length; i++) {
+            const char = input[i];
+            const code = char.charCodeAt(0);
+            if (code >= 97 && code <= 122) { // a-z
+                result += (code - 97 + 10).toString();
+            } else if (code >= 65 && code <= 90) { // A-Z
+                result += (code - 65 + 10).toString();
+            } else {
+                result += char;
+            }
+        }
+        return result;
+    }
+
 
     /**
      * 基底状態を取得
