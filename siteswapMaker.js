@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.2.2";
+    static VERSION = "1.2.3";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -186,6 +186,11 @@ class SiteswapMaker {
      * @returns {number[]} 追加可能な数値の配列（0-35）
      */
     getPossibleThrows() {
+        // ボールが手元にない（0が状態に含まれていない）場合は、0（空手）のみ可能
+        if (!this.currentState.includes(0)) {
+            return [0];
+        }
+
         const available = [];
         for (let i = 0; i < 36; i++) {
             if (!this.currentState.includes(i)) {
@@ -276,9 +281,6 @@ class SiteswapMaker {
         const result = SiteswapLab.calculateConnectionFromStates(this.currentState, this.targetState, false);
         return result.isValid && result.data ? result.data.connection : "";
     }
-
-
-
 
     /**
      * 作成を終了し、完成したサイトスワップを取得する
