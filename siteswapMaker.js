@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.2.1";
+    static VERSION = "1.2.2";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -272,129 +272,13 @@ class SiteswapMaker {
      * @returns {string} 接続に必要なサイトスワップ文字列
      */
     getNeededConnection() {
-        // 現在のパターンが空でも接続計算できるように
-        // SiteswapLabの接続計算を使用
-        const currentPatternStr = this.getCurrentPatternString();
-
         // 現在の状態から目標状態への接続を計算
-        const connection = this._calculateCompletionPattern(this.currentState, this.targetState);
-        return connection;
+        const result = SiteswapLab.calculateConnectionFromStates(this.currentState, this.targetState, false);
+        return result.isValid && result.data ? result.data.connection : "";
     }
 
-    /**
-     * 完了時に追加が必要なパターンを計算
-     * @private
-     * @param {number[]} currentState - 現在の状態
-     * @param {number[]} targetState - 目標状態
-     * @returns {string} 接続パターン文字列
-     */
-    _calculateCompletionPattern(currentState, targetState) {
-        let fromState = [...currentState];
-        const toState = [...targetState];
 
-        const connection = [];
-        let iteration = 0;
-        const maxFromState = fromState.length > 0 ? Math.max(...fromState) : 0;
-        const minusOneCounts = [];
 
-        // 負の値以外が部分集合になるまで繰り返す
-        while (maxFromState + 1 - iteration >= 0) {
-            const fromPositives = fromState.filter(v => v >= 0);
-
-            // 部分集合チェック
-            if (this._isSubset(fromPositives, toState)) {
-                break;
-            }
-
-            // 全要素をデクリメント
-            fromState = fromState.map(v => v - 1);
-
-            // -1の個数をカウント
-            const countMinusOne = fromState.filter(v => v === -1).length;
-            minusOneCounts.push(countMinusOne);
-
-            iteration++;
-        }
-
-        // 差分を計算
-        const fromPositives = fromState.filter(v => v >= 0);
-        const positivesDiff = [...toState];
-        for (const val of fromPositives) {
-            const index = positivesDiff.indexOf(val);
-            if (index > -1) {
-                positivesDiff.splice(index, 1);
-            }
-        }
-
-        // minusOneCountsから負の値を生成
-        const negativesDiff = [];
-        for (let i = minusOneCounts.length - 1; i >= 0; i--) {
-            const negativeValue = -(minusOneCounts.length - i);
-            if (minusOneCounts[i] === 0) {
-                negativesDiff.push(negativeValue);
-            }
-        }
-
-        // 差分をソート
-        const stateDifference = [...negativesDiff, ...positivesDiff].sort((a, b) => a - b);
-
-        // グループ化
-        const groups = [];
-        let diffIndex = 0;
-        for (const count of minusOneCounts) {
-            if (count <= 1) {
-                groups.push([diffIndex++]);
-            } else {
-                const group = [];
-                for (let j = 0; j < count; j++) {
-                    group.push(diffIndex++);
-                }
-                groups.push(group);
-            }
-        }
-
-        // 接続投げを計算
-        const totalBeats = groups.length;
-        const result = [];
-        for (let beatIndex = 0; beatIndex < groups.length; beatIndex++) {
-            const group = groups[beatIndex];
-            const multi = group.map(idx => stateDifference[idx] + (totalBeats - beatIndex));
-            result.push(multi);
-        }
-
-        // 文字列に変換
-        let connectionStr = "";
-        for (const item of result) {
-            if (item.length > 1) {
-                connectionStr += "[" + item.map(v => SiteswapProcessor.CONVERT[v]).join("") + "]";
-            } else {
-                connectionStr += SiteswapProcessor.CONVERT[item[0]];
-            }
-        }
-
-        return connectionStr;
-    }
-
-    /**
-     * 配列subsetがsupersetの部分集合かチェック（個数を考慮）
-     * @private
-     */
-    _isSubset(subset, superset) {
-        const count = {};
-
-        for (const val of superset) {
-            count[val] = (count[val] || 0) + 1;
-        }
-
-        for (const val of subset) {
-            if (!count[val]) {
-                return false;
-            }
-            count[val]--;
-        }
-
-        return true;
-    }
 
     /**
      * 作成を終了し、完成したサイトスワップを取得する
