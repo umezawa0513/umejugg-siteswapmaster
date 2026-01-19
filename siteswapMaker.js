@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.4.0";
+    static VERSION = "1.5.0";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
