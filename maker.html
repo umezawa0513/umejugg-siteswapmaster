@@ -282,17 +282,39 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 16px;
+            width: 100%;
         }
 
         .step {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 12px;
             background: #DBE2EF;
             border-radius: 20px;
             font-size: 14px;
             color: #666;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 480px) {
+            .step {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .step-indicator {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .step {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
         }
 
         .step.active {
