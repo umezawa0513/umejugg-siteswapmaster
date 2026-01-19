@@ -6,6 +6,11 @@ RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
 <IfModule mod_rewrite.c>
 RewriteEngine on
+
+# Handle legacy view.html -> viewer.html with parameter name change (id -> pattern)
+RewriteCond %{QUERY_STRING} (^|&)id=([^&]+)(&|$)
+RewriteRule ^view(\.html)?$ /siteswapmaster/viewer?pattern=%2 [L,R=301]
+
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteCond %{REQUEST_FILENAME}\.html -f
 RewriteRule ^(.*)$ $1.html 
