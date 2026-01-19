@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="サイトスワップマスター開発者の支援・フィードバック">
+    <title>支援・フィードバック - サイトスワップマスター</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;800&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="title.png">
+
+    <link rel="stylesheet" href="simulation.css?ver=9.3.0">
+
+    <style>
+        :root {
+            --bg-color: #F9F7F7;
+            --text-color: #112D4E;
+            --secondary-bg: #DBE2EF;
+            --accent-color: #3F72AF;
+            --accent-hover: #2E5A8E;
+        }
+
+        /* box-sizingを全体に適用 */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            /* 横揺れ防止 */
+        }
+
+        header {
+            background-color: var(--secondary-bg);
+            width: 100%;
+            padding: 25px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .doc-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 15px;
+            /* 横余白を確保 */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            box-sizing: border-box;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease;
+            padding: 0 10px;
+        }
+
+        h2 {
+            color: var(--text-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 8px;
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .support-card {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 30px;
+            color: var(--text-color);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            animation: slideIn 0.6s ease backwards;
+            width: 100%;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            border: 2px solid transparent;
+        }
+
+        .support-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(63, 114, 175, 0.15);
+        }
+
+        .support-card h3 {
+            margin: 15px 0 10px 0;
+            font-size: 1.4rem;
+            color: var(--accent-color);
+        }
+
+        .support-card p {
+            margin: 0 0 20px 0;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .support-icon-area {
+            width: 70px;
+            height: 70px;
+            background-color: var(--secondary-bg);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+
+        .support-icon-area i {
+            font-size: 2.2rem;
+            color: var(--accent-color);
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 28px;
+            background-color: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .action-btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .action-btn i {
+            font-size: 1.3rem;
+        }
+
+        /* 項目ごとの遅延設定 */
+        .support-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .support-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #ced6e4;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: var(--accent-color);
+            width: 100%;
+            text-align: center;
+            color: #F9F7F7;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="home">
+            <h1><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+
+    <div class="doc-wrapper">
+        <div class="page-title">
+            <h2>SUPPORT</h2>
+            <p>開発者を支援・応援する</p>
+        </div>
+
+        <div class="support-card">
+            <div class="support-icon-area">
+                <i class="ri-twitter-x-line"></i>
+            </div>
+            <h3>SNSでシェア</h3>
+            <p>サイトスワップマスターをSNSで友達やフォロワーに紹介してください。皆様のシェアが開発の励みになります。</p>
+            <a href="https://twitter.com/intent/tweet?text=%E3%82%B5%E3%82%A4%E3%83%88%E3%82%B9%E3%83%AF%E3%83%83%E3%83%97%E3%83%9E%E3%82%B9%E3%82%BF%E3%83%BC%20-%20%E9%AB%98%E7%B2%BE%E5%BA%A6%E3%82%B8%E3%83%A3%E3%82%B0%E3%83%AA%E3%83%B3%E3%82%B0%E3%83%BB%E3%82%B7%E3%83%9F%E3%83%A5%E3%83%AC%E3%83%BC%E3%82%BF%E3%83%BC%0Ahttps%3A%2F%2Fumejugg.com%2Fsiteswapmaster%2Fhome"
+                target="_blank" rel="noopener noreferrer" class="action-btn">
+                <i class="ri-share-line"></i>
+                X (Twitter) でシェア
+            </a>
+        </div>
+
+        <div class="support-card">
+            <div class="support-icon-area">
+                <i class="ri-github-fill"></i>
+            </div>
+            <h3>GitHubでスターを付ける</h3>
+            <p>GitHubリポジトリにスター（星）を付けていただけると嬉しいです。オープンソースとしての活動を支援できます。</p>
+            <a href="https://github.com/umezawa0513/umejugg-siteswapmaster" target="_blank" rel="noopener noreferrer"
+                class="action-btn" style="background-color: #24292e;">
+                <i class="ri-star-line"></i>
+                GitHubでStar
+            </a>
+        </div>
+
+        <div class="support-card">
+            <div class="support-icon-area">
+                <i class="ri-mail-send-line"></i>
+            </div>
+            <h3>フィードバックを送る</h3>
+            <p>バグ報告や機能要望、感想などをお待ちしています。開発者のTwitter DMまでお気軽にご連絡ください。</p>
+            <a href="https://twitter.com/messages/compose?recipient_id=869867240644005889" target="_blank"
+                rel="noopener noreferrer" class="action-btn" style="background-color: #1DA1F2;">
+                <i class="ri-message-2-line"></i>
+                DMを送る
+            </a>
+        </div>
+
+        <div class="back-home">
+            <a href="home" class="btn-back">
+                <i class="ri-home-4-line"></i>
+                ホームへ戻る
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2021-2026 サイトスワップマスター</p>
+    </footer>
+
+</body>
+
+</html>
