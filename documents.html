@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="サイトスワップマスターのドキュメント一覧">
+    <title>ドキュメント - サイトスワップマスター</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;800&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="title.png">
+
+    <link rel="stylesheet" href="simulation.css?ver=9.3.0">
+
+    <style>
+        :root {
+            --bg-color: #F9F7F7;
+            --text-color: #112D4E;
+            --secondary-bg: #DBE2EF;
+            --accent-color: #3F72AF;
+            --accent-hover: #2E5A8E;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        header {
+            background-color: var(--secondary-bg);
+            width: 100%;
+            padding: 25px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 40px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        h2 {
+            color: var(--text-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 8px;
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .doc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .doc-card {
+            background-color: #fff;
+            border-radius: 16px;
+            padding: 25px;
+            text-decoration: none;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 2px solid transparent;
+            animation: slideIn 0.6s ease backwards;
+        }
+
+        .doc-card:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .doc-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 12px 25px rgba(63, 114, 175, 0.15);
+        }
+
+        .doc-icon {
+            width: 60px;
+            height: 60px;
+            background-color: var(--secondary-bg);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background-color 0.3s ease;
+        }
+
+        .doc-card:hover .doc-icon {
+            background-color: var(--accent-color);
+        }
+
+        .doc-icon i {
+            font-size: 2rem;
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .doc-card:hover .doc-icon i {
+            color: #fff;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-info h3 {
+            margin: 0 0 8px 0;
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .doc-info p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background-color: var(--accent-color);
+            color: #fff;
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        footer {
+            background-color: var(--accent-color);
+            width: 100%;
+            text-align: center;
+            color: #F9F7F7;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .doc-card {
+                flex-direction: column;
+                text-align: center;
+                padding: 20px;
+            }
+
+            .doc-icon {
+                margin-bottom: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="home">
+            <h1><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>DOCUMENTS</h2>
+            <p>サイトスワップマスターの技術資料とガイド</p>
+        </div>
+
+        <div class="doc-list">
+            <a href="transition-calculation-guide" class="doc-card">
+                <div class="doc-icon">
+                    <i class="ri-calculator-line"></i>
+                </div>
+                <div class="doc-info">
+                    <h3>遷移パターンの計算方法</h3>
+                    <p>サイトスワップの状態（State）の定義から、あるパターンから別のパターンへ繋ぐための遷移パターンの数学的な導出方法を解説します。</p>
+                </div>
+                <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
+            </a>
+
+            <a href="embed-document" class="doc-card">
+                <div class="doc-icon">
+                    <i class="ri-code-box-line"></i>
+                </div>
+                <div class="doc-info">
+                    <h3>埋め込み利用ガイド</h3>
+                    <p>URLパラメータを使用したシミュレーターのカスタマイズ方法や、外部サイトへの埋め込み手順について解説します。</p>
+                </div>
+                <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
+            </a>
+        </div>
+
+        <div class="back-home">
+            <a href="home" class="btn-back">
+                <i class="ri-home-4-line"></i>
+                ホームへ戻る
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2021-2026 サイトスワップマスター</p>
+    </footer>
+
+</body>
+
+</html>
