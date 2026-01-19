@@ -127,6 +127,43 @@
             box-shadow: 0 12px 25px rgba(63, 114, 175, 0.15);
         }
 
+        /* ダミーカード（作成中用） */
+        .doc-card-dummy {
+            background-color: #ededed;
+            border-radius: 16px;
+            padding: 25px;
+            color: #888;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: none;
+            border: 2px dashed #ccc;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+            cursor: not-allowed;
+        }
+
+        .doc-card-dummy .doc-icon {
+            background-color: #ddd;
+        }
+
+        .doc-card-dummy .doc-icon i {
+            color: #aaa;
+        }
+
+        .badge-soon {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background-color: #aaa;
+            color: #fff;
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 800;
+        }
+
         .doc-icon {
             width: 60px;
             height: 60px;
@@ -256,7 +293,9 @@
         </div>
 
         <div class="doc-list">
-            <!-- <a href="transition-calculation-guide" class="doc-card">
+            <!-- 公開時にコメントアウトを外して使用してください -->
+            <!-- 
+            <a href="transition-calculation-guide" class="doc-card">
                 <div class="doc-icon">
                     <i class="ri-calculator-line"></i>
                 </div>
@@ -265,7 +304,19 @@
                     <p>サイトスワップの状態（State）の定義から、あるパターンから別のパターンへ繋ぐための遷移パターンの数学的な導出方法を解説します。</p>
                 </div>
                 <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
-            </a> -->
+            </a> 
+            -->
+
+            <div class="doc-card-dummy">
+                <span class="badge-soon">COMING SOON</span>
+                <div class="doc-icon">
+                    <i class="ri-calculator-line"></i>
+                </div>
+                <div class="doc-info">
+                    <h3>遷移パターンの計算方法</h3>
+                    <p>サイトスワップの状態（State）の定義から、あるパターンから別のパターンへ繋ぐための遷移パターンの数学的な導出方法を公開予定です。</p>
+                </div>
+            </div>
 
             <a href="embed-document" class="doc-card">
                 <div class="doc-icon">
