@@ -4,7 +4,7 @@
  * siteswapProcessor.js に依存します
  */
 class SiteswapLab {
-    static VERSION = "1.5.4";
+    static VERSION = "1.5.5";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000; // 最大結果数
 
@@ -666,6 +666,144 @@ class SiteswapLab {
             return this.#createResult(false, false, error.message || "接続計算中にエラーが発生しました");
         }
     }
+
+    /**
+     * 2つの状態配列(state)から接続投げを計算
+     * @param {number[]} state1 - 基本状態（着地時刻の配列）
+     * @param {number[]} state2 - 目標状態（着地時刻の配列）
+     * @param {boolean} isSync - シンクロパターンかどうか
+     * @returns {Object} 接続情報を含む結果オブジェクト
+     */
+    static calculateConnectionFromStates(state1, state2, isSync = false) {
+        try {
+            if (!state1 || !state2) {
+                return this.#createResult(false, false, "状態配列が指定されていません");
+            }
+
+            // state1 -> state2 の接続投げの計算
+            const connection = this.#calculateConnection([...state1], [...state2], isSync);
+
+            // 接続サイトスワップを文字列に変換
+            const CONVERT = SiteswapProcessor.CONVERT;
+
+            // アシンクロ形式の接続文字列
+            let connectionStr = "";
+            for (const item of connection) {
+                if (item.length > 1) {
+                    connectionStr += "[" + item.map(v => CONVERT[v] || v).join("") + "]";
+                } else {
+                    connectionStr += CONVERT[item[0]] || item[0];
+                }
+            }
+
+            let connectionStrDisplay = connectionStr;
+            let conversionError = null;
+
+            if (isSync) {
+                // シンクロに変換
+                const syncResult = this.convertAsyncToSync(connectionStr, true);
+                if (syncResult.isValid) {
+                    connectionStrDisplay = syncResult.data.syncPattern;
+                } else {
+                    conversionError = syncResult.message;
+                }
+            }
+
+            const connectionData = {
+                state1: [...state1],
+                state2: [...state2],
+                isSync: isSync,
+                connection: connectionStrDisplay,
+                connectionArray: connection,
+                asyncConnection: isSync ? connectionStr : null,
+                conversionError: conversionError
+            };
+
+            return this.#createResult(true, true, null, connectionData);
+        } catch (error) {
+            return this.#createResult(false, false, error.message || "接続計算中にエラーが発生しました");
+        }
+    }
+
+    /**
+     * 2つの状態配列(state)からすべての接続投げを計算（全探索）
+     * @param {number[]} state1 - 基本状態
+     * @param {number[]} state2 - 目標状態
+     * @param {boolean} isSync - シンクロパターンかどうか
+     * @param {Object} options - オプション {timeout: ミリ秒, resultMax: 最大件数, useThrows2: boolean}
+     * @returns {Object} すべての接続情報を含む結果オブジェクト
+     */
+    static calculateAllConnectionsFromStates(state1, state2, isSync = false, options = {}) {
+        try {
+            if (!state1 || !state2) {
+                return this.#createResult(false, false, "状態配列が指定されていません");
+            }
+
+            const timeout = options.timeout || this.#TIMEOUT;
+            const useThrows2 = options.useThrows2 !== undefined ? options.useThrows2 : true;
+            const startTime = performance.now();
+
+            const allConnectionsResult = this.#calculateAllConnections(
+                [...state1],
+                [...state2],
+                isSync,
+                startTime,
+                timeout,
+                useThrows2
+            );
+
+            const allConnections = allConnectionsResult.solutions;
+            const calculationError = allConnectionsResult.error;
+
+            const CONVERT = SiteswapProcessor.CONVERT;
+            const arrayToString = (arr) => {
+                let str = "";
+                for (const item of arr) {
+                    if (item.length > 1) {
+                        str += "[" + item.map(v => CONVERT[v] || v).join("") + "]";
+                    } else {
+                        str += CONVERT[item[0]] || item[0];
+                    }
+                }
+                return str;
+            };
+
+            const connectionStrings = allConnections.map(conn => arrayToString(conn));
+
+            let connectionStrDisplay = connectionStrings;
+            let conversionErrors = null;
+
+            if (isSync) {
+                connectionStrDisplay = connectionStrings.map(str => {
+                    const syncResult = this.convertAsyncToSync(str, true);
+                    if (syncResult.isValid) {
+                        return syncResult.data.syncPattern;
+                    } else {
+                        if (!conversionErrors) conversionErrors = [];
+                        conversionErrors.push(syncResult.message);
+                        return str;
+                    }
+                });
+            }
+
+            const connectionData = {
+                state1: [...state1],
+                state2: [...state2],
+                isSync: isSync,
+                solutionCount: allConnections.length,
+                connections: connectionStrDisplay,
+                connectionArrays: allConnections,
+                asyncConnections: isSync ? connectionStrings : null,
+                conversionErrors: conversionErrors,
+                calculationError: calculationError
+            };
+
+            return this.#createResult(true, true, null, connectionData);
+        } catch (error) {
+            return this.#createResult(false, false, error.message || "接続計算中にエラーが発生しました");
+        }
+    }
+
 
     /**
      * patternDataから状態配列を計算（マルチプレックス対応）

@@ -40,6 +40,7 @@
             font-weight: bold;
             color: #112D4E;
             word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         .result-value.highlight {
@@ -134,6 +135,7 @@
             font-family: monospace;
             font-weight: bold;
             word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         .pattern-display .cursor {
@@ -228,6 +230,8 @@
             font-size: 24px;
             font-weight: bold;
             color: #112D4E;
+            word-break: break-all;
+            overflow-wrap: break-word;
         }
 
         /* シミュレーションコンテナ */
@@ -239,15 +243,21 @@
 
         .simulation-container {
             width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
             display: flex;
             justify-content: center;
+            background-color: #5a5a5a;
+            border-radius: 8px;
+            overflow: hidden;
         }
 
         .simulation-container iframe {
-            width: 300px;
+            width: 100%;
             aspect-ratio: 3 / 5;
             border: none;
             border-radius: 8px;
+            display: block;
         }
 
         .simulation-link {
@@ -273,17 +283,39 @@
             justify-content: center;
             gap: 8px;
             margin-bottom: 16px;
+            width: 100%;
         }
 
         .step {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px 16px;
+            justify-content: center;
+            gap: 4px;
+            padding: 8px 12px;
             background: #DBE2EF;
             border-radius: 20px;
             font-size: 14px;
             color: #666;
+            white-space: nowrap;
+            flex: 0 0 auto;
+        }
+
+        @media (max-width: 480px) {
+            .step {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+
+            .step-indicator {
+                gap: 4px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .step {
+                padding: 4px 8px;
+                font-size: 10px;
+            }
         }
 
         .step.active {
@@ -390,6 +422,14 @@
                         <span class="step">3. 完成</span>
                     </div>
 
+                    <!-- リアルタイムシミュレーション（作成中） -->
+                    <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">プレビュー</h4>
+                        <div class="simulation-container">
+                            <iframe id="previewFrame" src="" scrolling="no"></iframe>
+                        </div>
+                    </div>
+
                     <div class="pattern-display">
                         <div class="label">作成中のサイトスワップ</div>
                         <div class="value"><span id="currentPattern">_</span><span class="cursor">|</span></div>
@@ -412,14 +452,6 @@
                         <span class="result-label">終了時の追加</span>
                         <span id="completionPattern" class="result-value">-</span>
                     </div>
-
-                    <!-- リアルタイムシミュレーション -->
-                    <div class="simulation-wrapper">
-                        <h4 style="color: #3F72AF; margin-bottom: 10px;">プレビュー</h4>
-                        <div class="simulation-container">
-                            <iframe id="previewFrame" src="" scrolling="no"></iframe>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- ステップ3: 完成 -->
@@ -430,6 +462,15 @@
                         <span class="step completed">3. 完成</span>
                     </div>
 
+                    <!-- 完成シミュレーション -->
+                    <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
+                        <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">シミュレーション</h4>
+                        <div class="simulation-container">
+                            <iframe id="finalFrame" src="" scrolling="no"></iframe>
+                        </div>
+                        <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
+                    </div>
+
                     <div class="completion-info">
                         <div class="message">オリジナルサイトスワップが完成しました！</div>
                         <div class="final-pattern" id="finalPattern">-</div>
@@ -437,15 +478,6 @@
 
                     <div class="action-buttons">
                         <a href="#" class="btn-secondary" id="newPatternBtn">新しく作成</a>
-                    </div>
-
-                    <!-- 完成シミュレーション -->
-                    <div class="simulation-wrapper">
-                        <h4 style="color: #3F72AF; margin-bottom: 10px;">シミュレーション</h4>
-                        <div class="simulation-container">
-                            <iframe id="finalFrame" src="" scrolling="no"></iframe>
-                        </div>
-                        <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
                     </div>
                 </div>
             </section>
@@ -484,26 +516,8 @@
     </script>
     <script src="siteswapProcessor.js?ver=1.1.4"></script>
     <script src="siteswapLab.js?ver=1.5.4"></script>
-    <script src="siteswapMaker.js?ver=1.0.0"></script>
+    <script src="siteswapMaker.js?ver=1.2.0"></script>
     <script>
-        // 数値変換マップ
-        const CONVERT_TO_NUM = {
-            '0': 0, '1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6, '7': 7, '8': 8, '9': 9,
-            'a': 10, 'b': 11, 'c': 12, 'd': 13, 'e': 14, 'f': 15, 'g': 16, 'h': 17, 'i': 18, 'j': 19,
-            'k': 20, 'l': 21, 'm': 22, 'n': 23, 'o': 24, 'p': 25, 'q': 26, 'r': 27, 's': 28, 't': 29,
-            'u': 30, 'v': 31, 'w': 32, 'x': 33, 'y': 34, 'z': 35,
-            'A': 10, 'B': 11, 'C': 12, 'D': 13, 'E': 14, 'F': 15, 'G': 16, 'H': 17, 'I': 18, 'J': 19,
-            'K': 20, 'L': 21, 'M': 22, 'N': 23, 'O': 24, 'P': 25, 'Q': 26, 'R': 27, 'S': 28, 'T': 29,
-            'U': 30, 'V': 31, 'W': 32, 'X': 33, 'Y': 34, 'Z': 35
-        };
-
-        const CONVERT_TO_CHAR = {
-            0: '0', 1: '1', 2: '2', 3: '3', 4: '4', 5: '5', 6: '6', 7: '7', 8: '8', 9: '9',
-            10: 'a', 11: 'b', 12: 'c', 13: 'd', 14: 'e', 15: 'f', 16: 'g', 17: 'h', 18: 'i', 19: 'j',
-            20: 'k', 21: 'l', 22: 'm', 23: 'n', 24: 'o', 25: 'p', 26: 'q', 27: 'r', 28: 's', 29: 't',
-            30: 'u', 31: 'v', 32: 'w', 33: 'x', 34: 'y', 35: 'z'
-        };
-
         // DOM要素
         const ballCountInput = document.getElementById('ballCountInput');
         const beforePatternInput = document.getElementById('beforePatternInput');
@@ -527,14 +541,8 @@
         const simulationLink = document.getElementById('simulationLink');
         const newPatternBtn = document.getElementById('newPatternBtn');
 
-        // 状態管理
-        let ballCount = 0;
-        let beforePattern = '';
-        let afterPattern = '';
-        let currentState = [];
-        let targetState = [];
-        let patternArray = [];
-        let history = [];
+        // SiteswapMakerインスタンス
+        let maker = null;
 
         // エラー表示
         function showError(message) {
@@ -545,146 +553,15 @@
             errorOutput.textContent = '';
         }
 
-        // 入力文字を数値に変換
-        function charToNum(char) {
-            if (CONVERT_TO_NUM.hasOwnProperty(char)) {
-                return CONVERT_TO_NUM[char];
-            }
-            return parseInt(char);
-        }
-
-        // 数値を文字に変換
-        function numToChar(num) {
-            return CONVERT_TO_CHAR[num] || num.toString();
-        }
-
-        // 状態計算（基底状態）
-        function getGroundState(balls) {
-            const state = [];
-            for (let i = 0; i < balls; i++) {
-                state.push(i);
-            }
-            return state;
-        }
-
-        // パターンの状態を計算
-        function calculatePatternState(patternStr, balls) {
-            if (!patternStr || patternStr.trim() === '') {
-                return getGroundState(balls);
-            }
-
-            // SiteswapLabを使用して状態を計算
-            try {
-                const result = SiteswapLab.analyzePattern(patternStr);
-                if (result.isValid && result.isJugglable && result.data) {
-                    return result.data.state;
-                }
-            } catch (e) {
-                console.error('State calculation error:', e);
-            }
-
-            return getGroundState(balls);
-        }
-
-        // 次に投げられる数値リストを計算
-        function getAvailableNumbers(state) {
-            const available = [];
-            for (let i = 0; i < 36; i++) {
-                if (!state.includes(i)) {
-                    available.push(i);
-                }
-            }
-            return available;
-        }
-
-        // 状態を更新（数値を投げた後）
-        function updateState(state, throwValue) {
-            // 0を投げた場合は何も起きない（手持ち）
-            // それ以外は着地時刻を追加
-            const newState = state.map(s => s - 1).filter(s => s >= 0);
-            if (throwValue > 0) {
-                newState.push(throwValue - 1);
-            }
-            newState.sort((a, b) => a - b);
-            return newState;
-        }
-
-        // 完了時に追加が必要なパターンを計算
-        function calculateCompletionPattern(currentState, targetState) {
-            // 現在の状態からターゲット状態への接続を計算
-            // SiteswapLabの接続計算ロジックを簡略化
-            let fromState = [...currentState];
-            let toState = [...targetState];
-
-            const connection = [];
-            let iteration = 0;
-            const maxFromState = fromState.length > 0 ? Math.max(...fromState) : 0;
-
-            while (iteration <= maxFromState + 10) {
-                const fromPositives = fromState.filter(v => v >= 0);
-
-                // 部分集合チェック
-                let isSubset = true;
-                const toStateCopy = [...toState];
-                for (const val of fromPositives) {
-                    const idx = toStateCopy.indexOf(val);
-                    if (idx === -1) {
-                        isSubset = false;
-                        break;
-                    }
-                    toStateCopy.splice(idx, 1);
-                }
-
-                if (isSubset) {
-                    // 差分から接続投げを計算
-                    const diff = toState.filter(v => !fromPositives.includes(v));
-                    const totalBeats = connection.length;
-
-                    for (let i = 0; i < diff.length; i++) {
-                        const throwValue = diff[i] + (diff.length - i);
-                        connection.push(throwValue);
-                    }
-                    break;
-                }
-
-                // 状態をデクリメント
-                const minusOneCount = fromState.filter(v => v === 0).length;
-                fromState = fromState.map(v => v - 1);
-
-                // 投げる値を決定（仮: 最小の正の差分値）
-                const availableThrows = [];
-                for (let i = 0; i < 36; i++) {
-                    const throwHeight = i;
-                    const landing = throwHeight - 1;
-                    if (landing >= 0 && !fromState.includes(landing)) {
-                        availableThrows.push(throwHeight);
-                    }
-                }
-
-                if (availableThrows.length > 0) {
-                    // とりあえず平均に近い値を選択
-                    const avgThrow = ballCount;
-                    const closest = availableThrows.reduce((prev, curr) =>
-                        Math.abs(curr - avgThrow) < Math.abs(prev - avgThrow) ? curr : prev
-                    );
-                    connection.push(closest);
-                }
-
-                iteration++;
-            }
-
-            return connection.map(numToChar).join('');
-        }
-
         // 数値ボタンを生成
         function renderNumberButtons() {
             numberButtonsEl.innerHTML = '';
-            const available = getAvailableNumbers(currentState);
+            const available = maker.getPossibleThrows();
 
             for (let i = 0; i <= 35; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'number-btn';
-                btn.textContent = numToChar(i);
+                btn.textContent = SiteswapProcessor.CONVERT[i];
                 btn.disabled = !available.includes(i);
                 btn.addEventListener('click', () => addNumber(i));
                 numberButtonsEl.appendChild(btn);
@@ -695,17 +572,10 @@
         function addNumber(num) {
             clearError();
 
-            // 履歴に保存
-            history.push({
-                state: [...currentState],
-                pattern: [...patternArray]
-            });
-
-            // パターンに追加
-            patternArray.push(num);
-
-            // 状態を更新
-            currentState = updateState(currentState, num);
+            if (!maker.add(num)) {
+                showError(maker.error || '追加に失敗しました');
+                return;
+            }
 
             // UI更新
             updateUI();
@@ -713,11 +583,9 @@
 
         // 一つ削除
         function undoLast() {
-            if (history.length === 0) return;
-
-            const prev = history.pop();
-            currentState = prev.state;
-            patternArray = prev.pattern;
+            if (!maker.back()) {
+                return;
+            }
 
             updateUI();
         }
@@ -725,19 +593,17 @@
         // UI更新
         function updateUI() {
             // パターン表示
-            const patternStr = patternArray.length > 0
-                ? patternArray.map(numToChar).join('')
-                : '_';
+            const patternStr = maker.getCurrentPatternString() || '_';
             currentPatternEl.textContent = patternStr;
 
             // ボタン更新
             renderNumberButtons();
 
             // 削除ボタン
-            undoBtn.disabled = history.length === 0;
+            undoBtn.disabled = !maker.canBack();
 
             // 完了時のパターン計算
-            const completion = calculateCompletionPattern(currentState, targetState);
+            const completion = maker.getNeededConnection();
             if (completion === '') {
                 completionPatternEl.textContent = '終了ボタンを押すと完成します';
             } else {
@@ -745,22 +611,46 @@
             }
 
             // プレビュー更新
-            const previewPattern = patternArray.map(numToChar).join('') + completion;
+            const previewPattern = maker.getCurrentPatternString() + completion;
             if (previewPattern) {
-                previewFrame.src = `embed?encoded-pattern=${encodeURIComponent(previewPattern)}`;
+                updateSimulation(previewFrame, previewPattern);
             }
         }
 
+        /**
+         * シミュレーターの更新
+         */
+        function updateSimulation(iframe, pattern) {
+            if (!pattern) {
+                iframe.src = '';
+                return;
+            }
+
+            // すでにシミュレーターが読み込まれている場合はメッセージ送信で更新（高速）
+            if (iframe.contentWindow && iframe.src && iframe.src !== 'about:blank' && iframe.src !== window.location.href) {
+                iframe.contentWindow.postMessage({
+                    type: "START_ANIMATION",
+                    value: pattern
+                }, window.location.origin);
+            } else {
+                // 初回読み込みや未ロード時はsrcをセット
+                const url = new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href;
+                if (iframe.src !== url) {
+                    iframe.src = url;
+                }
+            }
+        }
+
+
         // 完成
         function complete() {
-            const completion = calculateCompletionPattern(currentState, targetState);
-            const finalPatternStr = patternArray.map(numToChar).join('') + completion;
+            const finalPatternStr = maker.finish();
 
             finalPatternEl.textContent = finalPatternStr;
 
             // シミュレーション設定
             const encodedPattern = encodeURIComponent(finalPatternStr);
-            finalFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+            updateSimulation(finalFrame, finalPatternStr);
             simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
 
             // セクション切り替え
@@ -768,77 +658,39 @@
             step3Section.style.display = 'block';
         }
 
+
         // 新規作成開始
         function startCreation() {
             clearError();
 
-            // 入力値の検証
-            const ballInput = ballCountInput.value.trim();
-            if (ballInput === '') {
-                showError('ボールの数を入力してください');
+            // SiteswapMakerインスタンス作成（バリデーションはクラス内で実行）
+            maker = new SiteswapMaker(
+                ballCountInput.value,
+                beforePatternInput.value,
+                afterPatternInput.value
+            );
+
+            if (maker.error) {
+                showError(maker.error);
                 return;
             }
-
-            // 数値変換
-            let balls;
-            if (CONVERT_TO_NUM.hasOwnProperty(ballInput)) {
-                balls = CONVERT_TO_NUM[ballInput];
-            } else {
-                balls = parseInt(ballInput);
-            }
-
-            if (isNaN(balls) || balls < 0 || balls > 35) {
-                showError('ボールの数は0〜35の範囲で入力してください');
-                return;
-            }
-
-            // 前後のパターン検証
-            const before = beforePatternInput.value.trim();
-            const after = afterPatternInput.value.trim();
-
-            if (before !== '') {
-                const result = SiteswapLab.validatePattern(before);
-                if (!result.isValid || !result.isJugglable) {
-                    showError('直前のサイトスワップが無効です: ' + (result.message || ''));
-                    return;
-                }
-                const analysis = SiteswapLab.analyzePattern(before);
-                if (analysis.data && analysis.data.propCount !== balls) {
-                    showError(`直前のサイトスワップのボール数(${analysis.data.propCount})が指定と異なります`);
-                    return;
-                }
-            }
-
-            if (after !== '') {
-                const result = SiteswapLab.validatePattern(after);
-                if (!result.isValid || !result.isJugglable) {
-                    showError('直後のサイトスワップが無効です: ' + (result.message || ''));
-                    return;
-                }
-                const analysis = SiteswapLab.analyzePattern(after);
-                if (analysis.data && analysis.data.propCount !== balls) {
-                    showError(`直後のサイトスワップのボール数(${analysis.data.propCount})が指定と異なります`);
-                    return;
-                }
-            }
-
-            // 初期化
-            ballCount = balls;
-            beforePattern = before;
-            afterPattern = after;
-
-            currentState = calculatePatternState(before, balls);
-            targetState = calculatePatternState(after, balls);
-            patternArray = [];
-            history = [];
 
             // セクション切り替え
             step1Section.style.display = 'none';
             step2Section.style.display = 'block';
 
+            // シミュレーターの初回読み込み（直前のサイトスワップ、または基底状態）
+            // maker.currentState から基底状態を推定、または startPattern を使用
+            let initialPattern = maker.startPattern;
+            if (!initialPattern || initialPattern.trim() === '') {
+                initialPattern = SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
+            }
+            updateSimulation(previewFrame, initialPattern);
+
             // UI初期化
             updateUI();
         }
+
 
         // リセット
         function resetToStart() {
@@ -846,16 +698,10 @@
             step2Section.style.display = 'none';
             step3Section.style.display = 'none';
 
-            ballCount = 0;
-            beforePattern = '';
-            afterPattern = '';
-            currentState = [];
-            targetState = [];
-            patternArray = [];
-            history = [];
+            maker = null;
 
-            previewFrame.src = '';
-            finalFrame.src = '';
+            updateSimulation(previewFrame, '');
+            updateSimulation(finalFrame, '');
             clearError();
         }
 

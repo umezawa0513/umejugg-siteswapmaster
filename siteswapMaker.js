@@ -4,44 +4,246 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.0.0";
+    static VERSION = "1.2.3";
+
     /**
-     * @param {number} propCount - ボールの数
+     * @param {number|string} propCount - ボールの数（数値または文字列）
      * @param {string} startPattern - 初期状態を決定するサイトスワップ（空の場合は基底状態）
      * @param {string} endPattern - 目標（終了時）の状態を決定するサイトスワップ（空の場合は基底状態）
      */
     constructor(propCount, startPattern = "", endPattern = "") {
-        this.propCount = propCount;
-        this.startPattern = startPattern || propCount.toString();
-        this.endPattern = endPattern || propCount.toString();
+        this.propCount = null;
+        this.startPattern = startPattern;
+        this.endPattern = endPattern;
 
-        this.currentThrows = []; // 現在までに追加された投げの配列
+        this.currentThrows = []; // 現在までに追加された投げの配列（数値）
         this.history = []; // 状態遷移の履歴
 
-        this.currentState = null; // 現在の状態（配列またはビットマスク）
+        this.currentState = null; // 現在の状態（配列）
         this.targetState = null; // 目標とする状態
+
+        this.error = null; // エラーメッセージ
+
+        // propCountのバリデーションと変換
+        if (!this._validateAndSetPropCount(propCount)) {
+            return;
+        }
 
         // 初期化処理
         this.initialize();
     }
 
     /**
+     * propCountのバリデーションと設定
+     * @private
+     * @param {number|string} propCount - ボールの数
+     * @returns {boolean} 成功したか
+     */
+    _validateAndSetPropCount(propCount) {
+        if (propCount === '' || propCount === null || propCount === undefined) {
+            this.error = 'ボールの数を入力してください';
+            return false;
+        }
+
+        let input = String(propCount).trim();
+        if (input === '') {
+            this.error = 'ボールの数を入力してください';
+            return false;
+        }
+
+        // 全角数字を半角に変換、およびアルファベットを数値に変換
+        input = this._convertFullWidthToHalfWidth(input);
+        input = this._convertAlphabetToNumber(input);
+
+        const balls = parseInt(input);
+
+        if (isNaN(balls) || balls < 0 || balls > 35) {
+            this.error = 'ボールの数は0〜35の範囲で入力してください';
+            return false;
+        }
+
+        this.propCount = balls;
+        return true;
+    }
+
+    /**
+     * 全角数字を半角に変換
+     * @private
+     * @param {string} input - 入力文字列
+     * @returns {string} 変換後の文字列
+     */
+    _convertFullWidthToHalfWidth(input) {
+        const fullWidthNumbers = '０１２３４５６７８９';
+        const halfWidthNumbers = '0123456789';
+        let result = input;
+        for (let i = 0; i < fullWidthNumbers.length; i++) {
+            result = result.split(fullWidthNumbers[i]).join(halfWidthNumbers[i]);
+        }
+        return result;
+    }
+
+    /**
+     * アルファベット(a-z, A-Z)を数値(10-35)形式の文字列に変換
+     * @private
+     * @param {string} input - 入力文字列
+     * @returns {string} 変換後の文字列
+     */
+    _convertAlphabetToNumber(input) {
+        let result = '';
+        for (let i = 0; i < input.length; i++) {
+            const char = input[i];
+            const code = char.charCodeAt(0);
+            if (code >= 97 && code <= 122) { // a-z
+                result += (code - 97 + 10).toString();
+            } else if (code >= 65 && code <= 90) { // A-Z
+                result += (code - 65 + 10).toString();
+            } else {
+                result += char;
+            }
+        }
+        return result;
+    }
+
+
+    /**
+     * 基底状態を取得
+     * @param {number} balls - ボール数
+     * @returns {number[]} 基底状態の配列
+     */
+    static getGroundState(balls) {
+        const state = [];
+        for (let i = 0; i < balls; i++) {
+            state.push(i);
+        }
+        return state;
+    }
+
+    /**
+     * パターンの状態を計算
+     * @param {string} patternStr - サイトスワップパターン
+     * @param {number} balls - ボール数
+     * @returns {number[]} 状態配列
+     */
+    static calculatePatternState(patternStr, balls) {
+        if (!patternStr || patternStr.trim() === '') {
+            return SiteswapMaker.getGroundState(balls);
+        }
+
+        try {
+            const result = SiteswapLab.analyzePattern(patternStr);
+            if (result.isValid && result.isJugglable && result.data) {
+                return result.data.state;
+            }
+        } catch (e) {
+            console.error('State calculation error:', e);
+        }
+
+        return SiteswapMaker.getGroundState(balls);
+    }
+
+    /**
      * 初期状態の設定とバリデーション
+     * @returns {boolean} 初期化に成功したか
      */
     initialize() {
-        // TODO: startPattern と endPattern から初期状態と目標状態を計算
-        // SiteswapLab.analyzePattern 等を利用
+        this.error = null;
+
+        // startPatternのバリデーション
+        if (this.startPattern && this.startPattern.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直前のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
+        // endPatternのバリデーション
+        if (this.endPattern && this.endPattern.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直後のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
+        // 初期状態の計算
+        this.currentState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
+        this.targetState = SiteswapMaker.calculatePatternState(this.endPattern, this.propCount);
+
+        return true;
+    }
+
+    /**
+     * 現在の状態から追加（投げること）が可能な数値のリストを取得する
+     * @returns {number[]} 追加可能な数値の配列（0-35）
+     */
+    getPossibleThrows() {
+        // ボールが手元にない（0が状態に含まれていない）場合は、0（空手）のみ可能
+        if (!this.currentState.includes(0)) {
+            return [0];
+        }
+
+        const available = [];
+        for (let i = 0; i < 36; i++) {
+            if (!this.currentState.includes(i)) {
+                available.push(i);
+            }
+        }
+        return available;
+    }
+
+    /**
+     * 状態を更新（数値を投げた後）
+     * @param {number[]} state - 現在の状態
+     * @param {number} throwValue - 投げる数値
+     * @returns {number[]} 新しい状態
+     */
+    static updateState(state, throwValue) {
+        // 全要素を-1して、負の値を削除
+        const newState = state.map(s => s - 1).filter(s => s >= 0);
+        // 0以外の投げは着地時刻を追加
+        if (throwValue > 0) {
+            newState.push(throwValue - 1);
+        }
+        newState.sort((a, b) => a - b);
+        return newState;
     }
 
     /**
      * 投げを追加する
-     * @param {number|string} throwValue - 追加する数値（'a', 'b' 等の文字も許容）
+     * @param {number} throwValue - 追加する数値（0-35）
      * @returns {boolean} 追加に成功したか
      */
     add(throwValue) {
-        // TODO: 現在の状態から throwValue が投げられるかチェック
-        // 可能であれば currentThrows に追加し、currentState を更新
-        // 履歴 (history) に現在の状態を保存
+        // 投げられるかチェック
+        const available = this.getPossibleThrows();
+        if (!available.includes(throwValue)) {
+            this.error = 'この値は現在投げることができません';
+            return false;
+        }
+
+        // 履歴に現在の状態を保存
+        this.history.push({
+            state: [...this.currentState],
+            throws: [...this.currentThrows]
+        });
+
+        // パターンに追加
+        this.currentThrows.push(throwValue);
+
+        // 状態を更新
+        this.currentState = SiteswapMaker.updateState(this.currentState, throwValue);
+
+        this.error = null;
+        return true;
     }
 
     /**
@@ -49,15 +251,17 @@ class SiteswapMaker {
      * @returns {boolean} 戻ることができたか
      */
     back() {
-        // TODO: history から最後のエントリを取り出し、状態を復元
-    }
+        if (this.history.length === 0) {
+            this.error = '戻る履歴がありません';
+            return false;
+        }
 
-    /**
-     * 現在の状態から追加（投げること）が可能な数値のリストを取得する
-     * @returns {number[]} 追加可能な数値の配列
-     */
-    getPossibleThrows() {
-        // TODO: currentState を元に、次に投げられる数値（0-35等）を計算
+        const prev = this.history.pop();
+        this.currentState = prev.state;
+        this.currentThrows = prev.throws;
+
+        this.error = null;
+        return true;
     }
 
     /**
@@ -65,7 +269,7 @@ class SiteswapMaker {
      * @returns {string} 文字列（例: "53"）
      */
     getCurrentPatternString() {
-        // TODO: currentThrows を文字列に変換して返す
+        return this.currentThrows.map(n => SiteswapProcessor.CONVERT[n]).join('');
     }
 
     /**
@@ -73,8 +277,9 @@ class SiteswapMaker {
      * @returns {string} 接続に必要なサイトスワップ文字列
      */
     getNeededConnection() {
-        // TODO: SiteswapLab.calculateConnectionPattern 等を使用して、
-        // currentState から targetState への最短、あるいは適切な接続を計算
+        // 現在の状態から目標状態への接続を計算
+        const result = SiteswapLab.calculateConnectionFromStates(this.currentState, this.targetState, false);
+        return result.isValid && result.data ? result.data.connection : "";
     }
 
     /**
@@ -82,7 +287,58 @@ class SiteswapMaker {
      * @returns {string} 完成したサイトスワップ文字列
      */
     finish() {
-        // TODO: getNeededConnection を呼び出して、現在のパターンと結合して完成させる
+        const currentPattern = this.getCurrentPatternString();
+        const connection = this.getNeededConnection();
+        return currentPattern + connection;
+    }
+
+    /**
+     * 戻る履歴があるかどうか
+     * @returns {boolean}
+     */
+    canBack() {
+        return this.history.length > 0;
+    }
+
+    /**
+     * パターンの検証
+     * @param {string} pattern - 検証するパターン
+     * @param {number} expectedBallCount - 期待されるボール数
+     * @returns {Object} {isValid, isJugglable, message, ballCount}
+     */
+    static validatePattern(pattern, expectedBallCount = null) {
+        if (!pattern || pattern.trim() === '') {
+            return { isValid: true, isJugglable: true, message: null, ballCount: null };
+        }
+
+        const result = SiteswapLab.validatePattern(pattern);
+        if (!result.isValid || !result.isJugglable) {
+            return {
+                isValid: result.isValid,
+                isJugglable: result.isJugglable,
+                message: result.message,
+                ballCount: null
+            };
+        }
+
+        const analysis = SiteswapLab.analyzePattern(pattern);
+        const ballCount = analysis.data ? analysis.data.propCount : null;
+
+        if (expectedBallCount !== null && ballCount !== expectedBallCount) {
+            return {
+                isValid: true,
+                isJugglable: true,
+                message: `ボール数(${ballCount})が指定(${expectedBallCount})と異なります`,
+                ballCount: ballCount
+            };
+        }
+
+        return {
+            isValid: true,
+            isJugglable: true,
+            message: null,
+            ballCount: ballCount
+        };
     }
 
     /**
@@ -93,7 +349,11 @@ class SiteswapMaker {
             propCount: this.propCount,
             currentPattern: this.getCurrentPatternString(),
             neededConnection: this.getNeededConnection(),
-            possibleThrows: this.getPossibleThrows()
+            possibleThrows: this.getPossibleThrows(),
+            currentState: this.currentState,
+            targetState: this.targetState,
+            canBack: this.canBack(),
+            error: this.error
         };
     }
 }
