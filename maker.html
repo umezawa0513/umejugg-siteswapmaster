@@ -594,14 +594,23 @@
          * シミュレーターの更新
          */
         function updateSimulation(iframe, pattern) {
-            const url = pattern ? new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href : '';
+            if (!pattern) {
+                iframe.src = '';
+                return;
+            }
 
-            if (iframe.src === url && url !== '') {
-                // 同じURLの場合、強制的にリロード
-                iframe.src = 'about:blank';
-                setTimeout(() => { iframe.src = url; }, 10);
+            // すでにシミュレーターが読み込まれている場合はメッセージ送信で更新（高速）
+            if (iframe.contentWindow && iframe.src && iframe.src !== 'about:blank' && iframe.src !== window.location.href) {
+                iframe.contentWindow.postMessage({
+                    type: "START_ANIMATION",
+                    value: pattern
+                }, window.location.origin);
             } else {
-                iframe.src = url;
+                // 初回読み込みや未ロード時はsrcをセット
+                const url = new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href;
+                if (iframe.src !== url) {
+                    iframe.src = url;
+                }
             }
         }
 
