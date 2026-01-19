@@ -252,16 +252,7 @@
             aspect-ratio: 3 / 5;
             border: none;
             border-radius: 8px;
-            opacity: 0;
-            /* 最初は透明 */
-            transition: opacity 0.4s ease-in-out;
             display: block;
-            background-color: transparent;
-        }
-
-        .simulation-container iframe.sim-loaded {
-            opacity: 1;
-            visibility: visible;
         }
 
         .simulation-link {
@@ -605,29 +596,8 @@
         function updateSimulation(iframe, pattern) {
             const url = pattern ? new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href : '';
 
-            // 既に同じURL且つ表示済みなら何もしない（チラつき防止）
-            if (iframe.src === url && iframe.classList.contains('sim-loaded')) {
-                return;
-            }
-
-            // 透明にする（背景色 #5a5a5a が見える）
-            iframe.classList.remove('sim-loaded');
-
-            // 読み込み完了時の処理を再設定
-            iframe.onload = function () {
-                if (this.src && !this.src.includes('about:blank')) {
-                    this.classList.add('sim-loaded'); // 表示する
-                }
-            };
-
-            // srcが空の場合はURLセット不要
-            if (!url) {
-                iframe.src = '';
-                return;
-            }
-
-            // srcを更新（以前と同じURLの場合でも強制リロード）
-            if (iframe.src === url) {
+            if (iframe.src === url && url !== '') {
+                // 同じURLの場合、強制的にリロード
                 iframe.src = 'about:blank';
                 setTimeout(() => { iframe.src = url; }, 10);
             } else {
