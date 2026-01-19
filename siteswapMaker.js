@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.3.0";
+    static VERSION = "1.4.0";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -13,8 +13,8 @@ class SiteswapMaker {
      */
     constructor(propCount, startPattern = "", endPattern = "") {
         this.propCount = null;
-        this.startPattern = startPattern;
-        this.endPattern = endPattern;
+        this.startPattern = "";
+        this.endPattern = "";
 
         this.currentThrows = []; // 現在までに追加された投げの配列（数値）
         this.history = []; // 状態遷移の履歴
@@ -24,13 +24,64 @@ class SiteswapMaker {
 
         this.error = null; // エラーメッセージ
 
-        // propCountのバリデーションと変換
-        if (!this._validateAndSetPropCount(propCount)) {
+        // 入力のバリデーションと正規化
+        if (!this._validateInputs(propCount, startPattern, endPattern)) {
             return;
         }
 
         // 初期化処理
         this.initialize();
+    }
+
+    /**
+     * 入力のバリデーションと正規化
+     * @private
+     * @param {number|string} propCount - ボールの数
+     * @param {string} startPattern - 直前のサイトスワップ
+     * @param {string} endPattern - 直後のサイトスワップ
+     * @returns {boolean} 成功したか
+     */
+    _validateInputs(propCount, startPattern, endPattern) {
+        // 1. パターンの正規化（全角→半角変換）
+        const normalizedStart = SiteswapProcessor.normalizePattern(startPattern || "");
+        const normalizedEnd = SiteswapProcessor.normalizePattern(endPattern || "");
+
+        // 2. propCountのバリデーションと設定
+        if (!this._validateAndSetPropCount(propCount)) {
+            return false;
+        }
+
+        // 3. 直前のサイトスワップのバリデーション
+        if (normalizedStart && normalizedStart.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(normalizedStart, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直前のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
+        // 4. 直後のサイトスワップのバリデーション
+        if (normalizedEnd && normalizedEnd.trim() !== '') {
+            const validation = SiteswapMaker.validatePattern(normalizedEnd, this.propCount);
+            if (!validation.isValid || !validation.isJugglable) {
+                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
+                return false;
+            }
+            if (validation.message) {
+                this.error = '直後のサイトスワップ: ' + validation.message;
+                return false;
+            }
+        }
+
+        // 5. 正規化されたパターンを保存
+        this.startPattern = normalizedStart;
+        this.endPattern = normalizedEnd;
+
+        return true;
     }
 
     /**
@@ -45,14 +96,10 @@ class SiteswapMaker {
             return false;
         }
 
-        let input = String(propCount).trim();
-        if (input === '') {
-            this.error = 'ボールの数を入力してください';
-            return false;
-        }
+        // 全角を半角に正規化
+        let input = SiteswapProcessor.normalizePattern(String(propCount).trim());
 
-        // 全角数字を半角に変換、およびアルファベットを数値に変換
-        input = this._convertFullWidthToHalfWidth(input);
+        // アルファベットを数値に変換（サイトスワップ特有のa=10, b=11...）
         input = this._convertAlphabetToNumber(input);
 
         const balls = parseInt(input);
@@ -66,21 +113,6 @@ class SiteswapMaker {
         return true;
     }
 
-    /**
-     * 全角数字を半角に変換
-     * @private
-     * @param {string} input - 入力文字列
-     * @returns {string} 変換後の文字列
-     */
-    _convertFullWidthToHalfWidth(input) {
-        const fullWidthNumbers = '０１２３４５６７８９';
-        const halfWidthNumbers = '0123456789';
-        let result = input;
-        for (let i = 0; i < fullWidthNumbers.length; i++) {
-            result = result.split(fullWidthNumbers[i]).join(halfWidthNumbers[i]);
-        }
-        return result;
-    }
 
     /**
      * アルファベット(a-z, A-Z)を数値(10-35)形式の文字列に変換
@@ -129,52 +161,23 @@ class SiteswapMaker {
             return SiteswapMaker.getGroundState(balls);
         }
 
-        try {
-            const result = SiteswapLab.analyzePattern(patternStr);
-            if (result.isValid && result.isJugglable && result.data) {
-                return result.data.state;
-            }
-        } catch (e) {
-            console.error('State calculation error:', e);
+        const result = SiteswapLab.analyzePattern(patternStr);
+        if (result.isValid && result.isJugglable && result.data) {
+            return result.data.state;
         }
 
         return SiteswapMaker.getGroundState(balls);
     }
 
     /**
-     * 初期状態の設定とバリデーション
+     * 初期状態の設定
+     * バリデーションは_validateInputsで完了しているため、ここでは状態の計算のみ行う
      * @returns {boolean} 初期化に成功したか
      */
     initialize() {
         this.error = null;
 
-        // startPatternのバリデーション
-        if (this.startPattern && this.startPattern.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直前のサイトスワップ: ' + validation.message;
-                return false;
-            }
-        }
-
-        // endPatternのバリデーション
-        if (this.endPattern && this.endPattern.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直後のサイトスワップ: ' + validation.message;
-                return false;
-            }
-        }
-
-        // 初期状態の計算
+        // 初期状態と目標状態の計算
         this.currentState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
         this.targetState = SiteswapMaker.calculatePatternState(this.endPattern, this.propCount);
 
