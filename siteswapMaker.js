@@ -43,44 +43,30 @@ class SiteswapMaker {
      * @returns {boolean} 成功したか
      */
     _validateInputs(propCount, startPattern, endPattern) {
-        // 1. パターンの正規化（全角→半角変換）
-        const normalizedStart = SiteswapProcessor.normalizePattern(startPattern || "");
-        const normalizedEnd = SiteswapProcessor.normalizePattern(endPattern || "");
-
-        // 2. propCountのバリデーションと設定
+        // 1. propCountのバリデーションと設定（補完に必要なので先に行う）
         if (!this._validateAndSetPropCount(propCount)) {
             return false;
         }
 
+        const groundPattern = SiteswapProcessor.CONVERT[this.propCount] || String(this.propCount);
+
+        // 2. パターンの正規化と補完
+        this.startPattern = SiteswapProcessor.normalizePattern(startPattern || "").trim() || groundPattern;
+        this.endPattern = SiteswapProcessor.normalizePattern(endPattern || "").trim() || groundPattern;
+
         // 3. 直前のサイトスワップのバリデーション
-        if (normalizedStart && normalizedStart.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(normalizedStart, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直前のサイトスワップ: ' + validation.message;
-                return false;
-            }
+        const startValidation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
+        if (!startValidation.isValid || !startValidation.isJugglable) {
+            this.error = '直前のサイトスワップが無効です: ' + (startValidation.message || '');
+            return false;
         }
 
         // 4. 直後のサイトスワップのバリデーション
-        if (normalizedEnd && normalizedEnd.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(normalizedEnd, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直後のサイトスワップ: ' + validation.message;
-                return false;
-            }
+        const endValidation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
+        if (!endValidation.isValid || !endValidation.isJugglable) {
+            this.error = '直後のサイトスワップが無効です: ' + (endValidation.message || '');
+            return false;
         }
-
-        // 5. 正規化されたパターンを保存
-        this.startPattern = normalizedStart;
-        this.endPattern = normalizedEnd;
 
         return true;
     }
