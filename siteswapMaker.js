@@ -19,6 +19,7 @@ class SiteswapMaker {
         this.currentThrows = []; // 現在までに追加された投げの配列（数値）
         this.history = []; // 状態遷移の履歴
 
+        this.startState = null; // 初期状態
         this.currentState = null; // 現在の状態（配列）
         this.targetState = null; // 目標とする状態
 
@@ -178,7 +179,8 @@ class SiteswapMaker {
         this.error = null;
 
         // 初期状態と目標状態の計算
-        this.currentState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
+        this.startState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
+        this.currentState = [...this.startState]; // 現在の状態を初期状態で初期化
         this.targetState = SiteswapMaker.calculatePatternState(this.endPattern, this.propCount);
 
         return true;
@@ -302,7 +304,7 @@ class SiteswapMaker {
      */
     getLoopConnection() {
         // 直後の状態から直前の状態への接続を計算
-        const result = SiteswapLab.calculateConnectionFromStates(this.targetState, SiteswapMaker.calculatePatternState(this.startPattern, this.propCount), false);
+        const result = SiteswapLab.calculateConnectionFromStates(this.targetState, this.startState, false);
         return result.isValid && result.data ? result.data.connection : "";
     }
 
@@ -385,6 +387,7 @@ class SiteswapMaker {
             currentPattern: this.getCurrentPatternString(),
             neededConnection: this.getNeededConnection(),
             possibleThrows: this.getPossibleThrows(),
+            startState: this.startState,
             currentState: this.currentState,
             targetState: this.targetState,
             canBack: this.canBack(),
