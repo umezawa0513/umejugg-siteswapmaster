@@ -350,6 +350,72 @@
             color: #666;
             margin-top: -4px;
         }
+
+        /* 接続パターン追加通知 */
+        .connection-notice {
+            background: #e3f2fd;
+            border: 2px solid #2196F3;
+            border-radius: 10px;
+            padding: 16px;
+            margin: 16px 0;
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+
+        .connection-notice .notice-icon {
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .connection-notice .notice-content {
+            flex: 1;
+        }
+
+        .connection-notice .notice-title {
+            font-weight: bold;
+            color: #1976D2;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+
+        .connection-notice .notice-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .connection-notice .notice-row {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .connection-notice .notice-label {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .connection-notice .notice-value {
+            font-family: monospace;
+            font-size: 18px;
+            font-weight: bold;
+            color: #112D4E;
+            word-break: break-all;
+            overflow-wrap: break-word;
+        }
+
+        .connection-notice .notice-value.highlight {
+            color: #2196F3;
+            font-size: 20px;
+        }
+
+        .connection-notice .notice-explanation {
+            font-size: 13px;
+            color: #555;
+            margin-top: 8px;
+            line-height: 1.5;
+        }
     </style>
 </head>
 
@@ -476,6 +542,35 @@
                         <div class="final-pattern" id="finalPattern">-</div>
                     </div>
 
+                    <!-- 接続パターン追加通知 -->
+                    <div class="connection-notice" id="connectionNotice" style="display: none;">
+                        <div class="notice-icon">ℹ️</div>
+                        <div class="notice-content">
+                            <div class="notice-title">接続パターンを自動追加しました</div>
+                            <div class="notice-details">
+                                <div class="notice-row">
+                                    <span class="notice-label">作成したパターン:</span>
+                                    <span class="notice-value" id="userCreatedPattern">-</span>
+                                </div>
+                                <div class="notice-row">
+                                    <span class="notice-label">直後のサイトスワップ:</span>
+                                    <span class="notice-value" id="endPatternDisplay">-</span>
+                                </div>
+                                <div class="notice-row">
+                                    <span class="notice-label">追加された接続:</span>
+                                    <span class="notice-value highlight" id="addedConnection">-</span>
+                                </div>
+                                <div class="notice-row">
+                                    <span class="notice-label">直前のサイトスワップ:</span>
+                                    <span class="notice-value" id="startPatternDisplay">-</span>
+                                </div>
+                                <div class="notice-explanation">
+                                    直前と直後のサイトスワップの状態が異なるため、シミュレーションでループ可能にするための接続パターン（直後ss→直前ss）を自動的に計算して追加しました。
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="action-buttons">
                         <a href="#" class="btn-secondary" id="newPatternBtn">新しく作成</a>
                     </div>
@@ -516,7 +611,7 @@
     </script>
     <script src="siteswapProcessor.js?ver=1.1.4"></script>
     <script src="siteswapLab.js?ver=1.5.5"></script>
-    <script src="siteswapMaker.js?ver=1.2.0"></script>
+    <script src="siteswapMaker.js?ver=1.3.0"></script>
     <script>
         // DOM要素
         const ballCountInput = document.getElementById('ballCountInput');
@@ -610,8 +705,11 @@
                 completionPatternEl.textContent = `終了ボタンを押すと「${completion}」が追加されて完成します`;
             }
 
-            // プレビュー更新
-            const previewPattern = maker.getCurrentPatternString() + completion;
+            // プレビュー更新（ループ接続パターンも含む）
+            const basePattern = maker.getCurrentPatternString() + completion;
+            const loopConnection = maker.getLoopConnection();
+            const previewPattern = basePattern + loopConnection;
+
             if (previewPattern) {
                 updateSimulation(previewFrame, previewPattern);
             }
@@ -644,13 +742,49 @@
 
         // 完成
         function complete() {
-            const finalPatternStr = maker.finish();
+            // 完全なループパターンを生成
+            const result = maker.finishWithLoop();
+            const userCreatedPattern = result.userPattern;
+            const toEndConnection = result.toEndConnection;
+            const loopConnection = result.loopConnection;
+            const completeLoopPattern = result.pattern;
 
-            finalPatternEl.textContent = finalPatternStr;
+            // 表示用のパターン（ユーザーが作成した部分 + 直後への接続）
+            const displayPattern = userCreatedPattern + toEndConnection;
+            finalPatternEl.textContent = displayPattern;
 
-            // シミュレーション設定
-            const encodedPattern = encodeURIComponent(finalPatternStr);
-            updateSimulation(finalFrame, finalPatternStr);
+            // 接続パターンが追加された場合の通知
+            const connectionNotice = document.getElementById('connectionNotice');
+            const userCreatedPatternEl = document.getElementById('userCreatedPattern');
+            const addedConnectionEl = document.getElementById('addedConnection');
+            const endPatternDisplayEl = document.getElementById('endPatternDisplay');
+            const startPatternDisplayEl = document.getElementById('startPatternDisplay');
+
+            if (loopConnection && loopConnection !== '') {
+                // ループ接続パターンが追加された場合
+                connectionNotice.style.display = 'flex';
+                userCreatedPatternEl.textContent = displayPattern;
+                addedConnectionEl.textContent = loopConnection;
+
+                // 直後のサイトスワップ（空の場合は基底状態を表示）
+                const endPattern = maker.endPattern && maker.endPattern.trim() !== ''
+                    ? maker.endPattern
+                    : SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
+                endPatternDisplayEl.textContent = endPattern;
+
+                // 直前のサイトスワップ（空の場合は基底状態を表示）
+                const startPattern = maker.startPattern && maker.startPattern.trim() !== ''
+                    ? maker.startPattern
+                    : SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
+                startPatternDisplayEl.textContent = startPattern;
+            } else {
+                // ループ接続パターンが不要な場合
+                connectionNotice.style.display = 'none';
+            }
+
+            // シミュレーション設定（完全なループパターンを使用）
+            const encodedPattern = encodeURIComponent(completeLoopPattern);
+            updateSimulation(finalFrame, completeLoopPattern);
             simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
 
             // セクション切り替え
@@ -703,6 +837,12 @@
             updateSimulation(previewFrame, '');
             updateSimulation(finalFrame, '');
             clearError();
+
+            // 接続パターン通知を非表示
+            const connectionNotice = document.getElementById('connectionNotice');
+            if (connectionNotice) {
+                connectionNotice.style.display = 'none';
+            }
         }
 
         // イベントリスナー

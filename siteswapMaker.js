@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.2.3";
+    static VERSION = "1.3.0";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -290,6 +290,38 @@ class SiteswapMaker {
         const currentPattern = this.getCurrentPatternString();
         const connection = this.getNeededConnection();
         return currentPattern + connection;
+    }
+
+    /**
+     * 直後の状態から直前の状態に戻るための接続パターンを計算する
+     * （ループを完成させるため）
+     * @returns {string} ループ接続に必要なサイトスワップ文字列
+     */
+    getLoopConnection() {
+        // 直後の状態から直前の状態への接続を計算
+        const result = SiteswapLab.calculateConnectionFromStates(this.targetState, SiteswapMaker.calculatePatternState(this.startPattern, this.propCount), false);
+        return result.isValid && result.data ? result.data.connection : "";
+    }
+
+    /**
+     * 完全なループパターンを生成する
+     * 直前ss → オリジナルss → 直後ss → [ループ接続] → 直前ss
+     * @returns {Object} {pattern: 完全なパターン, loopConnection: ループ接続パターン}
+     */
+    finishWithLoop() {
+        const currentPattern = this.getCurrentPatternString();
+        const connection = this.getNeededConnection();
+        const basePattern = currentPattern + connection;
+
+        // 直後の状態から直前の状態に戻るための接続を計算
+        const loopConnection = this.getLoopConnection();
+
+        return {
+            pattern: basePattern + loopConnection,
+            userPattern: currentPattern,
+            toEndConnection: connection,
+            loopConnection: loopConnection
+        };
     }
 
     /**
