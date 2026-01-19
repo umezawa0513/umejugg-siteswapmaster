@@ -394,8 +394,7 @@
                     <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
                         <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">プレビュー</h4>
                         <div class="simulation-container">
-                            <iframe id="previewFrame" src="" scrolling="no"
-                                style="box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>
+                            <iframe id="previewFrame" src="" scrolling="no"></iframe>
                         </div>
                     </div>
 
@@ -435,8 +434,7 @@
                     <div class="simulation-wrapper" style="border-top: none; margin-bottom: 20px;">
                         <h4 style="color: #3F72AF; margin-bottom: 10px; text-align: center;">シミュレーション</h4>
                         <div class="simulation-container">
-                            <iframe id="finalFrame" src="" scrolling="no"
-                                style="box-shadow: 0 4px 12px rgba(0,0,0,0.1);"></iframe>
+                            <iframe id="finalFrame" src="" scrolling="no"></iframe>
                         </div>
                         <a href="#" class="simulation-link" id="simulationLink" target="_blank">シミュレーションページで開く</a>
                     </div>
@@ -589,22 +587,10 @@
 
         /**
          * シミュレーターの更新
-         * iframeが読み込まれていれば animation.start() を呼び、そうでなければ src を設定する
          */
         function updateSimulation(iframe, pattern) {
-            try {
-                if (iframe.contentWindow && iframe.contentWindow.animation && typeof iframe.contentWindow.animation.start === 'function') {
-                    iframe.contentWindow.animation.start(pattern);
-                    return;
-                }
-            } catch (e) {
-                console.warn('Simulator update error:', e);
-            }
-            // iframeが未ロード、またはエラーの場合はsrcを更新
-            const newSrc = `embed?encoded-pattern=${encodeURIComponent(pattern)}`;
-            if (iframe.src.indexOf(newSrc) === -1) { // 既にある程度一致していれば更新しない等の工夫も可能だが単純比較
-                iframe.src = newSrc;
-            }
+            const url = new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href;
+            iframe.src = url;
         }
 
 
