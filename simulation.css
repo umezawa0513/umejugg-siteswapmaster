@@ -1,3 +1,4 @@
+/* simulation.css ver 9.3.0 */
 .container {
     display: flex;
     flex-direction: column;
@@ -5,26 +6,31 @@
     width: 100vw;
     align-items: center;
 }
+
 body {
     height: 100vh;
     margin: 0;
-    color:#112D4E;
+    color: #112D4E;
     background-color: #F9F7F7;
 }
-header{
+
+header {
     font-family: 'M PLUS Rounded 1c', sans-serif;
     background-color: #DBE2EF;
     width: 100vw;
     color: #112D4E;
     z-index: 3;
 }
+
 main {
-    max-width: 800px; /* メインコンテンツの最大幅を設定 */
+    max-width: 800px;
+    /* メインコンテンツの最大幅を設定 */
     width: 100%;
     padding: 0;
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
-footer{
+
+footer {
     background-color: #3F72AF;
     width: 100vw;
     text-align: center;
@@ -35,33 +41,41 @@ footer{
     flex-direction: column;
     align-items: center;
 }
-section{
+
+section {
     padding: 20px;
     background-color: #DBE2EF;
     margin: 10px;
     border-radius: 10px;
 }
-span{
+
+span {
     display: inline-block
 }
-h1{
+
+h1 {
     text-align: center;
 }
-h2{
+
+h2 {
     border-bottom: 2px solid;
     border-color: #3F72AF;
     padding: 0 4px;
     margin-top: 0;
 }
+
 a {
     color: #3F72AF;
     cursor: pointer;
     /*text-decoration: none; /* 下線を削除する */
 }
-.titleText{
+
+.titleText {
     color: #112D4E;
-    text-decoration: none; /* 下線を削除する */
+    text-decoration: none;
+    /* 下線を削除する */
 }
+
 .loader {
     color: #112D4E;
     /*text-indent: -9999em;*/
@@ -71,14 +85,17 @@ a {
     height: 100vh;
     transition: all 1s;
     position: fixed;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     z-index: 2;
     display: flex;
-    justify-content: center; /* 水平方向の中央揃え */
-    align-items: center; /* 垂直方向の中央揃え */
+    justify-content: center;
+    /* 水平方向の中央揃え */
+    align-items: center;
+    /* 垂直方向の中央揃え */
     font-family: 'M PLUS Rounded 1c', sans-serif;
 }
+
 .loaded {
     opacity: 0;
     visibility: hidden;
@@ -333,10 +350,22 @@ input[type="color"] {
     border-top: none;
 }
 
+/* 設定用アコーディオンのスタイル */
+.settings-accordion-content {
+    background: #DBE2EF !important;
+}
+
+.accordion-item.active .settings-accordion-content {
+    border: 1px solid #BDC7D8;
+    border-top: none;
+}
+
 .version-list {
     padding: 20px;
-    max-height: 500px; /* 最大高さを設定 */
-    overflow-y: auto; /* 縦スクロールを有効化 */
+    max-height: 500px;
+    /* 最大高さを設定 */
+    overflow-y: auto;
+    /* 縦スクロールを有効化 */
 }
 
 .version-item {
@@ -392,11 +421,12 @@ input[type="color"] {
     background-color: #fff3cd;
     border: 1px solid #ffeaa7;
     border-radius: 5px;
-    padding: 12px 35px 12px 12px; /* 右側にバツボタン用スペース */
+    padding: 12px 35px 12px 12px;
+    /* 右側にバツボタン用スペース */
     margin: 10px 0;
     color: #856404;
     font-size: 14px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .low-fps-warning-close-btn {
@@ -423,7 +453,7 @@ input[type="color"] {
 }
 
 /* フッターリンク */
-.back-home-footer{
+.back-home-footer {
     color: #F9F7F7;
     text-decoration: none;
     padding: 8px 20px;
@@ -440,33 +470,40 @@ input[type="color"] {
     color: #3F72AF;
 }
 
-.contact{
+.contact {
     color: #F9F7F7;
     text-decoration: underline;
-    transition: transform 0.4s ease; /* ゆっくりアニメーション */
+    transition: transform 0.4s ease;
+    /* ゆっくりアニメーション */
 }
 
-.contact:hover{
+.contact:hover {
     font-weight: bold;
-    transform: scale(1.05); /* 少し大きく（5%拡大） */
+    transform: scale(1.05);
+    /* 少し大きく（5%拡大） */
 }
 
-.log-div{
+.log-div {
     padding: 5px;
-    background: #F9F7F7;/*背景色*/
+    background: #F9F7F7;
+    /*背景色*/
     margin: 0 0 20px 0;
     border-radius: 4px;
     text-align: center;
 }
-.log-div a{
+
+.log-div a {
     color: #3F72AF;
     text-decoration: underline;
-    word-wrap: break-word;  /* 長い単語を強制的に折り返し */
-    word-break: break-all;  /* すべての文字で折り返し可能 */
+    word-wrap: break-word;
+    /* 長い単語を強制的に折り返し */
+    word-break: break-all;
+    /* すべての文字で折り返し可能 */
     max-width: 380px !important;
     margin: 5px auto;
 }
-.log{
+
+.log {
     opacity: 0;
     max-height: 0;
     transition: all 1.5s;
@@ -497,14 +534,14 @@ input[type="color"] {
     background: #2E5A8E;
 }
 
-.input-box{
+.input-box {
     display: flex;
     align-items: center;
     justify-content: center;
-    width:100%;
+    width: 100%;
 }
 
-.setting-btn{
+.setting-btn {
     display: inline-block;
     padding: 2px 3px;
     background-color: #3F72AF;
