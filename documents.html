@@ -27,6 +27,11 @@
             --accent-hover: #2E5A8E;
         }
 
+        /* box-sizingを全体に適用 */
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
@@ -35,7 +40,8 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
+            overflow-x: hidden;
+            /* 横揺れ防止 */
         }
 
         header {
@@ -56,20 +62,25 @@
             color: var(--text-color);
         }
 
-        .container {
+        .doc-wrapper {
             width: 100%;
             max-width: 800px;
-            padding: 40px 20px;
+            margin: 0 auto;
+            padding: 40px 15px;
+            /* 横余白を確保 */
             flex: 1;
             display: flex;
             flex-direction: column;
             gap: 30px;
+            box-sizing: border-box;
+            /* パディングを含める */
         }
 
         .page-title {
             text-align: center;
             margin-bottom: 20px;
             animation: fadeIn 0.6s ease;
+            padding: 0 10px;
         }
 
         h2 {
@@ -85,6 +96,7 @@
             display: flex;
             flex-direction: column;
             gap: 20px;
+            width: 100%;
         }
 
         .doc-card {
@@ -100,6 +112,9 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             border: 2px solid transparent;
             animation: slideIn 0.6s ease backwards;
+            width: 100%;
+            box-sizing: border-box;
+            /* コンテナいっぱいに広げる */
         }
 
         .doc-card:nth-child(2) {
@@ -234,14 +249,14 @@
         </a>
     </header>
 
-    <div class="container">
+    <div class="doc-wrapper">
         <div class="page-title">
             <h2>DOCUMENTS</h2>
             <p>サイトスワップマスターの技術資料とガイド</p>
         </div>
 
         <div class="doc-list">
-            <a href="transition-calculation-guide" class="doc-card">
+            <!-- <a href="transition-calculation-guide" class="doc-card">
                 <div class="doc-icon">
                     <i class="ri-calculator-line"></i>
                 </div>
@@ -250,7 +265,7 @@
                     <p>サイトスワップの状態（State）の定義から、あるパターンから別のパターンへ繋ぐための遷移パターンの数学的な導出方法を解説します。</p>
                 </div>
                 <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
-            </a>
+            </a> -->
 
             <a href="embed-document" class="doc-card">
                 <div class="doc-icon">
