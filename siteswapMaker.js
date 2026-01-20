@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.3.0";
+    static VERSION = "1.5.1";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -13,24 +13,62 @@ class SiteswapMaker {
      */
     constructor(propCount, startPattern = "", endPattern = "") {
         this.propCount = null;
-        this.startPattern = startPattern;
-        this.endPattern = endPattern;
+        this.startPattern = "";
+        this.endPattern = "";
 
         this.currentThrows = []; // 現在までに追加された投げの配列（数値）
         this.history = []; // 状態遷移の履歴
 
+        this.startState = null; // 初期状態
         this.currentState = null; // 現在の状態（配列）
         this.targetState = null; // 目標とする状態
 
         this.error = null; // エラーメッセージ
 
-        // propCountのバリデーションと変換
-        if (!this._validateAndSetPropCount(propCount)) {
+        // 入力のバリデーションと正規化
+        if (!this._validateInputs(propCount, startPattern, endPattern)) {
             return;
         }
 
         // 初期化処理
         this.initialize();
+    }
+
+    /**
+     * 入力のバリデーションと正規化
+     * @private
+     * @param {number|string} propCount - ボールの数
+     * @param {string} startPattern - 直前のサイトスワップ
+     * @param {string} endPattern - 直後のサイトスワップ
+     * @returns {boolean} 成功したか
+     */
+    _validateInputs(propCount, startPattern, endPattern) {
+        // 1. propCountのバリデーションと設定（補完に必要なので先に行う）
+        if (!this._validateAndSetPropCount(propCount)) {
+            return false;
+        }
+
+        const groundPattern = SiteswapProcessor.CONVERT[this.propCount] || String(this.propCount);
+
+        // 2. パターンの正規化と補完
+        this.startPattern = SiteswapProcessor.normalizePattern(startPattern || "").trim() || groundPattern;
+        this.endPattern = SiteswapProcessor.normalizePattern(endPattern || "").trim() || groundPattern;
+
+        // 3. 直前のサイトスワップのバリデーション（マルチプレックス不可）
+        const startValidation = SiteswapMaker.validatePattern(this.startPattern, this.propCount, false);
+        if (!startValidation.isValid || !startValidation.isJugglable) {
+            this.error = '直前のサイトスワップが無効です: ' + (startValidation.message || '');
+            return false;
+        }
+
+        // 4. 直後のサイトスワップのバリデーション（マルチプレックス不可）
+        const endValidation = SiteswapMaker.validatePattern(this.endPattern, this.propCount, false);
+        if (!endValidation.isValid || !endValidation.isJugglable) {
+            this.error = '直後のサイトスワップが無効です: ' + (endValidation.message || '');
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -45,14 +83,10 @@ class SiteswapMaker {
             return false;
         }
 
-        let input = String(propCount).trim();
-        if (input === '') {
-            this.error = 'ボールの数を入力してください';
-            return false;
-        }
+        // 全角を半角に正規化
+        let input = SiteswapProcessor.normalizePattern(String(propCount).trim());
 
-        // 全角数字を半角に変換、およびアルファベットを数値に変換
-        input = this._convertFullWidthToHalfWidth(input);
+        // アルファベットを数値に変換（サイトスワップ特有のa=10, b=11...）
         input = this._convertAlphabetToNumber(input);
 
         const balls = parseInt(input);
@@ -66,21 +100,6 @@ class SiteswapMaker {
         return true;
     }
 
-    /**
-     * 全角数字を半角に変換
-     * @private
-     * @param {string} input - 入力文字列
-     * @returns {string} 変換後の文字列
-     */
-    _convertFullWidthToHalfWidth(input) {
-        const fullWidthNumbers = '０１２３４５６７８９';
-        const halfWidthNumbers = '0123456789';
-        let result = input;
-        for (let i = 0; i < fullWidthNumbers.length; i++) {
-            result = result.split(fullWidthNumbers[i]).join(halfWidthNumbers[i]);
-        }
-        return result;
-    }
 
     /**
      * アルファベット(a-z, A-Z)を数値(10-35)形式の文字列に変換
@@ -129,53 +148,25 @@ class SiteswapMaker {
             return SiteswapMaker.getGroundState(balls);
         }
 
-        try {
-            const result = SiteswapLab.analyzePattern(patternStr);
-            if (result.isValid && result.isJugglable && result.data) {
-                return result.data.state;
-            }
-        } catch (e) {
-            console.error('State calculation error:', e);
+        const result = SiteswapLab.analyzePattern(patternStr);
+        if (result.isValid && result.isJugglable && result.data) {
+            return result.data.state;
         }
 
         return SiteswapMaker.getGroundState(balls);
     }
 
     /**
-     * 初期状態の設定とバリデーション
+     * 初期状態の設定
+     * バリデーションは_validateInputsで完了しているため、ここでは状態の計算のみ行う
      * @returns {boolean} 初期化に成功したか
      */
     initialize() {
         this.error = null;
 
-        // startPatternのバリデーション
-        if (this.startPattern && this.startPattern.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直前のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直前のサイトスワップ: ' + validation.message;
-                return false;
-            }
-        }
-
-        // endPatternのバリデーション
-        if (this.endPattern && this.endPattern.trim() !== '') {
-            const validation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
-            if (!validation.isValid || !validation.isJugglable) {
-                this.error = '直後のサイトスワップが無効です: ' + (validation.message || '');
-                return false;
-            }
-            if (validation.message) {
-                this.error = '直後のサイトスワップ: ' + validation.message;
-                return false;
-            }
-        }
-
-        // 初期状態の計算
-        this.currentState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
+        // 初期状態と目標状態の計算
+        this.startState = SiteswapMaker.calculatePatternState(this.startPattern, this.propCount);
+        this.currentState = [...this.startState]; // 現在の状態を初期状態で初期化
         this.targetState = SiteswapMaker.calculatePatternState(this.endPattern, this.propCount);
 
         return true;
@@ -299,7 +290,7 @@ class SiteswapMaker {
      */
     getLoopConnection() {
         // 直後の状態から直前の状態への接続を計算
-        const result = SiteswapLab.calculateConnectionFromStates(this.targetState, SiteswapMaker.calculatePatternState(this.startPattern, this.propCount), false);
+        const result = SiteswapLab.calculateConnectionFromStates(this.targetState, this.startState, false);
         return result.isValid && result.data ? result.data.connection : "";
     }
 
@@ -336,9 +327,10 @@ class SiteswapMaker {
      * パターンの検証
      * @param {string} pattern - 検証するパターン
      * @param {number} expectedBallCount - 期待されるボール数
+     * @param {boolean} allowMultiplex - マルチプレックスを許可するか
      * @returns {Object} {isValid, isJugglable, message, ballCount}
      */
-    static validatePattern(pattern, expectedBallCount = null) {
+    static validatePattern(pattern, expectedBallCount = null, allowMultiplex = true) {
         if (!pattern || pattern.trim() === '') {
             return { isValid: true, isJugglable: true, message: null, ballCount: null };
         }
@@ -354,6 +346,17 @@ class SiteswapMaker {
         }
 
         const analysis = SiteswapLab.analyzePattern(pattern);
+
+        // マルチプレックス制限のチェック
+        if (!allowMultiplex && analysis.data && analysis.data.hasMultiplex) {
+            return {
+                isValid: false,
+                isJugglable: false,
+                message: "マルチプレックスを含むパターンは指定できません",
+                ballCount: null
+            };
+        }
+
         const ballCount = analysis.data ? analysis.data.propCount : null;
 
         if (expectedBallCount !== null && ballCount !== expectedBallCount) {
@@ -382,6 +385,7 @@ class SiteswapMaker {
             currentPattern: this.getCurrentPatternString(),
             neededConnection: this.getNeededConnection(),
             possibleThrows: this.getPossibleThrows(),
+            startState: this.startState,
             currentState: this.currentState,
             targetState: this.targetState,
             canBack: this.canBack(),

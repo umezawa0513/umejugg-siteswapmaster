@@ -750,11 +750,11 @@
         function openPatternModal(pattern) {
             modalPatternTitle.textContent = pattern;
 
-            // シミュレーションのiframeを設定
-            const encodedPattern = encodeURIComponent(pattern);
-            simulationFrame.src = `embed?encoded-pattern=${encodedPattern}`;
+            // シミュレーターを更新（メッセージ送信による更新を優先）
+            updateSimulation(simulationFrame, pattern);
 
             // シミュレーションページへのリンクを設定
+            const encodedPattern = encodeURIComponent(pattern);
             simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
 
             // 接続情報をローディング状態に
@@ -819,7 +819,31 @@
         function closePatternModal() {
             patternModal.classList.remove('visible');
             document.body.style.overflow = '';
-            simulationFrame.src = '';
+            // iframeの読み込みを維持して次回高速化するため、srcはクリアしない
+        }
+
+        /**
+         * シミュレーターの更新
+         */
+        function updateSimulation(iframe, pattern) {
+            if (!pattern) {
+                iframe.src = '';
+                return;
+            }
+
+            // すでにシミュレーターが読み込まれている場合はメッセージ送信で更新（高速）
+            if (iframe.contentWindow && iframe.src && iframe.src !== 'about:blank' && iframe.src !== window.location.href) {
+                iframe.contentWindow.postMessage({
+                    type: "START_ANIMATION",
+                    value: pattern
+                }, window.location.origin);
+            } else {
+                // 初回読み込みや未ロード時はsrcをセット
+                const url = new URL(`embed?encoded-pattern=${encodeURIComponent(pattern)}`, window.location.href).href;
+                if (iframe.src !== url) {
+                    iframe.src = url;
+                }
+            }
         }
 
         // モーダルを閉じるイベント
