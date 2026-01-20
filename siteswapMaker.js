@@ -4,7 +4,7 @@
  * siteswapProcessor.js と siteswapLab.js に依存します
  */
 class SiteswapMaker {
-    static VERSION = "1.5.0";
+    static VERSION = "1.5.1";
 
     /**
      * @param {number|string} propCount - ボールの数（数値または文字列）
@@ -54,15 +54,15 @@ class SiteswapMaker {
         this.startPattern = SiteswapProcessor.normalizePattern(startPattern || "").trim() || groundPattern;
         this.endPattern = SiteswapProcessor.normalizePattern(endPattern || "").trim() || groundPattern;
 
-        // 3. 直前のサイトスワップのバリデーション
-        const startValidation = SiteswapMaker.validatePattern(this.startPattern, this.propCount);
+        // 3. 直前のサイトスワップのバリデーション（マルチプレックス不可）
+        const startValidation = SiteswapMaker.validatePattern(this.startPattern, this.propCount, false);
         if (!startValidation.isValid || !startValidation.isJugglable) {
             this.error = '直前のサイトスワップが無効です: ' + (startValidation.message || '');
             return false;
         }
 
-        // 4. 直後のサイトスワップのバリデーション
-        const endValidation = SiteswapMaker.validatePattern(this.endPattern, this.propCount);
+        // 4. 直後のサイトスワップのバリデーション（マルチプレックス不可）
+        const endValidation = SiteswapMaker.validatePattern(this.endPattern, this.propCount, false);
         if (!endValidation.isValid || !endValidation.isJugglable) {
             this.error = '直後のサイトスワップが無効です: ' + (endValidation.message || '');
             return false;
@@ -327,9 +327,10 @@ class SiteswapMaker {
      * パターンの検証
      * @param {string} pattern - 検証するパターン
      * @param {number} expectedBallCount - 期待されるボール数
+     * @param {boolean} allowMultiplex - マルチプレックスを許可するか
      * @returns {Object} {isValid, isJugglable, message, ballCount}
      */
-    static validatePattern(pattern, expectedBallCount = null) {
+    static validatePattern(pattern, expectedBallCount = null, allowMultiplex = true) {
         if (!pattern || pattern.trim() === '') {
             return { isValid: true, isJugglable: true, message: null, ballCount: null };
         }
@@ -345,6 +346,17 @@ class SiteswapMaker {
         }
 
         const analysis = SiteswapLab.analyzePattern(pattern);
+
+        // マルチプレックス制限のチェック
+        if (!allowMultiplex && analysis.data && analysis.data.hasMultiplex) {
+            return {
+                isValid: false,
+                isJugglable: false,
+                message: "マルチプレックスを含むパターンは指定できません",
+                ballCount: null
+            };
+        }
+
         const ballCount = analysis.data ? analysis.data.propCount : null;
 
         if (expectedBallCount !== null && ballCount !== expectedBallCount) {
