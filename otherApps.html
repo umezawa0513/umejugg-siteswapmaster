@@ -4,8 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="サイトスワップで遊ぼう！">
-    <title>サイトスワップマスター</title>
+    <meta name="description" content="その他のアプリ - サイトスワップマスター">
+    <title>その他のアプリ - サイトスワップマスター</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="simulation.css?ver=9.3.0">
 
     <style>
-        /* simulation.css の色変数を定義（CSSファイルがない場合用） */
         :root {
             --bg-color: #F9F7F7;
             --text-color: #112D4E;
@@ -28,7 +27,6 @@
             --accent-hover: #2E5A8E;
         }
 
-        /* 全体の設定（box-sizingでパディングを含めた幅計算にする） */
         * {
             box-sizing: border-box;
         }
@@ -44,7 +42,6 @@
             align-items: center;
         }
 
-        /* ヘッダー調整 */
         header {
             background-color: var(--secondary-bg);
             width: 100%;
@@ -63,13 +60,10 @@
             color: var(--text-color);
         }
 
-        /* メインコンテナ */
-        .home-container {
+        .container {
             width: 100%;
             max-width: 900px;
-            /* 少し広げて4列表示の余裕を持たせる */
             padding: 20px;
-            /* 画面端の隙間を確保 */
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -77,23 +71,10 @@
             gap: 20px;
         }
 
-        /* ロゴエリア */
-        .logo-section {
+        .page-title {
             text-align: center;
-            margin-bottom: 10px;
+            margin: 30px 0 10px;
             animation: fadeIn 0.8s ease;
-        }
-
-        .logo-img {
-            width: 120px;
-            height: auto;
-            border-radius: 20px;
-            box-shadow: 0 8px 20px rgba(17, 45, 78, 0.15);
-            transition: transform 0.3s ease;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.05) rotate(-2deg);
         }
 
         h2 {
@@ -104,24 +85,26 @@
             display: inline-block;
         }
 
-        /* メニューグリッド */
-        .menu-grid {
+        .description {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            color: #112D4E;
+            text-align: center;
+        }
+
+        .apps-grid {
             display: grid;
             gap: 15px;
             width: 100%;
-            /* デフォルト（PC）は4列。
-               minmaxを少し大きめ(160px)にとって文字折り返しを防ぐ 
-            */
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(2, 1fr);
+            margin-top: 20px;
         }
 
-        /* カード型ボタン */
-        .menu-card {
+        .app-card {
             background-color: var(--secondary-bg);
             color: var(--text-color);
             border-radius: 12px;
-            padding: 20px 5px;
-            /* 横パディングを少し減らして文字スペース確保 */
+            padding: 30px 15px;
             text-align: center;
             text-decoration: none;
             display: flex;
@@ -132,36 +115,49 @@
             transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 2px solid transparent;
-            min-height: 110px;
-            /* 高さを揃える */
+            min-height: 120px;
         }
 
-        .menu-card i {
+        .app-card i {
             font-size: 2.5rem;
             color: var(--accent-color);
             transition: color 0.3s ease;
         }
 
-        .menu-card span {
+        .app-card span {
             font-weight: 800;
             font-size: 1rem;
-            white-space: nowrap;
-            /* 強制的に1行にする（画面幅が許す限り） */
         }
 
-        /* ホバー時の挙動 */
-        .menu-card:hover {
+        .app-card:hover {
             transform: translateY(-5px);
             background-color: var(--accent-color);
             color: #F9F7F7;
             box-shadow: 0 10px 20px rgba(63, 114, 175, 0.3);
         }
 
-        .menu-card:hover i {
+        .app-card:hover i {
             color: #F9F7F7;
         }
 
-        /* フッター */
+        .back-button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background-color: var(--accent-color);
+            color: #F9F7F7;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .back-button:hover {
+            background-color: var(--accent-hover);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
         footer {
             background-color: var(--accent-color);
             width: 100%;
@@ -176,13 +172,6 @@
             font-size: 0.9rem;
         }
 
-        .ai-credit {
-            font-size: 0.75rem;
-            opacity: 0.8;
-            margin-top: 4px;
-        }
-
-        /* アニメーション */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -195,25 +184,13 @@
             }
         }
 
-        /* レスポンシブ対応：列数を8の約数（4, 2, 1）に制限 */
-
-        /* 画面幅が狭くなったら2列にする（シミュレーションの文字幅確保のため早めに切り替え） */
         @media (max-width: 768px) {
-            .menu-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .home-container {
-                padding: 20px 25px;
-                /* スマホでの横の隙間を確保 */
-            }
-        }
-
-        /* かなり狭い画面（iPhone SE等）でも2列を維持するか、あるいは1列にする */
-        @media (max-width: 350px) {
-            .menu-grid {
+            .apps-grid {
                 grid-template-columns: 1fr;
-                /* 1列 */
+            }
+
+            .container {
+                padding: 20px 25px;
             }
         }
     </style>
@@ -227,48 +204,38 @@
         </a>
     </header>
 
-    <div class="home-container">
+    <div class="container">
 
-        <div class="logo-section">
-            <div>
-                <h2>MAIN MENU</h2>
-            </div>
-            <p style="font-size: 0.9rem; margin-top: 5px; color: #112D4E;">
-                高精度ジャグリング・シミュレーター
+        <div class="page-title">
+            <h2>その他のアプリ</h2>
+            <p class="description">
+                その他の便利な機能をご利用いただけます
             </p>
         </div>
 
-        <nav class="menu-grid">
-            <a href="simulation" class="menu-card">
-                <i class="ri-gamepad-line"></i>
-                <span>シミュレーション</span>
+        <nav class="apps-grid">
+            <a href="documents" class="app-card">
+                <i class="ri-book-read-line"></i>
+                <span>ドキュメント</span>
             </a>
 
-            <a href="generator" class="menu-card">
-                <i class="ri-magic-line"></i>
-                <span>パターン生成</span>
+            <a href="conversion" class="app-card">
+                <i class="ri-arrow-left-right-line"></i>
+                <span>変換</span>
             </a>
 
-            <a href="maker" class="menu-card">
-                <i class="ri-edit-circle-line"></i>
-                <span>作る</span>
+            <a href="multi" class="app-card">
+                <i class="ri-bubble-chart-line"></i>
+                <span>マルチ化</span>
             </a>
 
-            <a href="transition" class="menu-card">
-                <i class="ri-links-line"></i>
-                <span>繋げる</span>
-            </a>
-
-            <a href="details" class="menu-card">
-                <i class="ri-file-list-3-line"></i>
-                <span>確認</span>
-            </a>
-
-            <a href="otherApps" class="menu-card">
-                <i class="ri-apps-line"></i>
-                <span>その他のアプリ</span>
+            <a href="share" class="app-card">
+                <i class="ri-share-circle-line"></i>
+                <span>共有</span>
             </a>
         </nav>
+
+        <a href="home" class="back-button">メインメニューに戻る</a>
 
     </div>
 
