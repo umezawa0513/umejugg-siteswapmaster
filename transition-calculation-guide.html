@@ -253,6 +253,10 @@
             margin: 0 0 0.5rem 0;
             color: inherit;
         }
+        /* 該当のinfo-text要素の下に余白を追加 */
+        #simple-procedure .info-text {
+            margin-bottom: 2rem;
+        }
     </style>
     <link rel="stylesheet" href="simulation.css?ver=9.3.0">
 </head>
@@ -324,8 +328,12 @@
                 <h2>3. 計算手順【簡易版】</h2>
                 <p>計算手順【簡易版】では、マルチを含まないアシンクロサイトスワップのみを対象とします。マルチサイトスワップやシンクロサイトスワップは、<a href="#full-procedure" style="color: #3F72AF;">計算手順【完全版】</a>で計算できます。</p>
                 <div class="info-text">
-                    <strong>計算例：</strong><br>
-                    <p>初期パターン「744」から目標パターン「915」へ移行する際を例として、接続パターンの計算手順を説明します。</p>
+                    <strong>計算例
+                    </strong><br>
+                    初期パターン「744」<br>
+                    と<br>
+                    目標パターン「915」<br>
+                    の接続計算を説明します。
                 </div>
                 <div class="step-item">
                     <span class="step-number">1</span>
@@ -342,7 +350,7 @@
                 <div class="step-item">
                     <span class="step-number">2</span>
                     <div class="step-content">
-                        <h4>①で求めた数列から昇順の連続整数「1,2,...,n」を引く</h4>
+                        <h4>求めた数列から昇順の連続整数「1,2,...,n」を引く</h4>
                         <div class="example-code">
                             例えば、7つの要素がある場合は「1,2,3,4,5,6,7」を各要素から引きます。<br>
                             「4,4,7,4,4,7,4」-「1,2,3,4,5,6,7」= 「3,2,4,0,-1,1,-3」<br>
@@ -355,7 +363,7 @@
                 <div class="step-item">
                     <span class="step-number">3</span>
                     <div class="step-content">
-                        <h4>②で求めた数列から負の数を除去し、昇順に並べる</h4>
+                        <h4>求めた数列から負の数を除去し、昇順に並べる</h4>
                         <div class="example-code">
                             「3,2,4,0,-1,1,-3」→「0,1,2,3,4」<br>
                             同様に、<br>
@@ -394,9 +402,9 @@
                         <h4>④で求めた集合が⑤で求めた集合の部分集合になるまで④と⑤の操作を繰り返す</h4>
                         <div class="example-code">
                             {-1,0,1,2,3}は{-1,0,1,3,4,6}の部分集合ではないため、再度④と⑤を適用します。<br>
-                            適用結果、{-2,-1,0,1,2}、{-2,-1,0,1,3,4,6}<br>
+                            ④と⑤の適用結果、{-2,-1,0,1,2}と{-2,-1,0,1,3,4,6}となります。<br>
                             {-2,-1,0,1,2}は{-2,-1,0,1,3,4,6}の部分集合ではないため、再度④と⑤を適用します。<br>
-                            適用結果、{-3,-2,-1,0,1}、{-3,-2,-1,0,1,3,4,6}<br>
+                            ④と⑤の適用結果、{-3,-2,-1,0,1}と{-3,-2,-1,0,1,3,4,6}となります。<br>
                             {-3,-2,-1,0,1}は{-3,-2,-1,0,1,3,4,6}の部分集合であるため、終了します。<br>
                         </div>
                         <p>【計算の流れ】③→④→⑤→部分集合判定(失敗)→④→⑤→部分集合判定(失敗)→④→⑤→部分集合判定(成功)→⑦</p>
@@ -406,7 +414,7 @@
                 <div class="step-item">
                     <span class="step-number">7</span>
                     <div class="step-content">
-                        <h4>⑥で求めた集合から差集合を求める</h4>
+                        <h4>求めた集合から差集合を求める</h4>
                         <div class="example-code">
                             {-3,-2,-1,0,1,3,4,6}に含まれるが{-3,-2,-1,0,1}に含まれない要素を書き出します。<br>
                             つまり、{3,4,6}となります。
@@ -417,10 +425,20 @@
                 <div class="step-item">
                     <span class="step-number">8</span>
                     <div class="step-content">
-                        <h4>【完成】⑦で求めた集合を昇順に並べ、降順の連続整数[n, n-1, ..., 1]を足す</h4>
+                        <h4>求めた集合を昇順に並べ、降順の連続整数[n, n-1, ..., 1]を足す</h4>
                         <div class="example-code">
                             {3,4,6}を昇順に並べると「3,4,6」となります。これに要素数から1までの降順列「3,2,1」を足します。<br>
                             結果は「6,6,7」となります。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-item">
+                    <span class="step-number">9</span>
+                    <div class="step-content">
+                        <h4>【完成】10以上はアルファベットに変換後、結合して完成</h4>
+                        <div class="example-code">
+                            「6,6,7」を結合して、「667」となります。<br>
                         </div>
                         <p>これで、接続パターン「667」が求まりました。<br>
                             初期パターン「744」→接続パターン「667」→目標パターン「915」</p>
@@ -428,7 +446,7 @@
                 </div>
 
                 <div class="step-item">
-                    <span class="step-number">9</span>
+                    <span class="step-number">10</span>
                     <div class="step-content">
                         <h4>【他の接続パターンの求め方】⑦で求めた集合を自由に並び替え、降順の連続整数[n, n-1, ..., 1]を足す(このとき負の数があればその並び替えでは不可能)</h4>
                         <div class="example-code">
