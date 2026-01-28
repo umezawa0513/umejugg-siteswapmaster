@@ -106,9 +106,9 @@
         }
 
         .other-app-card {
-            background-color: #fff;
+            background-color: var(--secondary-bg);
             color: var(--text-color);
-            border-radius: 16px;
+            border-radius: 12px;
             padding: 30px 20px;
             text-align: center;
             text-decoration: none;
@@ -116,67 +116,33 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-            transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             border: 2px solid transparent;
             min-height: 140px;
-            width: 100%;
-            box-sizing: border-box;
-            position: relative;
-            animation: slideIn 0.6s ease backwards;
-        }
-
-        /* 疑似要素でshadowを実装 */
-        .other-app-card::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 16px;
-            box-shadow: 0 12px 25px rgba(63, 114, 175, 0.15);
-            opacity: 0;
-            transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .other-app-card:nth-child(2) {
-            animation-delay: 0.1s;
-        }
-
-        .other-app-card:nth-child(3) {
-            animation-delay: 0.2s;
-        }
-
-        .other-app-card:nth-child(4) {
-            animation-delay: 0.3s;
-        }
-
-        .other-app-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-color);
-        }
-
-        .other-app-card:hover::after {
-            opacity: 1;
         }
 
         .other-app-card i {
             font-size: 2.5rem;
             color: var(--accent-color);
-            transition: transform 0.3s ease;
-        }
-
-        .other-app-card:hover i {
-            transform: scale(1.1);
+            transition: color 0.3s ease;
         }
 
         .other-app-card span {
             font-weight: 800;
-            font-size: 1.1rem;
+            font-size: 1rem;
+        }
+
+        .other-app-card:hover {
+            transform: translateY(-5px);
+            background-color: var(--accent-color);
+            color: #F9F7F7;
+            box-shadow: 0 10px 20px rgba(63, 114, 175, 0.3);
+        }
+
+        .other-app-card:hover i {
+            color: #F9F7F7;
         }
 
         .back-home {
@@ -220,18 +186,6 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateX(0);
             }
         }
 
