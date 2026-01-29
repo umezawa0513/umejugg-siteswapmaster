@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="その他のアプリ - サイトスワップマスター">
+    <title>その他のアプリ - サイトスワップマスター</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;800&display=swap"
+        rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+
+    <link rel="icon" type="image/png" href="title.png">
+
+    <link rel="stylesheet" href="simulation.css?ver=9.3.0">
+
+    <style>
+        :root {
+            --bg-color: #F9F7F7;
+            --text-color: #112D4E;
+            --secondary-bg: #DBE2EF;
+            --accent-color: #3F72AF;
+            --accent-hover: #2E5A8E;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'M PLUS Rounded 1c', sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+            /* 横揺れ防止 */
+        }
+
+        header {
+            background-color: var(--secondary-bg);
+            width: 100%;
+            padding: 25px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            text-align: center;
+        }
+
+        header a {
+            text-decoration: none;
+            color: var(--text-color);
+        }
+
+        .other-apps-wrapper {
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 15px;
+            /* 横余白を確保 */
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            box-sizing: border-box;
+            /* パディングを含める */
+        }
+
+        .other-apps-title {
+            text-align: center;
+            margin-bottom: 20px;
+            animation: fadeIn 0.6s ease;
+            padding: 0 10px;
+        }
+
+        .other-apps-title h2 {
+            color: var(--text-color);
+            border-bottom: 3px solid var(--accent-color);
+            padding-bottom: 8px;
+            display: inline-block;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .other-apps-title p {
+            margin: 0;
+            font-size: 0.95rem;
+            color: #555;
+            line-height: 1.5;
+        }
+
+        .other-apps-grid {
+            display: grid;
+            gap: 20px;
+            width: 100%;
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .other-app-card {
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 2px solid transparent;
+            min-height: 140px;
+        }
+
+        .other-app-card i {
+            font-size: 2.5rem;
+            color: var(--accent-color);
+            transition: color 0.3s ease;
+        }
+
+        .other-app-card span {
+            font-weight: 800;
+            font-size: 1rem;
+        }
+
+        .other-app-card:hover {
+            transform: translateY(-5px);
+            background-color: var(--accent-color);
+            color: #F9F7F7;
+            box-shadow: 0 10px 20px rgba(63, 114, 175, 0.3);
+        }
+
+        .other-app-card:hover i {
+            color: #F9F7F7;
+        }
+
+        .back-home {
+            text-align: center;
+            margin-top: 40px;
+        }
+
+        .btn-back-home {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background-color: var(--secondary-bg);
+            color: var(--text-color);
+            text-decoration: none;
+            border-radius: 30px;
+            font-weight: 800;
+            transition: all 0.3s ease;
+        }
+
+        .btn-back-home:hover {
+            background-color: #ced6e4;
+            transform: translateY(-2px);
+        }
+
+        footer {
+            background-color: var(--accent-color);
+            width: 100%;
+            text-align: center;
+            color: #F9F7F7;
+            padding: 20px 0;
+            margin-top: auto;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 600px) {
+            .other-apps-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .other-app-card {
+                padding: 25px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <header>
+        <a href="home">
+            <h1><span>サイトスワップ</span><span>マスター</span></h1>
+        </a>
+    </header>
+
+    <div class="other-apps-wrapper">
+
+        <div class="other-apps-title">
+            <h2>その他のアプリ</h2>
+            <p>その他の便利な機能をご利用いただけます</p>
+        </div>
+
+        <nav class="other-apps-grid">
+            <a href="documents" class="other-app-card">
+                <i class="ri-book-read-line"></i>
+                <span>ドキュメント</span>
+            </a>
+
+            <a href="conversion" class="other-app-card">
+                <i class="ri-arrow-left-right-line"></i>
+                <span>変換</span>
+            </a>
+
+            <a href="multi" class="other-app-card">
+                <i class="ri-bubble-chart-line"></i>
+                <span>マルチ化</span>
+            </a>
+
+            <a href="share" class="other-app-card">
+                <i class="ri-share-circle-line"></i>
+                <span>共有</span>
+            </a>
+        </nav>
+
+        <div class="back-home">
+            <a href="home" class="btn-back-home">
+                <i class="ri-home-4-line"></i>
+                ホームへ戻る
+            </a>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2021-2026 サイトスワップマスター</p>
+    </footer>
+
+</body>
+
+</html>
