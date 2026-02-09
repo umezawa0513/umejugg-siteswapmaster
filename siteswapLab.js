@@ -943,6 +943,11 @@ class SiteswapLab {
         const resultMax = this.#RESULT_MAX;
         console.log(`接続投げ全探索開始: グループ数=${groups.length}, 差分=${stateDifference}`);
 
+        // stateDifferenceが空の場合は接続が不要なので空の配列を返す
+        if (stateDifference.length === 0) {
+            return { solutions: [], error: "" };
+        }
+
         // 各beatIndexで使える候補を事前計算（stateDifferenceと同じ位置に投げ高さを保存、使えない場合はnull）
         const candidatesForBeat = [];
         for (let beatIndex = 0; beatIndex < totalBeats; beatIndex++) {
@@ -1178,6 +1183,11 @@ class SiteswapLab {
         let errorMessage = "";
         const resultMax = this.#RESULT_MAX;
         console.log(`接続投げ全探索開始: グループ数=${groups}, 差分=${stateDifference}`);
+
+        // stateDifferenceが空の場合は接続が不要なので空の配列を返す
+        if (stateDifference.length === 0) {
+            return { solutions: [], error: "" };
+        }
 
         // 各beatIndexで使える候補を事前計算（stateDifferenceと同じ位置に投げ高さを保存、使えない場合はnull）
         const candidatesForBeat = [];

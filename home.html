@@ -16,7 +16,7 @@
 
     <link rel="icon" type="image/png" href="title.png">
 
-    <link rel="stylesheet" href="simulation.css?ver=9.3.0">
+    <link rel="stylesheet" href="simulation.css?ver=9.3.2">
 
     <style>
         /* simulation.css の色変数を定義（CSSファイルがない場合用） */
@@ -176,6 +176,28 @@
             font-size: 0.9rem;
         }
 
+        .footer-links {
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #F9F7F7;
+            text-decoration: none;
+            font-size: 0.85rem;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            opacity: 1;
+            text-decoration: underline;
+        }
+
+
         .ai-credit {
             font-size: 0.75rem;
             opacity: 0.8;
@@ -273,8 +295,14 @@
     </div>
 
     <footer>
+        <div class="footer-links">
+            <a href="legal/terms-of-service-web">利用規約</a>
+            <a href="legal/privacy-policy-web">プライバシーポリシー</a>
+        </div>
+
         <p>&copy; 2021-2026 サイトスワップマスター</p>
     </footer>
+
 
 </body>
 
