@@ -25,7 +25,7 @@
 | `simulation.css` | `9.3.2` | 共通スタイルシート |
 | `syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
 | `simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
-| `siteswapLab.js` | `1.5.5` | 数値計算・ロジックライブラリ |
+| `siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
 | `siteswapProcessor.js` | `1.1.4` | サイトスワップ解析・データ処理 |
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |

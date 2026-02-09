@@ -4,7 +4,7 @@
  * siteswapProcessor.js に依存します
  */
 class SiteswapLab {
-    static VERSION = "1.5.5";
+    static VERSION = "1.5.6";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000; // 最大結果数
 
