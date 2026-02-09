@@ -22,9 +22,9 @@
 
 | ファイル名 | バージョン | 説明 |
 | :--- | :--- | :--- |
-| `simulation.css` | `9.3.0` | 共通スタイルシート |
+| `simulation.css` | `9.3.2` | 共通スタイルシート |
 | `syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
-| `simulation.min.js` | `9.3.0` | シミュレーター・コアエンジン |
+| `simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
 | `siteswapLab.js` | `1.5.5` | 数値計算・ロジックライブラリ |
 | `siteswapProcessor.js` | `1.1.4` | サイトスワップ解析・データ処理 |
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
