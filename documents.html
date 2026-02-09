@@ -138,6 +138,10 @@
             animation-delay: 0.1s;
         }
 
+        .doc-card:nth-child(3) {
+            animation-delay: 0.2s;
+        }
+
         .doc-card:hover {
             transform: translateY(-5px);
             border-color: var(--accent-color);
@@ -260,6 +264,39 @@
             margin-top: auto;
         }
 
+        /* GitHubカード固有のスタイル */
+        .github-card:hover {
+            border-color: #24292e;
+        }
+
+        .github-card:hover .doc-icon {
+            background-color: #24292e;
+        }
+
+        .external-indicator {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            opacity: 0.3;
+            transition: opacity 0.3s ease;
+        }
+
+        .doc-card:hover .external-indicator {
+            opacity: 0.8;
+            color: var(--accent-color);
+        }
+
+        .github-card:hover .external-indicator {
+            color: #24292e;
+        }
+
+        .external-label {
+            font-size: 0.65rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -314,18 +351,19 @@
 
         <div class="doc-list">
             <!-- 公開時にコメントアウトを外して使用してください -->
-            
+
             <a href="transition-calculation-guide" class="doc-card">
                 <div class="doc-icon">
                     <i class="ri-calculator-line"></i>
                 </div>
                 <div class="doc-info">
                     <h3>接続パターン計算ガイド</h3>
-                    <p>あるサイトスワップから別のサイトスワップへ移行するための接続パターンを、状態（State）の概念を用いて計算する手順を、具体例とともに詳しく解説します。アシンクロ・シンクロ・マルチサイトスワップに対応。</p>
+                    <p>あるサイトスワップから別のサイトスワップへ移行するための接続パターンを、状態（State）の概念を用いて計算する手順を、具体例とともに詳しく解説します。アシンクロ・シンクロ・マルチサイトスワップに対応。
+                    </p>
                 </div>
                 <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
-            </a> 
-           
+            </a>
+
 
             <!-- <div class="doc-card-dummy">
                 <span class="badge-soon">COMING SOON</span>
@@ -347,6 +385,21 @@
                     <p>URLパラメータを使用したシミュレーターのカスタマイズ方法や、外部サイトへの埋め込み手順について解説します。</p>
                 </div>
                 <i class="ri-arrow-right-s-line" style="font-size: 1.5rem; opacity: 0.3;"></i>
+            </a>
+
+            <a href="https://github.com/umezawa0513/umejugg-siteswapmaster" class="doc-card github-card" target="_blank"
+                rel="noopener noreferrer">
+                <div class="doc-icon">
+                    <i class="ri-github-line"></i>
+                </div>
+                <div class="doc-info">
+                    <h3>GitHub リポジトリ</h3>
+                    <p>サイトスワップマスターのソースコードを GitHub で公開中。開発の詳細確認やコントリビューションはこちらから。</p>
+                </div>
+                <div class="external-indicator">
+                    <i class="ri-external-link-line" style="font-size: 1.5rem;"></i>
+                    <span class="external-label">外部サイト</span>
+                </div>
             </a>
         </div>
 
