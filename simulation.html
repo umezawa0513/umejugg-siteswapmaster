@@ -13,7 +13,7 @@
         /* CSSコード */
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
     </style>
-    <link rel="stylesheet" href="simulation.css?ver=9.3.2">
+    <link rel="stylesheet" href="simulation.css?ver=9.3.3">
     <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
 </head>
 
@@ -72,6 +72,9 @@
                         <input type="range" id="yaw" min="-100" max="100" value="0" step="1">
                     </div> -->
                     </div>
+
+                    <!-- canvas 録画 UI (canvasRecorder.js が動的に中身を挿入) -->
+                    <div id="canvas-recorder-ui" class="canvas-recorder-ui"></div>
                 </div>
             </section>
             <section id="clubRotSetting" style="display:none"></section>
@@ -435,6 +438,21 @@
     <script src="simulation.min.js?ver=9.3.2"></script>
     <!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
     <script src="siteswapLab.js?ver=1.5.6"></script>
+
+    <!-- canvas → MP4 録画機能 (mp4-muxer + WebCodecs) -->
+    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
+    <script src="canvasRecorder.js?ver=1.0.0"></script>
+    <script>
+        // canvas 録画ボタンをマウント
+        if (window.CanvasRecorder) {
+            const recorder = new CanvasRecorder({
+                canvas: '#canvas',
+                durations: [5, 10, 30],
+                fileName: 'siteswap-simulation',
+            });
+            recorder.mount('#canvas-recorder-ui');
+        }
+    </script>
 </body>
 
 </html>

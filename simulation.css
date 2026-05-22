@@ -559,3 +559,47 @@ input[type="color"] {
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
 }
+
+/* canvas → MP4 録画 UI */
+.canvas-recorder-ui {
+    display: flex;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.canvas-recorder {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.canvas-recorder__duration {
+    padding: 4px 6px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 13px;
+    background-color: #F9F7F7;
+}
+
+.canvas-recorder__button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #3F72AF;
+    color: #F9F7F7;
+    border: none;
+    border-radius: 5px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.canvas-recorder__button:hover:not(:disabled) {
+    background-color: #2E5A8E;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
+}
+
+.canvas-recorder__button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+}
