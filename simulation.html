@@ -13,7 +13,7 @@
         /* CSSコード */
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
     </style>
-    <link rel="stylesheet" href="simulation.css?ver=9.3.2">
+    <link rel="stylesheet" href="simulation.css?ver=9.3.6">
     <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
 </head>
 
@@ -72,6 +72,9 @@
                         <input type="range" id="yaw" min="-100" max="100" value="0" step="1">
                     </div> -->
                     </div>
+
+                    <!-- canvas 録画 UI (canvasRecorder.js が動的に中身を挿入) -->
+                    <div id="canvas-recorder-ui" class="canvas-recorder-ui"></div>
                 </div>
             </section>
             <section id="clubRotSetting" style="display:none"></section>
@@ -435,6 +438,38 @@
     <script src="simulation.min.js?ver=9.3.2"></script>
     <!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
     <script src="siteswapLab.js?ver=1.5.6"></script>
+
+    <!-- canvas → MP4 録画機能 (mp4-muxer + WebCodecs) -->
+    <!-- mp4-muxer は自己ホスト。読み込めない場合 window.Mp4Muxer は未定義となり、録画ボタンは表示されない -->
+    <script src="vendor/mp4-muxer-5.2.1.min.js"></script>
+    <script src="canvasRecorder.js?ver=1.6.0"></script>
+    <script>
+        // canvas 録画ボタンをマウント
+        if (window.CanvasRecorder) {
+            const recorder = new CanvasRecorder({
+                canvas: '#canvas',
+                fixedDuration: 6, // ボタン押下で 6 秒固定録画
+                // SSmaster_<入力サイトスワップ>_日時.mp4 で保存する。
+                fileName: () => {
+                    const display = document.getElementById('siteswapDisplay');
+                    const input = document.getElementById('siteswapInput');
+                    const pattern = (display && display.textContent.trim())
+                        || (input && input.value.trim())
+                        || 'pattern';
+                    return `SSmaster_${pattern}`;
+                },
+                // canvas は透過なので MP4 では黒背景になる。シミュレーターの背景色を合成する。
+                // state は simulation.min.js が定義するグローバル。未定義時は canvas の CSS 背景色へフォールバック。
+                backgroundColor: () => {
+                    if (window.state && window.state.backgroundColor) {
+                        return window.state.backgroundColor;
+                    }
+                    return getComputedStyle(document.getElementById('canvas')).backgroundColor;
+                },
+            });
+            recorder.mount('#canvas-recorder-ui');
+        }
+    </script>
 </body>
 
 </html>
