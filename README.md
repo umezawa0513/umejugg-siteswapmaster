@@ -22,7 +22,7 @@
 
 | ファイル名 | バージョン | 説明 |
 | :--- | :--- | :--- |
-| `simulation.css` | `9.3.2` | 共通スタイルシート |
+| `simulation.css` | `9.3.5` | 共通スタイルシート |
 | `syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
 | `simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
 | `siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
@@ -30,6 +30,31 @@
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
 | `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
+| `canvasRecorder.js` | `1.3.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
+
+## 動画保存 (canvasRecorder.js)
+
+シミュレーター画面では、canvas のアニメーションを **MP4 動画として保存**できます。
+「動画を保存」ボタンを押すと録画する長さ（5秒・10秒・30秒）を選べます。
+
+- **仕組み**: WebCodecs (`VideoEncoder`) でフレームをエンコードし、[`mp4-muxer`](https://github.com/Vanilagy/mp4-muxer) で H.264 MP4 を生成します。
+- **背景色**: canvas は透過のため、録画時は背景色を合成して保存します（MP4 は透過非対応）。
+- **対応環境**: WebCodecs 対応ブラウザ（Chrome / Edge / Safari 16.4+ / Firefox 130+）。未対応時はボタンが無効化されます。
+- **汎用ライブラリ**: 特定アプリに依存しないため、他の canvas を持つページでも再利用できます。
+
+```html
+<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
+<script src="canvasRecorder.js"></script>
+<script>
+  const recorder = new CanvasRecorder({
+    canvas: '#canvas',          // 対象 canvas (セレクタ or 要素)
+    durations: [5, 10, 30],     // 選択できる録画秒数
+    fileName: 'my-recording',   // 保存ファイル名 (拡張子除く)
+    backgroundColor: 'auto',    // 'auto' | 色文字列 | 色を返す関数
+  });
+  recorder.mount('#recorder-ui'); // ボタン UI を任意要素に挿入
+</script>
+```
 
 ## 使い方
 

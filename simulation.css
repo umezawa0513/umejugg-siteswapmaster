@@ -564,7 +564,8 @@ input[type="color"] {
 .canvas-recorder-ui {
     display: flex;
     justify-content: center;
-    margin-top: 10px;
+    /* 視点などの range-controls との間に余白をあける */
+    margin-top: 24px;
 }
 
 .canvas-recorder {
@@ -575,15 +576,22 @@ input[type="color"] {
     gap: 8px;
 }
 
-.canvas-recorder__duration {
-    padding: 4px 6px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    font-size: 13px;
-    background-color: #F9F7F7;
+.canvas-recorder__chooser {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
-.canvas-recorder__button {
+.canvas-recorder__chooser-label {
+    font-size: 13px;
+    color: #333;
+}
+
+.canvas-recorder__button,
+.canvas-recorder__duration-btn,
+.canvas-recorder__cancel-btn {
     display: inline-block;
     padding: 6px 12px;
     background-color: #3F72AF;
@@ -595,10 +603,20 @@ input[type="color"] {
     transition: all 0.3s ease;
 }
 
-.canvas-recorder__button:hover:not(:disabled) {
+.canvas-recorder__cancel-btn {
+    background-color: #888;
+}
+
+.canvas-recorder__button:hover:not(:disabled),
+.canvas-recorder__duration-btn:hover:not(:disabled) {
     background-color: #2E5A8E;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
+}
+
+.canvas-recorder__cancel-btn:hover:not(:disabled) {
+    background-color: #6d6d6d;
+    transform: translateY(-2px);
 }
 
 .canvas-recorder__button:disabled {
