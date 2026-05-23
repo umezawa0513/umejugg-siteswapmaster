@@ -16,7 +16,7 @@
  *   await recorder.start(10);          // 10 秒録画 → 自動で MP4 ダウンロード
  */
 class CanvasRecorder {
-    static VERSION = "1.0.0";
+    static VERSION = "1.1.0";
 
     /**
      * @param {Object} options
@@ -62,6 +62,21 @@ class CanvasRecorder {
     }
 
     /**
+     * 非対応の場合に、何が足りないかを示す日本語メッセージを返す。
+     * @returns {string}
+     */
+    static unsupportedReason() {
+        if (typeof window === 'undefined') return '実行環境が不正です';
+        if (typeof window.VideoEncoder !== 'function' || typeof window.VideoFrame !== 'function') {
+            return 'このブラウザは動画エンコード(WebCodecs)に未対応です。最新のブラウザでお試しください';
+        }
+        if (typeof window.Mp4Muxer === 'undefined') {
+            return '録画ライブラリ(mp4-muxer)の読み込みに失敗しました。通信環境をご確認ください';
+        }
+        return '録画機能を利用できません';
+    }
+
+    /**
      * UI（録画ボタン + 秒数セレクト）を生成して指定要素に挿入する。
      * @param {string|HTMLElement} target - 挿入先（セレクタ or 要素）
      */
@@ -89,13 +104,22 @@ class CanvasRecorder {
         button.className = 'canvas-recorder__button';
         button.textContent = '録画してMP4保存';
 
+        // スマホ等でコンソールが見られない環境向けに、エラーや状態を画面へ表示する領域
+        const status = document.createElement('p');
+        status.className = 'canvas-recorder__status';
+        status.setAttribute('aria-live', 'polite');
+
         if (!CanvasRecorder.isSupported()) {
             button.disabled = true;
-            button.title = 'このブラウザは WebCodecs / mp4-muxer 未対応のため利用できません';
+            const reason = CanvasRecorder.unsupportedReason();
+            button.title = reason;
+            status.textContent = reason;
         }
 
         button.addEventListener('click', async () => {
             const seconds = Number(select.value);
+            status.textContent = '';
+            button.disabled = true;
             try {
                 await this.start(seconds, (progress) => {
                     button.textContent = `録画中... ${Math.floor(progress * 100)}%`;
@@ -103,18 +127,23 @@ class CanvasRecorder {
                 button.textContent = '録画してMP4保存';
             } catch (err) {
                 console.error('[CanvasRecorder] 録画失敗', err);
-                button.textContent = '録画失敗';
-                setTimeout(() => { button.textContent = '録画してMP4保存'; }, 2000);
+                button.textContent = '録画してMP4保存';
+                // エラーメッセージを画面に出す（モバイルでの原因特定用）
+                status.textContent = `録画失敗: ${err && err.message ? err.message : err}`;
+            } finally {
+                button.disabled = false;
             }
         });
 
         root.appendChild(select);
         root.appendChild(button);
+        root.appendChild(status);
         parent.appendChild(root);
 
         this._uiRoot = root;
         this._button = button;
         this._select = select;
+        this._status = status;
     }
 
     /**
@@ -150,8 +179,9 @@ class CanvasRecorder {
      */
     async _record(seconds, onProgress) {
         const { fps, bitrate } = this.options;
-        const width = this.canvas.width;
-        const height = this.canvas.height;
+        // モバイルのハードウェアエンコーダは解像度が 2 の倍数でないと configure に失敗することがあるため偶数へ丸める
+        const width = this.canvas.width - (this.canvas.width % 2);
+        const height = this.canvas.height - (this.canvas.height % 2);
         const totalFrames = Math.round(seconds * fps);
         const frameDurationUs = Math.round(1_000_000 / fps); // マイクロ秒
 
@@ -169,34 +199,45 @@ class CanvasRecorder {
             fastStart: 'in-memory',    // moov を先頭に置き、Web 再生・共有しやすくする
         });
 
+        // 対応する VideoEncoder 設定を選ぶ（端末によって対応コーデックや HW/SW が異なる）
+        const config = await this._pickSupportedConfig({ width, height, bitrate, fps });
+
+        let encoderError = null;
         const encoder = new VideoEncoder({
             output: (chunk, meta) => muxer.addVideoChunk(chunk, meta),
-            error: (e) => console.error('[CanvasRecorder] VideoEncoder error', e),
+            error: (e) => {
+                // モバイルでは encode 中に非同期でエラーが出る。最初の 1 件を保持して後で投げる
+                console.error('[CanvasRecorder] VideoEncoder error', e);
+                if (!encoderError) encoderError = e;
+            },
         });
-
-        encoder.configure({
-            codec: 'avc1.42E01F',       // H.264 Baseline 3.1 互換性が高い
-            width,
-            height,
-            bitrate,
-            framerate: fps,
-            avc: { format: 'avc' },
-        });
+        encoder.configure(config);
 
         // 一定間隔で canvas からフレームを取り出してエンコード
         const frameIntervalMs = 1000 / fps;
         let frameIndex = 0;
 
-        await new Promise((resolve) => {
+        await new Promise((resolve, reject) => {
             const startTime = performance.now();
             const tick = () => {
+                // 非同期エンコードエラーが出ていたら中断
+                if (encoderError) {
+                    reject(encoderError);
+                    return;
+                }
                 if (frameIndex >= totalFrames) {
                     resolve();
                     return;
                 }
+                // エンコーダのキューが詰まっている場合はフレーム投入を控え、処理が進むのを待つ
+                // (非力なスマホでキューが溢れてクラッシュするのを防ぐ)
+                if (encoder.encodeQueueSize > fps) {
+                    setTimeout(tick, frameIntervalMs);
+                    return;
+                }
 
                 const timestamp = frameIndex * frameDurationUs;
-                const frame = new VideoFrame(this.canvas, { timestamp });
+                const frame = new VideoFrame(this.canvas, { timestamp, duration: frameDurationUs });
                 // keyFrame を定期的に挿入（先頭 + 約 2 秒ごと）
                 const keyFrame = (frameIndex % (fps * 2)) === 0;
                 encoder.encode(frame, { keyFrame });
@@ -215,9 +256,41 @@ class CanvasRecorder {
 
         await encoder.flush();
         encoder.close();
+        if (encoderError) throw encoderError;
         muxer.finalize();
 
         return new Blob([muxer.target.buffer], { type: 'video/mp4' });
+    }
+
+    /**
+     * 端末が対応する VideoEncoder 設定を順に試して、最初に対応した設定を返す。
+     * H.264 のプロファイルや HW/SW アクセラレーションの対応は端末差が大きいため、
+     * 互換性の高い順にフォールバックする。
+     * @private
+     * @returns {Promise<VideoEncoderConfig>}
+     */
+    async _pickSupportedConfig({ width, height, bitrate, fps }) {
+        const base = { width, height, bitrate, framerate: fps, avc: { format: 'avc' } };
+        // 上から順に試す: Baseline → Main → 高プロファイル / さらに SW エンコードへフォールバック
+        const candidates = [
+            { ...base, codec: 'avc1.42E01F' },                                       // Baseline 3.1
+            { ...base, codec: 'avc1.4D401F' },                                       // Main 3.1
+            { ...base, codec: 'avc1.640028' },                                       // High 4.0
+            { ...base, codec: 'avc1.42E01F', hardwareAcceleration: 'prefer-software' },
+            { ...base, codec: 'avc1.4D401F', hardwareAcceleration: 'prefer-software' },
+        ];
+
+        for (const cfg of candidates) {
+            try {
+                const support = await VideoEncoder.isConfigSupported(cfg);
+                if (support && support.supported) {
+                    return support.config || cfg;
+                }
+            } catch (_) {
+                // isConfigSupported 自体が投げる端末もあるので次の候補へ
+            }
+        }
+        throw new Error('この端末では対応する動画形式が見つかりませんでした (H.264 非対応の可能性)');
     }
 
     /**
