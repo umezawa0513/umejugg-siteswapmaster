@@ -16,12 +16,13 @@
  *   await recorder.start(10);          // 10 秒録画 → 自動で MP4 ダウンロード
  */
 class CanvasRecorder {
-    static VERSION = "1.4.0";
+    static VERSION = "1.5.0";
 
     /**
      * @param {Object} options
      * @param {HTMLCanvasElement|string} options.canvas - 対象 canvas 要素 or セレクタ
-     * @param {number[]} [options.durations=[5,10,30]] - UI に表示する秒数の選択肢
+     * @param {number} [options.fixedDuration] - 指定すると秒数選択を出さず、この秒数で即録画する
+     * @param {number[]} [options.durations=[5,10,30]] - 秒数選択肢（fixedDuration 未指定時のみ使用）
      * @param {number} [options.fps=60] - 録画フレームレート
      * @param {number} [options.bitrate=4_000_000] - ビデオビットレート (bps)
      * @param {string|function():string} [options.fileName='canvas-recording'] - 拡張子・日時を除くファイル名。関数なら保存時に評価する
@@ -29,6 +30,7 @@ class CanvasRecorder {
     constructor(options = {}) {
         this.options = {
             canvas: '#canvas',
+            fixedDuration: null,
             durations: [5, 10, 30],
             fps: 60,
             bitrate: 4_000_000,
@@ -95,39 +97,11 @@ class CanvasRecorder {
         const root = document.createElement('div');
         root.className = 'canvas-recorder';
 
-        // メインボタン: 押すと秒数選択を表示する
+        // メインボタン
         const saveButton = document.createElement('button');
         saveButton.type = 'button';
         saveButton.className = 'canvas-recorder__button';
         saveButton.textContent = '動画を保存';
-
-        // 秒数選択エリア（初期は非表示）
-        const chooser = document.createElement('div');
-        chooser.className = 'canvas-recorder__chooser';
-        chooser.hidden = true;
-
-        const label = document.createElement('span');
-        label.className = 'canvas-recorder__chooser-label';
-        label.textContent = '録画する長さ:';
-        chooser.appendChild(label);
-
-        const durationButtons = [];
-        for (const sec of this.options.durations) {
-            const durBtn = document.createElement('button');
-            durBtn.type = 'button';
-            durBtn.className = 'canvas-recorder__duration-btn';
-            durBtn.textContent = `${sec}秒`;
-            durBtn.addEventListener('click', () => this._handleRecord(sec));
-            chooser.appendChild(durBtn);
-            durationButtons.push(durBtn);
-        }
-
-        const cancelBtn = document.createElement('button');
-        cancelBtn.type = 'button';
-        cancelBtn.className = 'canvas-recorder__cancel-btn';
-        cancelBtn.textContent = 'キャンセル';
-        cancelBtn.addEventListener('click', () => this._showSaveButton());
-        chooser.appendChild(cancelBtn);
 
         // スマホ等でコンソールが見られない環境向けに、エラーや状態を画面へ表示する領域
         const status = document.createElement('p');
@@ -141,24 +115,66 @@ class CanvasRecorder {
             status.textContent = reason;
         }
 
-        // メインボタンを押したら秒数選択を表示
-        saveButton.addEventListener('click', () => {
-            if (this.isRecording) return;
-            status.textContent = '';
-            saveButton.hidden = true;
-            chooser.hidden = false;
-        });
-
         root.appendChild(saveButton);
-        root.appendChild(chooser);
+
+        // fixedDuration 指定時はボタン押下で即録画、未指定時は秒数選択を表示
+        if (this.options.fixedDuration) {
+            saveButton.addEventListener('click', () => {
+                if (this.isRecording) return;
+                this._handleRecord(this.options.fixedDuration);
+            });
+        } else {
+            const chooser = this._buildChooser();
+            root.appendChild(chooser);
+            saveButton.addEventListener('click', () => {
+                if (this.isRecording) return;
+                status.textContent = '';
+                saveButton.hidden = true;
+                chooser.hidden = false;
+            });
+            this._chooser = chooser;
+        }
+
         root.appendChild(status);
         parent.appendChild(root);
 
         this._uiRoot = root;
         this._saveButton = saveButton;
-        this._chooser = chooser;
-        this._durationButtons = durationButtons;
         this._status = status;
+    }
+
+    /**
+     * 秒数選択エリア（初期は非表示）を生成する。
+     * @private
+     * @returns {HTMLElement}
+     */
+    _buildChooser() {
+        const chooser = document.createElement('div');
+        chooser.className = 'canvas-recorder__chooser';
+        chooser.hidden = true;
+
+        const label = document.createElement('span');
+        label.className = 'canvas-recorder__chooser-label';
+        label.textContent = '録画する長さ:';
+        chooser.appendChild(label);
+
+        for (const sec of this.options.durations) {
+            const durBtn = document.createElement('button');
+            durBtn.type = 'button';
+            durBtn.className = 'canvas-recorder__duration-btn';
+            durBtn.textContent = `${sec}秒`;
+            durBtn.addEventListener('click', () => this._handleRecord(sec));
+            chooser.appendChild(durBtn);
+        }
+
+        const cancelBtn = document.createElement('button');
+        cancelBtn.type = 'button';
+        cancelBtn.className = 'canvas-recorder__cancel-btn';
+        cancelBtn.textContent = 'キャンセル';
+        cancelBtn.addEventListener('click', () => this._showSaveButton());
+        chooser.appendChild(cancelBtn);
+
+        return chooser;
     }
 
     /**
@@ -170,7 +186,7 @@ class CanvasRecorder {
         const status = this._status;
 
         // 録画中は選択 UI を隠し、メインボタンに進捗を表示
-        this._chooser.hidden = true;
+        if (this._chooser) this._chooser.hidden = true;
         saveButton.hidden = false;
         saveButton.disabled = true;
         status.textContent = '';

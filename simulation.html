@@ -441,13 +441,13 @@
 
     <!-- canvas → MP4 録画機能 (mp4-muxer + WebCodecs) -->
     <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
-    <script src="canvasRecorder.js?ver=1.4.0"></script>
+    <script src="canvasRecorder.js?ver=1.5.0"></script>
     <script>
         // canvas 録画ボタンをマウント
         if (window.CanvasRecorder) {
             const recorder = new CanvasRecorder({
                 canvas: '#canvas',
-                durations: [5, 10, 30],
+                fixedDuration: 6, // ボタン押下で 6 秒固定録画
                 // SSmaster_<入力サイトスワップ>_日時.mp4 で保存する。
                 fileName: () => {
                     const display = document.getElementById('siteswapDisplay');

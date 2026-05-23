@@ -30,12 +30,13 @@
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
 | `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
-| `canvasRecorder.js` | `1.4.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
+| `canvasRecorder.js` | `1.5.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
 
 ## 動画保存 (canvasRecorder.js)
 
 シミュレーター画面では、canvas のアニメーションを **MP4 動画として保存**できます。
-「動画を保存」ボタンを押すと録画する長さ（5秒・10秒・30秒）を選べます。
+「動画を保存」ボタンを押すと 6 秒間録画して保存します。
+（`fixedDuration` を指定しない場合は、押下後に録画する長さを選択する UI になります）
 
 - **仕組み**: WebCodecs (`VideoEncoder`) でフレームをエンコードし、[`mp4-muxer`](https://github.com/Vanilagy/mp4-muxer) で H.264 MP4 を生成します。
 - **背景色**: canvas は透過のため、録画時は背景色を合成して保存します（MP4 は透過非対応）。
@@ -48,8 +49,8 @@
 <script>
   const recorder = new CanvasRecorder({
     canvas: '#canvas',          // 対象 canvas (セレクタ or 要素)
-    durations: [5, 10, 30],     // 選択できる録画秒数
-    fileName: 'my-recording',   // 保存ファイル名 (拡張子除く)
+    fixedDuration: 6,           // 押下で即録画する秒数 (未指定なら秒数選択UI)
+    fileName: 'my-recording',   // 保存ファイル名 (文字列 or 関数, 拡張子除く)
     backgroundColor: 'auto',    // 'auto' | 色文字列 | 色を返す関数
   });
   recorder.mount('#recorder-ui'); // ボタン UI を任意要素に挿入
