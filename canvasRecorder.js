@@ -16,7 +16,7 @@
  *   await recorder.start(10);          // 10 秒録画 → 自動で MP4 ダウンロード
  */
 class CanvasRecorder {
-    static VERSION = "1.1.0";
+    static VERSION = "1.2.0";
 
     /**
      * @param {Object} options
@@ -33,6 +33,11 @@ class CanvasRecorder {
             fps: 30,
             bitrate: 4_000_000,
             fileName: 'canvas-recording',
+            // 背景色: MP4 は透過非対応のため、透明な canvas はそのままだと黒くなる。
+            //   'auto'   … canvas 要素の CSS 背景色を自動採用（透明なら塗らない）
+            //   文字列   … その色で塗る (例: '#5a5a5a')
+            //   関数     … 録画中フレーム毎に呼ばれ、戻り値の色で塗る (例: () => state.backgroundColor)
+            backgroundColor: 'auto',
             ...options,
         };
 
@@ -199,6 +204,12 @@ class CanvasRecorder {
             fastStart: 'in-memory',    // moov を先頭に置き、Web 再生・共有しやすくする
         });
 
+        // 背景合成用のオフスクリーン canvas（透過 canvas をそのまま録画すると MP4 では黒くなるため）
+        const composite = document.createElement('canvas');
+        composite.width = width;
+        composite.height = height;
+        const compositeCtx = composite.getContext('2d');
+
         // 対応する VideoEncoder 設定を選ぶ（端末によって対応コーデックや HW/SW が異なる）
         const config = await this._pickSupportedConfig({ width, height, bitrate, fps });
 
@@ -236,8 +247,18 @@ class CanvasRecorder {
                     return;
                 }
 
+                // 背景色を塗ってから canvas を重ねて合成する
+                const bgColor = this._resolveBackgroundColor();
+                if (bgColor) {
+                    compositeCtx.fillStyle = bgColor;
+                    compositeCtx.fillRect(0, 0, width, height);
+                } else {
+                    compositeCtx.clearRect(0, 0, width, height);
+                }
+                compositeCtx.drawImage(this.canvas, 0, 0, width, height);
+
                 const timestamp = frameIndex * frameDurationUs;
-                const frame = new VideoFrame(this.canvas, { timestamp, duration: frameDurationUs });
+                const frame = new VideoFrame(composite, { timestamp, duration: frameDurationUs });
                 // keyFrame を定期的に挿入（先頭 + 約 2 秒ごと）
                 const keyFrame = (frameIndex % (fps * 2)) === 0;
                 encoder.encode(frame, { keyFrame });
@@ -291,6 +312,30 @@ class CanvasRecorder {
             }
         }
         throw new Error('この端末では対応する動画形式が見つかりませんでした (H.264 非対応の可能性)');
+    }
+
+    /**
+     * 録画フレームに塗る背景色を解決する。
+     * options.backgroundColor が関数ならその戻り値、文字列ならそのまま、
+     * 'auto' なら canvas 要素の CSS 背景色を採用する。透明と判定した場合は null。
+     * @private
+     * @returns {string|null}
+     */
+    _resolveBackgroundColor() {
+        const bg = this.options.backgroundColor;
+        let color;
+        if (typeof bg === 'function') {
+            color = bg();
+        } else if (bg === 'auto') {
+            color = getComputedStyle(this.canvas).backgroundColor;
+        } else {
+            color = bg;
+        }
+        if (!color) return null;
+        // 完全透明 (rgba(0,0,0,0) / transparent) は塗らない
+        const normalized = String(color).replace(/\s/g, '').toLowerCase();
+        if (normalized === 'transparent' || normalized === 'rgba(0,0,0,0)') return null;
+        return color;
     }
 
     /**
