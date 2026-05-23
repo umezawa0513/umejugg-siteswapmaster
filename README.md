@@ -22,7 +22,7 @@
 
 | ファイル名 | バージョン | 説明 |
 | :--- | :--- | :--- |
-| `simulation.css` | `9.3.5` | 共通スタイルシート |
+| `simulation.css` | `9.3.6` | 共通スタイルシート |
 | `syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
 | `simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
 | `siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
@@ -30,7 +30,7 @@
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
 | `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
-| `canvasRecorder.js` | `1.3.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
+| `canvasRecorder.js` | `1.4.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
 
 ## 動画保存 (canvasRecorder.js)
 

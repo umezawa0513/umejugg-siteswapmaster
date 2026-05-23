@@ -584,6 +584,12 @@ input[type="color"] {
     gap: 8px;
 }
 
+/* hidden 属性が CSS の display 指定に負けないように明示的に非表示にする */
+.canvas-recorder__button[hidden],
+.canvas-recorder__chooser[hidden] {
+    display: none;
+}
+
 .canvas-recorder__chooser-label {
     font-size: 13px;
     color: #333;

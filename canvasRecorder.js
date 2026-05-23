@@ -16,21 +16,21 @@
  *   await recorder.start(10);          // 10 秒録画 → 自動で MP4 ダウンロード
  */
 class CanvasRecorder {
-    static VERSION = "1.3.0";
+    static VERSION = "1.4.0";
 
     /**
      * @param {Object} options
      * @param {HTMLCanvasElement|string} options.canvas - 対象 canvas 要素 or セレクタ
      * @param {number[]} [options.durations=[5,10,30]] - UI に表示する秒数の選択肢
-     * @param {number} [options.fps=30] - 録画フレームレート
+     * @param {number} [options.fps=60] - 録画フレームレート
      * @param {number} [options.bitrate=4_000_000] - ビデオビットレート (bps)
-     * @param {string} [options.fileName='canvas-recording'] - 拡張子を除くファイル名
+     * @param {string|function():string} [options.fileName='canvas-recording'] - 拡張子・日時を除くファイル名。関数なら保存時に評価する
      */
     constructor(options = {}) {
         this.options = {
             canvas: '#canvas',
             durations: [5, 10, 30],
-            fps: 30,
+            fps: 60,
             bitrate: 4_000_000,
             fileName: 'canvas-recording',
             // 背景色: MP4 は透過非対応のため、透明な canvas はそのままだと黒くなる。
@@ -393,8 +393,13 @@ class CanvasRecorder {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         const stamp = new Date().toISOString().replace(/[:.]/g, '-');
+        // fileName は文字列 or（保存時に評価する）関数。ファイル名に使えない文字は除去する。
+        const rawName = typeof this.options.fileName === 'function'
+            ? this.options.fileName()
+            : this.options.fileName;
+        const safeName = String(rawName).replace(/[\\/:*?"<>|]/g, '').trim() || 'recording';
         a.href = url;
-        a.download = `${this.options.fileName}-${stamp}.mp4`;
+        a.download = `${safeName}_${stamp}.mp4`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
