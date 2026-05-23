@@ -440,8 +440,9 @@
     <script src="siteswapLab.js?ver=1.5.6"></script>
 
     <!-- canvas → MP4 録画機能 (mp4-muxer + WebCodecs) -->
-    <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
-    <script src="canvasRecorder.js?ver=1.5.0"></script>
+    <!-- mp4-muxer は自己ホスト。読み込めない場合 window.Mp4Muxer は未定義となり、録画ボタンは表示されない -->
+    <script src="vendor/mp4-muxer-5.2.1.min.js"></script>
+    <script src="canvasRecorder.js?ver=1.6.0"></script>
     <script>
         // canvas 録画ボタンをマウント
         if (window.CanvasRecorder) {

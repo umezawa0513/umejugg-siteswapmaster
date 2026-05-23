@@ -5,9 +5,11 @@
  * WebCodecs (VideoEncoder) + mp4-muxer により H.264 MP4 を直接生成する。
  *
  * 依存:
- *   - mp4-muxer (CDN 経由で読み込む。グローバルに `Mp4Muxer` が存在する想定)
- *     例: <script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
+ *   - mp4-muxer (グローバルに `Mp4Muxer` が存在する想定。自己ホスト推奨)
+ *     例: <script src="vendor/mp4-muxer-5.2.1.min.js"></script>
  *   - WebCodecs API (Chrome / Edge / Safari 16.4+ / Firefox 130+)
+ *
+ * いずれかが利用できない場合、mount() は UI を描画しない（録画ボタンは表示されない）。
  *
  * 使い方の例:
  *   const recorder = new CanvasRecorder({ canvas: document.getElementById('canvas') });
@@ -16,7 +18,7 @@
  *   await recorder.start(10);          // 10 秒録画 → 自動で MP4 ダウンロード
  */
 class CanvasRecorder {
-    static VERSION = "1.5.0";
+    static VERSION = "1.6.0";
 
     /**
      * @param {Object} options
@@ -94,6 +96,12 @@ class CanvasRecorder {
             return;
         }
 
+        // 録画ライブラリ(mp4-muxer)や WebCodecs が利用できない場合は UI 自体を描画しない
+        if (!CanvasRecorder.isSupported()) {
+            console.warn('[CanvasRecorder]', CanvasRecorder.unsupportedReason());
+            return;
+        }
+
         const root = document.createElement('div');
         root.className = 'canvas-recorder';
 
@@ -107,13 +115,6 @@ class CanvasRecorder {
         const status = document.createElement('p');
         status.className = 'canvas-recorder__status';
         status.setAttribute('aria-live', 'polite');
-
-        if (!CanvasRecorder.isSupported()) {
-            saveButton.disabled = true;
-            const reason = CanvasRecorder.unsupportedReason();
-            saveButton.title = reason;
-            status.textContent = reason;
-        }
 
         root.appendChild(saveButton);
 

@@ -30,7 +30,8 @@
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
 | `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
-| `canvasRecorder.js` | `1.5.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
+| `canvasRecorder.js` | `1.6.0` | canvas の描画内容を MP4 動画として保存する汎用録画ライブラリ |
+| `vendor/mp4-muxer-*.min.js` | `5.2.1` | H.264 を MP4 コンテナへ結合する外部ライブラリ（自己ホスト） |
 
 ## 動画保存 (canvasRecorder.js)
 
@@ -40,11 +41,12 @@
 
 - **仕組み**: WebCodecs (`VideoEncoder`) でフレームをエンコードし、[`mp4-muxer`](https://github.com/Vanilagy/mp4-muxer) で H.264 MP4 を生成します。
 - **背景色**: canvas は透過のため、録画時は背景色を合成して保存します（MP4 は透過非対応）。
-- **対応環境**: WebCodecs 対応ブラウザ（Chrome / Edge / Safari 16.4+ / Firefox 130+）。未対応時はボタンが無効化されます。
+- **対応環境**: WebCodecs 対応ブラウザ（Chrome / Edge / Safari 16.4+ / Firefox 130+）。未対応、または `mp4-muxer` が読み込めない場合は録画ボタン自体を表示しません。
+- **ライブラリの自己ホスト**: `mp4-muxer` は CDN ではなく `vendor/mp4-muxer-<version>.min.js` として同梱します。更新時は同フォルダのファイルを差し替え、HTML の `<script>` パスと本 README のバージョンを更新してください。
 - **汎用ライブラリ**: 特定アプリに依存しないため、他の canvas を持つページでも再利用できます。
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/mp4-muxer@5.2.1/build/mp4-muxer.min.js"></script>
+<script src="vendor/mp4-muxer-5.2.1.min.js"></script>
 <script src="canvasRecorder.js"></script>
 <script>
   const recorder = new CanvasRecorder({
