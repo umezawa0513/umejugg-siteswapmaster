@@ -15,6 +15,7 @@
     </style>
     <link rel="stylesheet" href="simulation.css?ver=9.3.6">
     <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
+    <link rel="stylesheet" href="samplePatternModal.css?ver=1.0.1">
 </head>
 
 <body>
@@ -32,17 +33,21 @@
             <section>
                 <h2>シミュレーター</h2>
                 <p>入力された数列がどのようなサイトスワップであるかをシミュレーションできます。</p>
+                <div style="display: flex; justify-content: center; gap: 8px; margin: 10px 0;">
+                    <a href="#" id="openSampleModal" class="btn"
+                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">サンプルパターン</a>
+                    <a href="#" id="openSyncModal" class="btn"
+                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">シンクロ簡単入力</a>
+                </div>
                 <div class="error-display">
                     <output id="er"></output>
                 </div>
-                <div class="input-container">
+                <div class="input-container" style="margin-bottom: 10px;">
                     <label for="siteswapInput">確認したいパターンを入力してください</label>
                     <div class="input-box">
                         <input type="text" name="siteswapInput" id="siteswapInput" placeholder="例: 97531">
-                        <a href="#" id="openSyncModal" class="btn sync-btn"><span>簡単</span><span>入力</span></a>
                     </div>
                     <div id="log" class="log log-div"></div>
-                    <a href="#" class="btn" id="loadSiteswapBtn">読み込む</a>
                 </div>
 
                 <div class="canvas-section">
@@ -51,7 +56,17 @@
                         <span><output id="siteswapDisplay"></output></span>
                     </div>
 
-                    <canvas id="canvas" width="300" height="500"></canvas>
+                    <div class="canvas-wrapper" style="position: relative; display: inline-block;">
+                        <canvas id="canvas" width="300" height="500"></canvas>
+                        <a href="#" id="loadSiteswapBtn" class="canvas-reload-btn" aria-label="再読み込み" title="再読み込み"
+                            style="position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: transparent; color: #ffffff; text-decoration: none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <polyline points="1 20 1 14 7 14"></polyline>
+                                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                            </svg>
+                        </a>
+                    </div>
 
                     <p id="low-fps-warning" class="low-fps-warning">
                         <span class="warning-text"></span>
@@ -266,6 +281,11 @@
                                     <span class="version-description">ミルズメス、ウインドミル等の指定機能</span>
                                 </div>
                                 <div class="version-item">
+                                    <span class="version-date">2026/5/28</span>
+                                    <span class="version-number">ver9.5</span>
+                                    <span class="version-description">修正</span>
+                                </div>
+                                <div class="version-item">
                                     <span class="version-date">2026/5/23</span>
                                     <span class="version-number">ver9.4</span>
                                     <span class="version-description">動画保存機能追加</span>
@@ -427,6 +447,22 @@
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
         </footer>
+
+        <!-- サンプルパターン選択モーダル -->
+        <div id="samplePatternModal" class="sample-modal" role="dialog" aria-modal="true" aria-labelledby="sampleModalTitle">
+            <div class="sample-modal-content">
+                <span class="sample-close" id="sampleCloseBtn" aria-label="閉じる">&times;</span>
+                <h3 id="sampleModalTitle" class="sample-modal-title">サンプルパターン</h3>
+                <div class="sample-tabs" role="tablist">
+                    <button type="button" class="sample-tab-btn active" data-balls="3" role="tab">3個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="4" role="tab">4個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="5" role="tab">5個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="6" role="tab">6個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="7" role="tab">7個</button>
+                </div>
+                <div id="samplePatternGrid" class="sample-pattern-grid"></div>
+            </div>
+        </div>
     </div>
     <script>
         window.onload = function () { const spinner = document.getElementById('loading'); spinner.classList.add('loaded'); }
@@ -441,6 +477,7 @@
     <script src="syncPatternInput.js?ver=1.0.1"></script>
     <script src="siteswapProcessor.js?ver=1.1.4"></script>
     <script src="simulation.min.js?ver=9.3.2"></script>
+    <script src="samplePatterns.js?ver=1.0.2"></script>
     <!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
     <script src="siteswapLab.js?ver=1.5.6"></script>
 
