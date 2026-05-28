@@ -27,6 +27,7 @@
     max-width: 500px;
     max-height: 85%;
     width: 90%;
+    box-sizing: border-box;
     position: relative;
     overflow-y: auto;
     animation: sampleSlideIn 0.3s;
@@ -114,12 +115,4 @@
     background-color: #2E5A8E;
     transform: translateY(-1px);
     box-shadow: 0 3px 8px rgba(63, 114, 175, 0.3);
-}
-
-.sample-btn {
-    background-color: #FF9800;
-}
-
-.sample-btn:hover {
-    background-color: #F57C00;
 }
