@@ -31,7 +31,7 @@
 | `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
 | `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
 | `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
-| `samplePatterns.js` | `1.0.0` | サンプルパターン選択モーダルのロジック |
+| `samplePatterns.js` | `1.0.1` | サンプルパターン選択モーダルのロジック |
 | `canvasRecorder.js` | `1.6.0` | canvas を MP4 動画として保存する録画機能 |
 | `vendor/mp4-muxer-*.min.js` | `5.2.1` | MP4 生成用の外部ライブラリ |
 
