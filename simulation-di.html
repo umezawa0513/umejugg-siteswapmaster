@@ -32,11 +32,14 @@
             <section>
                 <h2>シミュレーター</h2>
                 <p>入力された数列がどのようなサイトスワップであるかをシミュレーションできます。</p>
+                <div style="text-align: right; margin: 10px 0;">
+                    <a href="#" id="openSyncModal" class="btn sync-btn"
+                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">シンクロ簡単入力</a>
+                </div>
                 <div class="error-display">
                     <output id="er"></output>
                 </div>
-                <div class="input-container">
-                    <a href="#" id="openSyncModal" class="btn sync-btn">シンクロ簡単入力</a>
+                <div class="input-container" style="margin-bottom: 10px;">
                     <label for="siteswapInput">確認したいパターンを入力してください</label>
                     <div class="input-box">
                         <input type="text" name="siteswapInput" id="siteswapInput" placeholder="例: 97531">
@@ -53,7 +56,7 @@
                     <div class="canvas-wrapper" style="position: relative; display: inline-block;">
                         <canvas id="canvas" width="300" height="500"></canvas>
                         <a href="#" id="loadSiteswapBtn" class="canvas-reload-btn" aria-label="再読み込み" title="再読み込み"
-                            style="position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background-color: rgba(63, 114, 175, 0.85); color: #F9F7F7; border-radius: 50%; text-decoration: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);">
+                            style="position: absolute; top: 8px; left: 8px; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; background: transparent; color: #3F72AF; text-decoration: none;">
                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                                 <polyline points="23 4 23 10 17 10"></polyline>
                                 <polyline points="1 20 1 14 7 14"></polyline>
