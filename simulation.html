@@ -15,6 +15,7 @@
     </style>
     <link rel="stylesheet" href="simulation.css?ver=9.3.6">
     <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
+    <link rel="stylesheet" href="samplePatternModal.css?ver=1.0.1">
 </head>
 
 <body>
@@ -32,8 +33,10 @@
             <section>
                 <h2>シミュレーター</h2>
                 <p>入力された数列がどのようなサイトスワップであるかをシミュレーションできます。</p>
-                <div style="text-align: right; margin: 10px 0;">
-                    <a href="#" id="openSyncModal" class="btn sync-btn"
+                <div style="display: flex; justify-content: center; gap: 8px; margin: 10px 0;">
+                    <a href="#" id="openSampleModal" class="btn"
+                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">サンプルパターン</a>
+                    <a href="#" id="openSyncModal" class="btn"
                         style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">シンクロ簡単入力</a>
                 </div>
                 <div class="error-display">
@@ -444,6 +447,22 @@
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
         </footer>
+
+        <!-- サンプルパターン選択モーダル -->
+        <div id="samplePatternModal" class="sample-modal" role="dialog" aria-modal="true" aria-labelledby="sampleModalTitle">
+            <div class="sample-modal-content">
+                <span class="sample-close" id="sampleCloseBtn" aria-label="閉じる">&times;</span>
+                <h3 id="sampleModalTitle" class="sample-modal-title">サンプルパターン</h3>
+                <div class="sample-tabs" role="tablist">
+                    <button type="button" class="sample-tab-btn active" data-balls="3" role="tab">3個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="4" role="tab">4個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="5" role="tab">5個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="6" role="tab">6個</button>
+                    <button type="button" class="sample-tab-btn" data-balls="7" role="tab">7個</button>
+                </div>
+                <div id="samplePatternGrid" class="sample-pattern-grid"></div>
+            </div>
+        </div>
     </div>
     <script>
         window.onload = function () { const spinner = document.getElementById('loading'); spinner.classList.add('loaded'); }
@@ -458,6 +477,7 @@
     <script src="syncPatternInput.js?ver=1.0.1"></script>
     <script src="siteswapProcessor.js?ver=1.1.4"></script>
     <script src="simulation.min.js?ver=9.3.2"></script>
+    <script src="samplePatterns.js?ver=1.0.2"></script>
     <!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
     <script src="siteswapLab.js?ver=1.5.6"></script>
 
