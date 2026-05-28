@@ -1,0 +1,125 @@
+.sample-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: sampleFadeIn 0.3s;
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    color: #333;
+}
+
+@keyframes sampleFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.sample-modal-content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    max-height: 85%;
+    width: 90%;
+    position: relative;
+    overflow-y: auto;
+    animation: sampleSlideIn 0.3s;
+}
+
+@keyframes sampleSlideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.sample-close {
+    color: #aaa;
+    position: absolute;
+    top: 6px;
+    right: 14px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
+}
+
+.sample-close:hover {
+    color: #000;
+}
+
+.sample-modal-title {
+    margin: 0 0 12px 0;
+    text-align: center;
+    color: #3F72AF;
+    font-size: 18px;
+}
+
+.sample-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 2px solid #DBE2EF;
+    margin-bottom: 12px;
+}
+
+.sample-tab-btn {
+    flex: 1;
+    padding: 8px 4px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+    font-family: inherit;
+}
+
+.sample-tab-btn:hover {
+    background: #F9F7F7;
+    color: #3F72AF;
+}
+
+.sample-tab-btn.active {
+    color: #3F72AF;
+    border-bottom-color: #3F72AF;
+    font-weight: bold;
+}
+
+.sample-pattern-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: 8px;
+    padding: 4px 0;
+}
+
+.sample-pattern-item {
+    padding: 10px 8px;
+    background-color: #3F72AF;
+    color: #F9F7F7;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: all 0.2s;
+    word-break: break-all;
+}
+
+.sample-pattern-item:hover {
+    background-color: #2E5A8E;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(63, 114, 175, 0.3);
+}
+
+.sample-btn {
+    background-color: #FF9800;
+}
+
+.sample-btn:hover {
+    background-color: #F57C00;
+}
