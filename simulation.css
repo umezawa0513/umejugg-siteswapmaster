@@ -1,4 +1,4 @@
-/* simulation.css ver 9.3.2 */
+/* simulation.css ver 9.3.7 */
 .container {
     display: flex;
     flex-direction: column;
@@ -162,6 +162,38 @@ input[type="text"].error-border {
     background-color: #2E5A8E;
     transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
+}
+
+/* 便利ツールグループ（サンプルパターン・シンクロ簡単入力をツールとしてまとめる枠） */
+.tool-group {
+    margin: 12px auto;
+    padding: 10px 16px 14px;
+    border: 1px solid #DBE2EF;
+    border-radius: 8px;
+    background-color: rgba(63, 114, 175, 0.04);
+    width: fit-content;
+    max-width: 100%;
+}
+
+.tool-group-legend {
+    padding: 0 8px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #3F72AF;
+}
+
+.tool-group-buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tool-btn {
+    width: auto;
+    white-space: nowrap;
+    padding: 6px 16px;
+    font-size: 14px;
 }
 
 .sync-btn {

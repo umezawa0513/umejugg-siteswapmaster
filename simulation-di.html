@@ -13,7 +13,7 @@
         /* CSSコード */
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
     </style>
-    <link rel="stylesheet" href="simulation.css?ver=9.3.6">
+    <link rel="stylesheet" href="simulation.css?ver=9.3.7">
     <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
     <link rel="stylesheet" href="samplePatternModal.css?ver=1.0.1">
 </head>
@@ -33,12 +33,13 @@
             <section>
                 <h2>シミュレーター</h2>
                 <p>入力された数列がどのようなサイトスワップであるかをシミュレーションできます。</p>
-                <div style="display: flex; justify-content: center; gap: 8px; margin: 10px 0;">
-                    <a href="#" id="openSampleModal" class="btn"
-                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">サンプルパターン</a>
-                    <a href="#" id="openSyncModal" class="btn"
-                        style="width: auto; white-space: nowrap; padding: 6px 16px; font-size: 14px;">シンクロ簡単入力</a>
-                </div>
+                <fieldset class="tool-group">
+                    <legend class="tool-group-legend">🛠️ 便利ツール</legend>
+                    <div class="tool-group-buttons">
+                        <a href="#" id="openSampleModal" class="btn tool-btn">サンプルパターン</a>
+                        <a href="#" id="openSyncModal" class="btn tool-btn">シンクロ簡単入力</a>
+                    </div>
+                </fieldset>
                 <div class="error-display">
                     <output id="er"></output>
                 </div>
