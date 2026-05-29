@@ -1,4 +1,4 @@
-/* simulation.css ver 9.3.8 */
+/* simulation.css ver 9.3.9 */
 .container {
     display: flex;
     flex-direction: column;
@@ -166,9 +166,9 @@ input[type="text"].error-border {
 
 /* 便利ツールグループ（サンプルパターン・シンクロ簡単入力をツールとしてまとめる枠） */
 .tool-group {
-    margin: 12px auto;
+    margin: 12px auto 24px auto;
     padding: 10px 16px 14px;
-    border: 1px solid #C2CEDF;
+    border: 2px solid #112D4E;
     border-radius: 8px;
     background-color: #DBE2EF;
     width: fit-content;
