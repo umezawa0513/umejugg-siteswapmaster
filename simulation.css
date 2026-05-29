@@ -1,4 +1,4 @@
-/* simulation.css ver 9.3.7 */
+/* simulation.css ver 9.3.8 */
 .container {
     display: flex;
     flex-direction: column;
@@ -168,9 +168,9 @@ input[type="text"].error-border {
 .tool-group {
     margin: 12px auto;
     padding: 10px 16px 14px;
-    border: 1px solid #DBE2EF;
+    border: 1px solid #C2CEDF;
     border-radius: 8px;
-    background-color: rgba(63, 114, 175, 0.04);
+    background-color: #DBE2EF;
     width: fit-content;
     max-width: 100%;
 }
