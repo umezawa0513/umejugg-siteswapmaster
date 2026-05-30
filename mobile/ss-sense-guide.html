@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SS センスのルール - サイトスワップマスター</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+      line-height: 1.8;
+      color: #333;
+      background: #fff;
+      padding: 24px 20px 40px;
+      font-size: 14px;
+    }
+    h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      color: #222;
+    }
+    h2 {
+      font-size: 16px;
+      font-weight: 600;
+      margin-top: 28px;
+      margin-bottom: 8px;
+      color: #333;
+    }
+    p {
+      margin-bottom: 12px;
+      color: #555;
+    }
+    .step {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+    .step-number {
+      flex-shrink: 0;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #3F72AF;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      margin-right: 12px;
+      margin-top: 2px;
+    }
+    .step-text {
+      flex: 1;
+      color: #555;
+    }
+    .tip {
+      background: #f0f4f8;
+      border-left: 3px solid #3F72AF;
+      padding: 12px 16px;
+      margin: 16px 0;
+      border-radius: 0 8px 8px 0;
+    }
+    .tip-title {
+      font-weight: 600;
+      color: #3F72AF;
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+    .example {
+      background: #f8f8f8;
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 15px;
+      color: #333;
+      display: inline-block;
+      margin: 4px 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>SS センスのルール</h1>
+
+  <p>「SS センス」は、ジャグリングのシミュレーションを見て、そのサイトスワップ（投げ方を表す数字）を当てるゲームです。</p>
+
+  <h2>遊び方</h2>
+  <div class="step">
+    <div class="step-number">1</div>
+    <div class="step-text">「ゲームスタート」を押すと、ランダムなパターンのジャグリングが再生されます。</div>
+  </div>
+  <div class="step">
+    <div class="step-number">2</div>
+    <div class="step-text">アニメーションをよく見て、サイトスワップが何かを考えます。</div>
+  </div>
+  <div class="step">
+    <div class="step-number">3</div>
+    <div class="step-text">下部のテンキーで数字を入力し、「回答」を押します。</div>
+  </div>
+  <div class="step">
+    <div class="step-number">4</div>
+    <div class="step-text">制限時間内に正解できればクリア。時間切れになるとゲーム終了です。</div>
+  </div>
+
+  <h2>制限時間と回答</h2>
+  <p>各ゲームには制限時間があり、画面上部のバーで残り時間が分かります。</p>
+  <p>不正解でも、制限時間内であれば何度でも回答し直せます。早く正解するほど有利です。</p>
+
+  <div class="tip">
+    <div class="tip-title">サイトスワップとは？</div>
+    <p>ジャグリングのパターンを数字の列で表す記法です。各数字はボールを投げてからキャッチするまでのビート数を表します。</p>
+    <p><span class="example">3</span> … 3ボールカスケード（基本パターン）</p>
+    <p><span class="example">531</span> … 3ボールの技</p>
+    <p><span class="example">97531</span> … 5ボールの技</p>
+  </div>
+
+  <h2>レーティング</h2>
+  <p>ゲームの結果に応じてレーティング（実力の目安となるポイント）が変動します。正解すると上がり、時間切れだと下がります。</p>
+  <p>レーティングはランキングに反映され、他のプレイヤーと競い合えます。マイページから自分の対戦履歴や成績も確認できます。</p>
+
+  <h2>ヒント</h2>
+  <p>・まずは投げる高さ（数字の大きさ）と、左右どちらの手から投げているかに注目しましょう。</p>
+  <p>・繰り返しの周期（何ビートで同じ動きに戻るか）を数えると、桁数の見当がつきます。</p>
+  <p>・対戦履歴のパターンをタップすると、簡易シミュレータで動きを再確認できます。</p>
+</body>
+</html>
