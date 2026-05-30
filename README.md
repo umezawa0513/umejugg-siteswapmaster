@@ -2,6 +2,22 @@
 
 高精度なジャグリング・サイトスワップのシミュレーション、生成、接続、変換、および解析を行うためのWebアプリケーションです。
 
+## ディレクトリ構成
+
+静的ファイルを役割ごとに整理しています。公開URL（`/siteswapmaster/...`）は従来どおりで変更ありません。
+
+```
+umejugg-siteswapmaster/
+├── *.html      … 各ページ（URL: /siteswapmaster/<ページ名>）
+├── assets/
+│   ├── css/    … スタイルシート
+│   ├── js/     … スクリプト（コアエンジン・各種ロジック）
+│   └── img/    … 画像（favicon 等）
+├── vendor/     … サードパーティ製ライブラリ
+├── legal/      … Web版の利用規約・プライバシーポリシー
+└── mobile/     … モバイルアプリ用ページ
+```
+
 ## 主な機能
 
 | 機能 | 説明 | 対応ファイル |
@@ -22,17 +38,17 @@
 
 | ファイル名 | バージョン | 説明 |
 | :--- | :--- | :--- |
-| `simulation.css` | `9.3.9` | 共通スタイルシート |
-| `syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
-| `samplePatternModal.css` | `1.0.1` | サンプルパターン選択モーダル用スタイル |
-| `simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
-| `siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
-| `siteswapProcessor.js` | `1.1.4` | サイトスワップ解析・データ処理 |
-| `siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
-| `siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
-| `syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
-| `samplePatterns.js` | `1.0.2` | サンプルパターン選択モーダルのロジック |
-| `canvasRecorder.js` | `1.6.0` | canvas を MP4 動画として保存する録画機能 |
+| `assets/css/simulation.css` | `9.3.9` | 共通スタイルシート |
+| `assets/css/syncModal.css` | `1.0.1` | 入力モーダル用スタイル |
+| `assets/css/samplePatternModal.css` | `1.0.1` | サンプルパターン選択モーダル用スタイル |
+| `assets/js/simulation.min.js` | `9.3.2` | シミュレーター・コアエンジン |
+| `assets/js/siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
+| `assets/js/siteswapProcessor.js` | `1.1.4` | サイトスワップ解析・データ処理 |
+| `assets/js/siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
+| `assets/js/siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
+| `assets/js/syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
+| `assets/js/samplePatterns.js` | `1.0.2` | サンプルパターン選択モーダルのロジック |
+| `assets/js/canvasRecorder.js` | `1.6.0` | canvas を MP4 動画として保存する録画機能 |
 | `vendor/mp4-muxer-*.min.js` | `5.2.1` | MP4 生成用の外部ライブラリ |
 
 ## 使い方
