@@ -13,9 +13,9 @@
         /* CSSコード */
         @import url('https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@800&display=swap');
     </style>
-    <link rel="stylesheet" href="simulation.css?ver=9.3.9">
-    <link rel="stylesheet" href="syncModal.css?ver=1.0.1">
-    <link rel="stylesheet" href="samplePatternModal.css?ver=1.0.1">
+    <link rel="stylesheet" href="assets/css/simulation.css?ver=9.3.9">
+    <link rel="stylesheet" href="assets/css/syncModal.css?ver=1.0.1">
+    <link rel="stylesheet" href="assets/css/samplePatternModal.css?ver=1.0.1">
 </head>
 
 <body>
@@ -475,17 +475,17 @@
             });
         });
     </script>
-    <script src="syncPatternInput.js?ver=1.0.1"></script>
-    <script src="siteswapProcessor.js?ver=1.1.4"></script>
-    <script src="simulation.min.js?ver=9.3.2"></script>
-    <script src="samplePatterns.js?ver=1.0.2"></script>
+    <script src="assets/js/syncPatternInput.js?ver=1.0.1"></script>
+    <script src="assets/js/siteswapProcessor.js?ver=1.1.4"></script>
+    <script src="assets/js/simulation.min.js?ver=9.3.2"></script>
+    <script src="assets/js/samplePatterns.js?ver=1.0.2"></script>
     <!--HTMLの下部にscriptタグ入れておくと、scriptタグが読み込まれるまでにすでにDOMの読み込みが完了しているのでDOMContentLoadedは不要-->
-    <script src="siteswapLab.js?ver=1.5.6"></script>
+    <script src="assets/js/siteswapLab.js?ver=1.5.6"></script>
 
     <!-- canvas → MP4 録画機能 (mp4-muxer + WebCodecs) -->
     <!-- mp4-muxer は自己ホスト。読み込めない場合 window.Mp4Muxer は未定義となり、録画ボタンは表示されない -->
     <script src="vendor/mp4-muxer-5.2.1.min.js"></script>
-    <script src="canvasRecorder.js?ver=1.6.0"></script>
+    <script src="assets/js/canvasRecorder.js?ver=1.6.0"></script>
     <script>
         // canvas 録画ボタンをマウント
         if (window.CanvasRecorder) {
