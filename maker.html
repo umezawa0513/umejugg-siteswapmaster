@@ -664,11 +664,11 @@
                             </div>
                             <div class="notice-details">
                                 <div class="notice-row">
-                                    <span class="notice-label">直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋ループコネクション：</span>
+                                    <span class="notice-label">直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋接続パターン：</span>
                                     <button type="button" class="notice-value highlight pattern-clickable" id="loopOption1" title="クリックしてシミュレーション">-</button>
                                 </div>
                                 <div class="notice-row">
-                                    <span class="notice-label">作成されたパターン＋ループコネクション：</span>
+                                    <span class="notice-label">作成されたパターン＋接続パターン：</span>
                                     <button type="button" class="notice-value highlight pattern-clickable" id="loopOption2" title="クリックしてシミュレーション">-</button>
                                 </div>
                             </div>
@@ -827,7 +827,7 @@
                 completionPatternEl.textContent = `終了ボタンを押すと「${completion}」が追加されて完成します`;
             }
 
-            // プレビュー更新（直前ss＋作成中パターン＋直後ss＋ループコネクション）
+            // プレビュー更新（直前ss＋作成中パターン＋直後ss＋接続パターン）
             const createdPattern = maker.getCurrentPatternString() + completion;
             const loopConnection = maker.getLoopConnection();
             const previewPattern = buildSimulationPattern(createdPattern, loopConnection);
@@ -876,7 +876,7 @@
         }
 
         // シミュレーション用のループパターンを生成する
-        // 「直前のサイトスワップ（繰り返し）＋作成されたパターン＋直後のサイトスワップ（繰り返し）＋ループコネクション」
+        // 「直前のサイトスワップ（繰り返し）＋作成されたパターン＋直後のサイトスワップ（繰り返し）＋接続パターン」
         function buildSimulationPattern(createdPattern, loopConnection) {
             const repeatedStart = repeatPatternToExceed(maker.startPattern);
             const repeatedEnd = repeatPatternToExceed(maker.endPattern);
@@ -896,7 +896,7 @@
             finalPatternEl.textContent = createdPattern;
 
             // シミュレーション用パターン
-            // 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋ループコネクション
+            // 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋接続パターン
             const simulationPattern = buildSimulationPattern(createdPattern, loopConnection);
 
             // 「作成されたパターンについて」セクション
@@ -906,9 +906,9 @@
                 // 前後の状態が異なり、作成されたパターン単体ではループ不可能な場合
                 connectionNotice.style.display = 'flex';
 
-                // ① 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋ループコネクション
+                // ① 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋接続パターン
                 document.getElementById('loopOption1').textContent = simulationPattern;
-                // ② 作成されたパターン＋ループコネクション
+                // ② 作成されたパターン＋接続パターン
                 document.getElementById('loopOption2').textContent = createdPattern + loopConnection;
             } else {
                 // ループ接続パターンが不要（前後の状態が同じ）な場合
