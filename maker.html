@@ -414,7 +414,119 @@
             font-size: 13px;
             color: #555;
             margin-top: 8px;
+            margin-bottom: 8px;
             line-height: 1.5;
+        }
+
+        /* クリックでシミュレーションを開けるパターン */
+        .connection-notice .notice-value.pattern-clickable {
+            cursor: pointer;
+            background: #DBE2EF;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: none;
+            text-align: left;
+            width: 100%;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+        }
+
+        .connection-notice .notice-value.pattern-clickable:hover {
+            background: #3F72AF;
+            color: #F9F7F7;
+            box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
+        }
+
+        /* 簡易シミュレータ モーダル */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .modal-overlay.visible {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #F9F7F7;
+            border-radius: 16px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 2px solid #DBE2EF;
+            position: sticky;
+            top: 0;
+            background: #F9F7F7;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #3F72AF;
+            font-size: 18px;
+            font-family: monospace;
+            max-width: calc(100% - 50px);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #666;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .modal-close:hover {
+            color: #112D4E;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-body .simulation-container {
+            max-width: 300px;
+            margin: 0 auto 16px;
+        }
+
+        .modal-pattern-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .modal-pattern-value {
+            font-family: monospace;
+            font-size: 16px;
+            font-weight: bold;
+            color: #112D4E;
+            word-break: break-all;
+            overflow-wrap: break-word;
+            margin-bottom: 8px;
         }
     </style>
 </head>
@@ -548,16 +660,16 @@
                         <div class="notice-content">
                             <div class="notice-title">作成されたパターンについて</div>
                             <div class="notice-explanation">
-                                作成されたパターンは、前後の状態が異なるため、ループ不可能です。そのため、シミュレータで確認したい場合は、<strong>直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋ループコネクション</strong>または、<strong>作成されたパターン＋ループコネクション</strong>とする必要があります。
+                                作成されたパターンは、前後の状態が異なるため、ループ不可能です。そのため、シミュレータで確認したい場合は、以下のように記述する必要があります。
                             </div>
                             <div class="notice-details">
                                 <div class="notice-row">
                                     <span class="notice-label">直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋ループコネクション：</span>
-                                    <span class="notice-value highlight" id="loopOption1">-</span>
+                                    <button type="button" class="notice-value highlight pattern-clickable" id="loopOption1" title="クリックしてシミュレーション">-</button>
                                 </div>
                                 <div class="notice-row">
                                     <span class="notice-label">作成されたパターン＋ループコネクション：</span>
-                                    <span class="notice-value highlight" id="loopOption2">-</span>
+                                    <button type="button" class="notice-value highlight pattern-clickable" id="loopOption2" title="クリックしてシミュレーション">-</button>
                                 </div>
                             </div>
                         </div>
@@ -585,6 +697,24 @@
             </a>
             <p>&copy; 2021-2026 サイトスワップマスター</p>
         </footer>
+    </div>
+
+    <!-- 簡易シミュレータ モーダル -->
+    <div class="modal-overlay" id="simModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="simModalTitle">-</h3>
+                <button class="modal-close" id="simModalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="simulation-container">
+                    <iframe id="simModalFrame" src="" scrolling="no"></iframe>
+                </div>
+                <div class="modal-pattern-label">シミュレーション中のパターン</div>
+                <div class="modal-pattern-value" id="simModalPattern">-</div>
+                <a href="#" class="simulation-link" id="simModalLink" target="_blank">シミュレーションページで開く</a>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -874,6 +1004,55 @@
             if (e.key === 'Enter') {
                 startCreation();
             }
+        });
+
+        // ===== 簡易シミュレータ モーダル =====
+        const simModal = document.getElementById('simModal');
+        const simModalClose = document.getElementById('simModalClose');
+        const simModalTitle = document.getElementById('simModalTitle');
+        const simModalFrame = document.getElementById('simModalFrame');
+        const simModalPattern = document.getElementById('simModalPattern');
+        const simModalLink = document.getElementById('simModalLink');
+
+        // 指定したパターンで簡易シミュレータを開く
+        function openSimulatorModal(pattern) {
+            if (!pattern || pattern === '-') {
+                return;
+            }
+            simModalTitle.textContent = pattern;
+            simModalPattern.textContent = pattern;
+
+            updateSimulation(simModalFrame, pattern);
+            simModalLink.href = `simulation?encoded-pattern=${encodeURIComponent(pattern)}`;
+
+            simModal.classList.add('visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // モーダルを閉じる（iframeはsrcを維持して再表示を高速化）
+        function closeSimulatorModal() {
+            simModal.classList.remove('visible');
+            document.body.style.overflow = '';
+        }
+
+        simModalClose.addEventListener('click', closeSimulatorModal);
+        simModal.addEventListener('click', function (e) {
+            if (e.target === simModal) {
+                closeSimulatorModal();
+            }
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && simModal.classList.contains('visible')) {
+                closeSimulatorModal();
+            }
+        });
+
+        // パターンをクリックすると簡易シミュレータを開く
+        document.getElementById('loopOption1').addEventListener('click', function () {
+            openSimulatorModal(this.textContent);
+        });
+        document.getElementById('loopOption2').addEventListener('click', function () {
+            openSimulatorModal(this.textContent);
         });
     </script>
 </body>
