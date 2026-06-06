@@ -542,30 +542,22 @@
                         <div class="final-pattern" id="finalPattern">-</div>
                     </div>
 
-                    <!-- 接続パターン追加通知 -->
+                    <!-- 作成されたパターンについて -->
                     <div class="connection-notice" id="connectionNotice" style="display: none;">
                         <div class="notice-icon">ℹ️</div>
                         <div class="notice-content">
-                            <div class="notice-title">接続パターンを自動追加しました</div>
+                            <div class="notice-title">作成されたパターンについて</div>
+                            <div class="notice-explanation">
+                                作成されたパターンは、前後の状態が異なるため、ループ不可能です。そのため、シミュレータで確認したい場合は、<strong>直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋ループコネクション</strong>または、<strong>作成されたパターン＋ループコネクション</strong>とする必要があります。
+                            </div>
                             <div class="notice-details">
                                 <div class="notice-row">
-                                    <span class="notice-label">作成したパターン:</span>
-                                    <span class="notice-value" id="userCreatedPattern">-</span>
+                                    <span class="notice-label">直前のサイトスワップ＋作成されたパターン＋直後のサイトスワップ＋ループコネクション：</span>
+                                    <span class="notice-value highlight" id="loopOption1">-</span>
                                 </div>
                                 <div class="notice-row">
-                                    <span class="notice-label">直後のサイトスワップ:</span>
-                                    <span class="notice-value" id="endPatternDisplay">-</span>
-                                </div>
-                                <div class="notice-row">
-                                    <span class="notice-label">追加された接続:</span>
-                                    <span class="notice-value highlight" id="addedConnection">-</span>
-                                </div>
-                                <div class="notice-row">
-                                    <span class="notice-label">直前のサイトスワップ:</span>
-                                    <span class="notice-value" id="startPatternDisplay">-</span>
-                                </div>
-                                <div class="notice-explanation">
-                                    直前と直後のサイトスワップの状態が異なるため、シミュレーションでループ可能にするための接続パターン（直後ss→直前ss）を自動的に計算して追加しました。
+                                    <span class="notice-label">作成されたパターン＋ループコネクション：</span>
+                                    <span class="notice-value highlight" id="loopOption2">-</span>
                                 </div>
                             </div>
                         </div>
@@ -705,10 +697,10 @@
                 completionPatternEl.textContent = `終了ボタンを押すと「${completion}」が追加されて完成します`;
             }
 
-            // プレビュー更新（ループ接続パターンも含む）
-            const basePattern = maker.getCurrentPatternString() + completion;
+            // プレビュー更新（直前ss＋作成中パターン＋直後ss＋ループコネクション）
+            const createdPattern = maker.getCurrentPatternString() + completion;
             const loopConnection = maker.getLoopConnection();
-            const previewPattern = basePattern + loopConnection;
+            const previewPattern = buildSimulationPattern(createdPattern, loopConnection);
 
             if (previewPattern) {
                 updateSimulation(previewFrame, previewPattern);
@@ -740,6 +732,27 @@
         }
 
 
+        // 直前/直後のサイトスワップを、大体10文字を超えるまで繰り返した文字列にする
+        // 例: "5" → "55555555555", "744" → "744744744744", "123456789" → "123456789123456789"
+        function repeatPatternToExceed(pattern, minLength = 10) {
+            if (!pattern) {
+                return '';
+            }
+            let result = pattern;
+            while (result.length <= minLength) {
+                result += pattern;
+            }
+            return result;
+        }
+
+        // シミュレーション用のループパターンを生成する
+        // 「直前のサイトスワップ（繰り返し）＋作成されたパターン＋直後のサイトスワップ（繰り返し）＋ループコネクション」
+        function buildSimulationPattern(createdPattern, loopConnection) {
+            const repeatedStart = repeatPatternToExceed(maker.startPattern);
+            const repeatedEnd = repeatPatternToExceed(maker.endPattern);
+            return repeatedStart + createdPattern + repeatedEnd + loopConnection;
+        }
+
         // 完成
         function complete() {
             // 完全なループパターンを生成
@@ -747,44 +760,34 @@
             const userCreatedPattern = result.userPattern;
             const toEndConnection = result.toEndConnection;
             const loopConnection = result.loopConnection;
-            const completeLoopPattern = result.pattern;
 
-            // 表示用のパターン（ユーザーが作成した部分 + 直後への接続）
-            const displayPattern = userCreatedPattern + toEndConnection;
-            finalPatternEl.textContent = displayPattern;
+            // 作成されたパターン（ユーザーが作成した部分 + 直後への接続）
+            const createdPattern = userCreatedPattern + toEndConnection;
+            finalPatternEl.textContent = createdPattern;
 
-            // 接続パターンが追加された場合の通知
+            // シミュレーション用パターン
+            // 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋ループコネクション
+            const simulationPattern = buildSimulationPattern(createdPattern, loopConnection);
+
+            // 「作成されたパターンについて」セクション
             const connectionNotice = document.getElementById('connectionNotice');
-            const userCreatedPatternEl = document.getElementById('userCreatedPattern');
-            const addedConnectionEl = document.getElementById('addedConnection');
-            const endPatternDisplayEl = document.getElementById('endPatternDisplay');
-            const startPatternDisplayEl = document.getElementById('startPatternDisplay');
 
             if (loopConnection && loopConnection !== '') {
-                // ループ接続パターンが追加された場合
+                // 前後の状態が異なり、作成されたパターン単体ではループ不可能な場合
                 connectionNotice.style.display = 'flex';
-                userCreatedPatternEl.textContent = displayPattern;
-                addedConnectionEl.textContent = loopConnection;
 
-                // 直後のサイトスワップ（空の場合は基底状態を表示）
-                const endPattern = maker.endPattern && maker.endPattern.trim() !== ''
-                    ? maker.endPattern
-                    : SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
-                endPatternDisplayEl.textContent = endPattern;
-
-                // 直前のサイトスワップ（空の場合は基底状態を表示）
-                const startPattern = maker.startPattern && maker.startPattern.trim() !== ''
-                    ? maker.startPattern
-                    : SiteswapProcessor.CONVERT[maker.propCount] || maker.propCount.toString();
-                startPatternDisplayEl.textContent = startPattern;
+                // ① 直前ss（繰り返し）＋作成されたパターン＋直後ss（繰り返し）＋ループコネクション
+                document.getElementById('loopOption1').textContent = simulationPattern;
+                // ② 作成されたパターン＋ループコネクション
+                document.getElementById('loopOption2').textContent = createdPattern + loopConnection;
             } else {
-                // ループ接続パターンが不要な場合
+                // ループ接続パターンが不要（前後の状態が同じ）な場合
                 connectionNotice.style.display = 'none';
             }
 
-            // シミュレーション設定（完全なループパターンを使用）
-            const encodedPattern = encodeURIComponent(completeLoopPattern);
-            updateSimulation(finalFrame, completeLoopPattern);
+            // シミュレーション設定
+            const encodedPattern = encodeURIComponent(simulationPattern);
+            updateSimulation(finalFrame, simulationPattern);
             simulationLink.href = `simulation?encoded-pattern=${encodedPattern}`;
 
             // セクション切り替え
