@@ -539,6 +539,24 @@
 
                                     <div class="checkbox-group">
                                         <label>
+                                            <input type="checkbox" id="isSyncPattern">
+                                            <span>シンクロで生成</span>
+                                        </label>
+                                        <span class="hint">シンクロサイトスワップとして出力（可能なものは短縮表記）</span>
+                                    </div>
+
+                                    <div class="checkbox-group">
+                                        <label>
+                                            <input type="checkbox" id="isGroundStateOnly">
+                                            <span>基底状態から入れるもののみ</span>
+                                        </label>
+                                        <span class="hint">カスケードやファウンテンなどの基底状態から直接入れるパターンのみ生成</span>
+                                    </div>
+
+                                    <hr class="divider">
+
+                                    <div class="checkbox-group">
+                                        <label>
                                             <input type="checkbox" id="isRandom">
                                             <span>ランダム出力</span>
                                         </label>
@@ -641,7 +659,7 @@
             });
         });
     </script>
-    <script src="assets/js/siteswapGenerator.js?ver=1.0.0"></script>
+    <script src="assets/js/siteswapGenerator.js?ver=1.1.0"></script>
     <script src="assets/js/siteswapProcessor.js?ver=1.1.4"></script>
     <script src="assets/js/siteswapLab.js?ver=1.5.6"></script>
     <script>
@@ -657,6 +675,8 @@
         const excNumInput = document.getElementById('excNumInput');
         const randomCountInput = document.getElementById('randomCountInput');
         const isRandomCheckbox = document.getElementById('isRandom');
+        const isSyncPatternCheckbox = document.getElementById('isSyncPattern');
+        const isGroundStateOnlyCheckbox = document.getElementById('isGroundStateOnly');
         const randomCountGroup = document.getElementById('randomCountGroup');
         const generateBtn = document.getElementById('generateBtn');
         const statusCard = document.getElementById('statusCard');
@@ -914,6 +934,10 @@
             const isDescending = sortOrder === 'descending';
             const isReverseOutput = outputOrder === 'ascending';
             const isRandom = isRandomCheckbox.checked;
+            const generatorOptions = {
+                isSync: isSyncPatternCheckbox.checked,
+                isGroundStateOnly: isGroundStateOnlyCheckbox.checked
+            };
 
             // 状態を更新
             generateBtn.disabled = true;
@@ -942,7 +966,8 @@
                             isDescending,
                             excNumConverted,
                             isReverseOutput,
-                            randomCount
+                            randomCount,
+                            generatorOptions
                         );
                     } else {
                         result = SiteswapGenerator.create(
@@ -951,7 +976,8 @@
                             maxh,
                             isDescending,
                             excNumConverted,
-                            isReverseOutput
+                            isReverseOutput,
+                            generatorOptions
                         );
                     }
 

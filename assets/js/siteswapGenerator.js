@@ -1,5 +1,5 @@
 class SiteswapGenerator {
-    static VERSION = "1.0.0";
+    static VERSION = "1.1.0";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000;
     static #CONVERT = (() => {
@@ -9,6 +9,8 @@ class SiteswapGenerator {
         }
         return convert;
     })();
+    // シンクロ表記では奇数値が左手側で+1されるため、投げの最大値は34(y)までに制限する
+    static #SYNC_MAX_NUM = 34;
 
     /**
      * サイトスワップパターンを生成します
@@ -18,12 +20,21 @@ class SiteswapGenerator {
      * @param {boolean} isSort - 降順ソートするかどうか
      * @param {Array<number>} excNumL - 除外する数字のリスト
      * @param {boolean} isReverseOutput - 結果リストを反転するかどうか（昇順出力）
+     * @param {Object} options - 追加オプション
+     * @param {boolean} options.isSync - シンクロサイトスワップとして生成するかどうか
+     * @param {boolean} options.isGroundStateOnly - 基底状態から直接入れるパターンのみ生成するかどうか
      * @returns {{results: string[], error: string}} 生成されたパターンとエラーメッセージ
      */
-    static create(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false) {
+    static create(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false, options = {}) {
+        const isSync = !!(options && options.isSync);
+        const isGroundStateOnly = !!(options && options.isGroundStateOnly);
+
         // 入力検証
         if (isNaN(ballInputNum) || ballInputNum < 0 || ballInputNum > 35) {
             return { results: [], error: 'ボールの数は0〜35の範囲で入力してください' };
+        }
+        if (isSync && ballInputNum > this.#SYNC_MAX_NUM) {
+            return { results: [], error: 'シンクロ生成ではボールの数は0〜34の範囲で入力してください' };
         }
         if (periodInputNum !== null && periodInputNum !== undefined && periodInputNum !== '' &&
             (isNaN(periodInputNum) || periodInputNum < 0 || periodInputNum > 10)) {
@@ -36,12 +47,14 @@ class SiteswapGenerator {
             return { results: [], error: '最大の高さはボールの数以上を指定してください' };
         }
 
+        const genOptions = { isSync, isGroundStateOnly };
+
         // 周期が指定されていない場合は1〜5周期を生成
         if (periodInputNum === null || periodInputNum === undefined || periodInputNum === '') {
-            return this.#createMultiplePeriods(ballInputNum, maxhInputNum, isSort, excNumL, isReverseOutput);
+            return this.#createMultiplePeriods(ballInputNum, maxhInputNum, isSort, excNumL, isReverseOutput, genOptions);
         }
 
-        const result = this.#createSinglePeriod(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, performance.now(), this.#TIMEOUT);
+        const result = this.#createSinglePeriod(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, performance.now(), this.#TIMEOUT, genOptions);
 
         // 出力順が昇順の場合、結果リストを反転する
         if (isReverseOutput && result.results.length > 0) {
@@ -53,11 +66,18 @@ class SiteswapGenerator {
 
     /**
      * 単一周期のサイトスワップパターンを生成します（内部メソッド）
+     * @param {Object} genOptions - 生成オプション {isSync, isGroundStateOnly, excludeRepetition}
      */
-    static #createSinglePeriod(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, startTime, timeout) {
+    static #createSinglePeriod(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, startTime, timeout, genOptions = {}) {
         const period = periodInputNum;
         const targetSum = ballInputNum * period;
-        const maxNum = Math.min(targetSum, maxhInputNum);
+        const isSync = !!genOptions.isSync;
+        const isGroundStateOnly = !!genOptions.isGroundStateOnly;
+        const excludeRepetition = !!genOptions.excludeRepetition;
+        let maxNum = Math.min(targetSum, maxhInputNum);
+        if (isSync) {
+            maxNum = Math.min(maxNum, this.#SYNC_MAX_NUM);
+        }
         const minNum = ballInputNum;
         const excNumLSet = new Set(excNumL);
         const convert = this.#CONVERT;
@@ -67,28 +87,62 @@ class SiteswapGenerator {
         const seenPatterns = new Set();
         let erValue = "";
 
+        // クラス内プライベートメソッドへの参照（内部関数から利用するため）
+        const isRepetitionFn = (str) => this.#isRepetition(str);
+        const groundRotationsFn = (pattern) => this.#groundRotations(pattern, ballInputNum);
+        const syncDisplayFn = (pattern, rotations) => this.#syncDisplayString(pattern, rotations);
+        // シンクロ表示用: 全回転を候補にする（先頭は生成された回転）
+        const allRotations = [];
+        for (let i = 0; i < period; i++) allRotations.push(i);
+
+        function rotationString(pattern, offset) {
+            let str = '';
+            for (let j = 0; j < period; j++) {
+                str += convert[pattern[(offset + j) % period]];
+            }
+            return str;
+        }
+
         function addPattern(pattern) {
             const patternStr = pattern.map(v => convert[v]).join('');
 
             if (seenPatterns.has(patternStr)) return;
 
+            const rotationStrs = [];
             for (let i = 1; i < period; i++) {
-                const rotated = [];
-                for (let j = 0; j < period; j++) {
-                    rotated.push(pattern[(i + j) % period]);
-                }
-                if (seenPatterns.has(rotated.map(v => convert[v]).join(''))) return;
+                const rotated = rotationString(pattern, i);
+                if (seenPatterns.has(rotated)) return;
+                rotationStrs.push(rotated);
             }
 
-            results.push(patternStr);
+            // 回転もまとめて登録（フィルタで除外しても再判定しないように先に登録する）
             seenPatterns.add(patternStr);
-            for (let i = 1; i < period; i++) {
-                const rotated = [];
-                for (let j = 0; j < period; j++) {
-                    rotated.push(pattern[(i + j) % period]);
-                }
-                seenPatterns.add(rotated.map(v => convert[v]).join(''));
+            for (const rotated of rotationStrs) {
+                seenPatterns.add(rotated);
             }
+
+            // 短い周期の繰り返しパターンを除外（複数周期生成時のみ）
+            if (excludeRepetition && isRepetitionFn(patternStr)) return;
+
+            // 基底状態フィルタ: 基底状態から直接入れる回転が無ければ除外
+            let groundRotations = null;
+            if (isGroundStateOnly) {
+                groundRotations = groundRotationsFn(pattern);
+                if (groundRotations.length === 0) return;
+            }
+
+            let display;
+            if (isSync) {
+                // シンクロ表記に変換（基底状態フィルタ時は基底状態になる回転のみ候補にする）
+                display = syncDisplayFn(pattern, groundRotations || allRotations);
+            } else if (groundRotations && groundRotations[0] !== 0) {
+                // 基底状態になる回転で表示する
+                display = rotationString(pattern, groundRotations[0]);
+            } else {
+                display = patternStr;
+            }
+
+            results.push(display);
         }
 
         function generate(remaining, numLeft, current, landingTimes) {
@@ -167,6 +221,110 @@ class SiteswapGenerator {
     }
 
     /**
+     * 基底状態から直接入れる回転（開始位置）の一覧を返します（内部メソッド）
+     * 「基底状態から直接入れる」⟺「パターンの状態(state)が {0,1,...,ボール数-1} と一致」であり、
+     * 有効なサイトスワップでは状態の要素数がボール数と一致するため、
+     * 「すべての着地時刻がボール数未満」であることを確認すれば十分です。
+     * 状態計算は siteswapLab.js の #calculateState と同一アルゴリズムです。
+     * シンクロ変換は状態を変えないため、シンクロ生成時もこの判定をそのまま使用できます。
+     * @param {Array<number>} pattern - パターンの数値配列
+     * @param {number} balls - ボール数
+     * @returns {Array<number>} 基底状態になる回転オフセットの配列（昇順）
+     */
+    static #groundRotations(pattern, balls) {
+        const period = pattern.length;
+        let maxHeight = 0;
+        for (const v of pattern) {
+            if (v > maxHeight) maxHeight = v;
+        }
+
+        const rotations = [];
+        for (let r = 0; r < period; r++) {
+            let isGround = true;
+            for (let i = 0; i < maxHeight; i++) {
+                // 回転rのパターンを逆順に走査して着地時刻を計算
+                const num = pattern[(r + period - 1 - (i % period)) % period];
+                if (num - (i + 1) >= balls) {
+                    isGround = false;
+                    break;
+                }
+            }
+            if (isGround) rotations.push(r);
+        }
+        return rotations;
+    }
+
+    /**
+     * アシンクロパターンをシンクロ表記の文字列に変換します（内部メソッド）
+     * 変換規則は siteswapLab.js の convertAsyncToSync と同一:
+     * 右手（偶数インデックス）の奇数値は -1 してクロス、左手（奇数インデックス）の奇数値は +1 してクロス。
+     * 奇数周期のパターンは2倍に繰り返してから変換します。
+     * 候補の回転の中から短縮表記(*)が可能なものを優先して選び、
+     * 無ければ先頭の回転候補を完全表記で出力します。
+     * @param {Array<number>} pattern - アシンクロパターンの数値配列
+     * @param {Array<number>} rotationCandidates - 表示に使用してよい回転オフセットの配列（先頭が優先）
+     * @returns {string} シンクロ表記の文字列
+     */
+    static #syncDisplayString(pattern, rotationCandidates) {
+        const period = pattern.length;
+        const convert = this.#CONVERT;
+
+        // 回転オフセットからシンクロの投げ配列（{num, cross}）を構築
+        const buildThrows = (offset) => {
+            const length = period % 2 === 1 ? period * 2 : period;
+            const throws = [];
+            for (let i = 0; i < length; i++) {
+                const num = pattern[(offset + i) % period];
+                if (num % 2 === 1) {
+                    // 奇数値: 右手(偶数インデックス)は-1、左手(奇数インデックス)は+1してクロス
+                    throws.push({ num: i % 2 === 0 ? num - 1 : num + 1, cross: true });
+                } else {
+                    throws.push({ num, cross: false });
+                }
+            }
+            return throws;
+        };
+
+        // 投げ配列の[from, to)区間を(右手,左手)ペアの文字列に変換
+        const formatPairs = (throws, from, to) => {
+            let str = '';
+            for (let i = from; i < to; i += 2) {
+                const right = convert[throws[i].num] + (throws[i].cross ? 'x' : '');
+                const left = convert[throws[i + 1].num] + (throws[i + 1].cross ? 'x' : '');
+                str += `(${right},${left})`;
+            }
+            return str;
+        };
+
+        // 短縮表記(*)の探索: ペア数kが偶数で、後半のペアが前半のペアの左右入れ替えになっている回転を探す
+        const length = period % 2 === 1 ? period * 2 : period;
+        const pairCount = length / 2;
+        if (pairCount % 2 === 0) {
+            for (const offset of rotationCandidates) {
+                const throws = buildThrows(offset);
+                let isMirror = true;
+                for (let j = 0; j < pairCount / 2 && isMirror; j++) {
+                    const right = throws[2 * j];
+                    const left = throws[2 * j + 1];
+                    const mirroredRight = throws[2 * j + pairCount];
+                    const mirroredLeft = throws[2 * j + pairCount + 1];
+                    if (mirroredRight.num !== left.num || mirroredRight.cross !== left.cross ||
+                        mirroredLeft.num !== right.num || mirroredLeft.cross !== right.cross) {
+                        isMirror = false;
+                    }
+                }
+                if (isMirror) {
+                    return formatPairs(throws, 0, pairCount) + '*';
+                }
+            }
+        }
+
+        // 短縮表記できない場合は先頭の回転候補を完全表記で出力
+        const throws = buildThrows(rotationCandidates[0]);
+        return formatPairs(throws, 0, throws.length);
+    }
+
+    /**
      * パターンが短い周期の繰り返しかどうかをチェックします（内部メソッド）
      * @param {string} pattern - チェックするパターン文字列
      * @returns {boolean} 繰り返しパターンの場合はtrue
@@ -195,8 +353,9 @@ class SiteswapGenerator {
 
     /**
      * 1〜5周期のサイトスワップパターンを生成します（内部メソッド）
+     * @param {Object} genOptions - 生成オプション {isSync, isGroundStateOnly}
      */
-    static #createMultiplePeriods(ballInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false) {
+    static #createMultiplePeriods(ballInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false, genOptions = {}) {
         const startTime = performance.now();
         const timeout = this.#TIMEOUT;
         const allResults = [];
@@ -211,19 +370,19 @@ class SiteswapGenerator {
                 isSort,
                 excNumL,
                 startTime,
-                timeout
+                timeout,
+                // 短い周期の繰り返しパターンの除外は生成時（アシンクロ文字列段階）に行う
+                // （シンクロ変換後の文字列では繰り返し判定ができないため）
+                { ...genOptions, excludeRepetition: true }
             );
 
-            // 短い周期の繰り返しパターンを除外
-            const filteredResults = results.filter(pattern => !this.#isRepetition(pattern));
-
             // 出力順が昇順の場合、各周期の結果を反転する（周期の順番は1~5で固定）
-            if (isReverseOutput && filteredResults.length > 0) {
-                filteredResults.reverse();
+            if (isReverseOutput && results.length > 0) {
+                results.reverse();
             }
 
             // 結果を追加
-            allResults.push(...filteredResults);
+            allResults.push(...results);
 
             // エラーが発生した場合（タイムアウトまたは結果数上限）
             if (error) {
@@ -250,16 +409,17 @@ class SiteswapGenerator {
      * @param {Array<number>} excNumL - 除外する数字のリスト
      * @param {boolean} isReverseOutput - 結果リストを反転するかどうか（昇順出力）
      * @param {number} count - 取得するパターン数
+     * @param {Object} options - 追加オプション（createメソッドと同じ）
      * @returns {{results: string[], error: string}} ランダムに選ばれたパターンとエラーメッセージ
      */
-    static createRandom(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false, count) {
+    static createRandom(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, isReverseOutput = false, count, options = {}) {
         // ランダム出力数の検証
         if (isNaN(count) || count < 1) {
             return { results: [], error: 'ランダム出力数は1以上を指定してください' };
         }
 
         // ランダム出力の場合、出力順は無視（シャッフルするため）
-        const { results, error } = this.create(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, false);
+        const { results, error } = this.create(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, false, options);
 
         // createメソッドでエラーがあった場合はそのまま返す
         if (error && results.length === 0) {
