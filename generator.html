@@ -160,12 +160,12 @@
             justify-content: center;
             min-width: 80px;
             padding: 8px 16px;
-            background: #DBE2EF;
+            background: #3F72AF;
             border-radius: 12px;
             font-size: 18px;
             font-weight: bold;
             font-family: monospace;
-            color: #112D4E;
+            color: #F9F7F7;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -173,7 +173,7 @@
         }
 
         .result-chip:hover {
-            background: #3F72AF;
+            background: #112D4E;
             color: #F9F7F7;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
@@ -291,6 +291,11 @@
             border: none;
             border-top: 2px solid #DBE2EF;
             margin: 24px 0;
+        }
+
+        .settings-accordion .accordion-item.active .accordion-content {
+            max-height: none;
+            overflow: visible;
         }
 
         /* モーダル */
@@ -539,6 +544,23 @@
 
                                     <div class="checkbox-group">
                                         <label>
+                                            <input type="checkbox" id="isSyncPattern">
+                                            <span>シンクロ生成</span>
+                                        </label>
+                                    </div>
+
+                                    <div class="checkbox-group">
+                                        <label>
+                                            <input type="checkbox" id="isGroundStateOnly">
+                                            <span>基底状態から直接のみ</span>
+                                        </label>
+                                        <span class="hint" id="groundStateOnlyHint">カスケードやファウンテンから直接入れるもののみ生成</span>
+                                    </div>
+
+                                    <hr class="divider">
+
+                                    <div class="checkbox-group">
+                                        <label>
                                             <input type="checkbox" id="isRandom">
                                             <span>ランダム出力</span>
                                         </label>
@@ -641,7 +663,7 @@
             });
         });
     </script>
-    <script src="assets/js/siteswapGenerator.js?ver=1.0.0"></script>
+    <script src="assets/js/siteswapGenerator.js?ver=1.1.1"></script>
     <script src="assets/js/siteswapProcessor.js?ver=1.1.4"></script>
     <script src="assets/js/siteswapLab.js?ver=1.5.6"></script>
     <script>
@@ -657,6 +679,9 @@
         const excNumInput = document.getElementById('excNumInput');
         const randomCountInput = document.getElementById('randomCountInput');
         const isRandomCheckbox = document.getElementById('isRandom');
+        const isSyncPatternCheckbox = document.getElementById('isSyncPattern');
+        const isGroundStateOnlyCheckbox = document.getElementById('isGroundStateOnly');
+        const groundStateOnlyHint = document.getElementById('groundStateOnlyHint');
         const randomCountGroup = document.getElementById('randomCountGroup');
         const generateBtn = document.getElementById('generateBtn');
         const statusCard = document.getElementById('statusCard');
@@ -679,6 +704,15 @@
         isRandomCheckbox.addEventListener('change', function () {
             randomCountGroup.style.display = this.checked ? 'block' : 'none';
         });
+
+        function updateGroundStateOnlyHint() {
+            groundStateOnlyHint.textContent = isSyncPatternCheckbox.checked
+                ? '(6x,4)*や(4,4)から直接入れるもののみ生成'
+                : 'カスケードやファウンテンから直接入れるもののみ生成';
+        }
+
+        isSyncPatternCheckbox.addEventListener('change', updateGroundStateOnlyHint);
+        updateGroundStateOnlyHint();
 
         // 全角数字を半角に変換
         function convertFullWidthToHalfWidth(input) {
@@ -914,6 +948,10 @@
             const isDescending = sortOrder === 'descending';
             const isReverseOutput = outputOrder === 'ascending';
             const isRandom = isRandomCheckbox.checked;
+            const generatorOptions = {
+                isSync: isSyncPatternCheckbox.checked,
+                isGroundStateOnly: isGroundStateOnlyCheckbox.checked
+            };
 
             // 状態を更新
             generateBtn.disabled = true;
@@ -942,7 +980,8 @@
                             isDescending,
                             excNumConverted,
                             isReverseOutput,
-                            randomCount
+                            randomCount,
+                            generatorOptions
                         );
                     } else {
                         result = SiteswapGenerator.create(
@@ -951,7 +990,8 @@
                             maxh,
                             isDescending,
                             excNumConverted,
-                            isReverseOutput
+                            isReverseOutput,
+                            generatorOptions
                         );
                     }
 

@@ -29,7 +29,7 @@
 | `assets/js/siteswapLab.js` | `1.5.6` | 数値計算・ロジックライブラリ |
 | `assets/js/siteswapProcessor.js` | `1.1.4` | サイトスワップ解析・データ処理 |
 | `assets/js/siteswapMaker.js` | `1.5.1` | オリジナルパターン作成補助 |
-| `assets/js/siteswapGenerator.js` | `1.0.0` | パターン生成エンジン |
+| `assets/js/siteswapGenerator.js` | `1.1.1` | パターン生成エンジン |
 | `assets/js/syncPatternInput.js` | `1.0.1` | パターン入力支援インターフェース |
 | `assets/js/samplePatterns.js` | `1.0.2` | サンプルパターン選択モーダルのロジック |
 | `assets/js/canvasRecorder.js` | `1.6.0` | canvas を MP4 動画として保存する録画機能 |
