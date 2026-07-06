@@ -1,5 +1,5 @@
 class SiteswapGenerator {
-    static VERSION = "1.1.0";
+    static VERSION = "1.1.1";
     static #TIMEOUT = 5000; // 5秒でタイムアウト
     static #RESULT_MAX = 100000;
     static #CONVERT = (() => {
@@ -66,7 +66,7 @@ class SiteswapGenerator {
 
     /**
      * 単一周期のサイトスワップパターンを生成します（内部メソッド）
-     * @param {Object} genOptions - 生成オプション {isSync, isGroundStateOnly, excludeRepetition}
+     * @param {Object} genOptions - 生成オプション {isSync, isGroundStateOnly, excludeRepetition, seenSyncDisplays}
      */
     static #createSinglePeriod(ballInputNum, periodInputNum, maxhInputNum, isSort, excNumL, startTime, timeout, genOptions = {}) {
         const period = periodInputNum;
@@ -85,6 +85,7 @@ class SiteswapGenerator {
 
         const results = [];
         const seenPatterns = new Set();
+        const seenSyncDisplays = isSync ? (genOptions.seenSyncDisplays || new Set()) : null;
         let erValue = "";
 
         // クラス内プライベートメソッドへの参照（内部関数から利用するため）
@@ -134,7 +135,11 @@ class SiteswapGenerator {
             let display;
             if (isSync) {
                 // シンクロ表記に変換（基底状態フィルタ時は基底状態になる回転のみ候補にする）
-                display = syncDisplayFn(pattern, groundRotations || allRotations);
+                const syncDisplay = syncDisplayFn(pattern, groundRotations || allRotations);
+                if (syncDisplay === null) return;
+                if (seenSyncDisplays.has(syncDisplay.key)) return;
+                seenSyncDisplays.add(syncDisplay.key);
+                display = syncDisplay.display;
             } else if (groundRotations && groundRotations[0] !== 0) {
                 // 基底状態になる回転で表示する
                 display = rotationString(pattern, groundRotations[0]);
@@ -259,11 +264,13 @@ class SiteswapGenerator {
      * 変換規則は siteswapLab.js の convertAsyncToSync と同一:
      * 右手（偶数インデックス）の奇数値は -1 してクロス、左手（奇数インデックス）の奇数値は +1 してクロス。
      * 奇数周期のパターンは2倍に繰り返してから変換します。
+     * 0xを含む回転候補は除外します。
      * 候補の回転の中から短縮表記(*)が可能なものを優先して選び、
      * 無ければ先頭の回転候補を完全表記で出力します。
+     * 右手・左手を区別しないため、左右を入れ替えた表記を同一キーとして扱います。
      * @param {Array<number>} pattern - アシンクロパターンの数値配列
      * @param {Array<number>} rotationCandidates - 表示に使用してよい回転オフセットの配列（先頭が優先）
-     * @returns {string} シンクロ表記の文字列
+     * @returns {{display: string, key: string}|null} シンクロ表記と重複判定キー。全候補が0xを含む場合はnull
      */
     static #syncDisplayString(pattern, rotationCandidates) {
         const period = pattern.length;
@@ -285,15 +292,26 @@ class SiteswapGenerator {
             return throws;
         };
 
+        const formatThrow = (throwData) => convert[throwData.num] + (throwData.cross ? 'x' : '');
+
         // 投げ配列の[from, to)区間を(右手,左手)ペアの文字列に変換
-        const formatPairs = (throws, from, to) => {
+        const formatPairs = (throws, from, to, swapHands = false) => {
             let str = '';
             for (let i = from; i < to; i += 2) {
-                const right = convert[throws[i].num] + (throws[i].cross ? 'x' : '');
-                const left = convert[throws[i + 1].num] + (throws[i + 1].cross ? 'x' : '');
+                const right = formatThrow(swapHands ? throws[i + 1] : throws[i]);
+                const left = formatThrow(swapHands ? throws[i] : throws[i + 1]);
                 str += `(${right},${left})`;
             }
             return str;
+        };
+
+        const hasZeroCross = (throws) => throws.some(throwData => throwData.num === 0 && throwData.cross);
+
+        const createDisplayResult = (display, mirrorDisplay) => {
+            return {
+                display,
+                key: mirrorDisplay < display ? mirrorDisplay : display
+            };
         };
 
         // 短縮表記(*)の探索: ペア数kが偶数で、後半のペアが前半のペアの左右入れ替えになっている回転を探す
@@ -302,6 +320,8 @@ class SiteswapGenerator {
         if (pairCount % 2 === 0) {
             for (const offset of rotationCandidates) {
                 const throws = buildThrows(offset);
+                if (hasZeroCross(throws)) continue;
+
                 let isMirror = true;
                 for (let j = 0; j < pairCount / 2 && isMirror; j++) {
                     const right = throws[2 * j];
@@ -314,14 +334,24 @@ class SiteswapGenerator {
                     }
                 }
                 if (isMirror) {
-                    return formatPairs(throws, 0, pairCount) + '*';
+                    const display = formatPairs(throws, 0, pairCount) + '*';
+                    const mirrorDisplay = formatPairs(throws, 0, pairCount, true) + '*';
+                    return createDisplayResult(display, mirrorDisplay);
                 }
             }
         }
 
-        // 短縮表記できない場合は先頭の回転候補を完全表記で出力
-        const throws = buildThrows(rotationCandidates[0]);
-        return formatPairs(throws, 0, throws.length);
+        // 短縮表記できない場合は、0xを含まない最初の回転候補を完全表記で出力
+        for (const offset of rotationCandidates) {
+            const throws = buildThrows(offset);
+            if (hasZeroCross(throws)) continue;
+
+            const display = formatPairs(throws, 0, throws.length);
+            const mirrorDisplay = formatPairs(throws, 0, throws.length, true);
+            return createDisplayResult(display, mirrorDisplay);
+        }
+
+        return null;
     }
 
     /**
@@ -359,6 +389,7 @@ class SiteswapGenerator {
         const startTime = performance.now();
         const timeout = this.#TIMEOUT;
         const allResults = [];
+        const seenSyncDisplays = genOptions.isSync ? new Set() : null;
         let erValue = "";
 
         // 1周期から5周期まで順番に計算
@@ -373,7 +404,7 @@ class SiteswapGenerator {
                 timeout,
                 // 短い周期の繰り返しパターンの除外は生成時（アシンクロ文字列段階）に行う
                 // （シンクロ変換後の文字列では繰り返し判定ができないため）
-                { ...genOptions, excludeRepetition: true }
+                { ...genOptions, excludeRepetition: true, seenSyncDisplays }
             );
 
             // 出力順が昇順の場合、各周期の結果を反転する（周期の順番は1~5で固定）
