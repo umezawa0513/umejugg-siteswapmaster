@@ -160,12 +160,12 @@
             justify-content: center;
             min-width: 80px;
             padding: 8px 16px;
-            background: #DBE2EF;
+            background: #3F72AF;
             border-radius: 12px;
             font-size: 18px;
             font-weight: bold;
             font-family: monospace;
-            color: #112D4E;
+            color: #F9F7F7;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
@@ -173,7 +173,7 @@
         }
 
         .result-chip:hover {
-            background: #3F72AF;
+            background: #112D4E;
             color: #F9F7F7;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(63, 114, 175, 0.3);
@@ -545,9 +545,8 @@
                                     <div class="checkbox-group">
                                         <label>
                                             <input type="checkbox" id="isSyncPattern">
-                                            <span>シンクロで生成</span>
+                                            <span>シンクロ生成</span>
                                         </label>
-                                        <span class="hint">シンクロサイトスワップとして出力（可能なものは短縮表記）</span>
                                     </div>
 
                                     <div class="checkbox-group">
@@ -555,7 +554,7 @@
                                             <input type="checkbox" id="isGroundStateOnly">
                                             <span>基底状態から入れるもののみ</span>
                                         </label>
-                                        <span class="hint">カスケードやファウンテンなどの基底状態から直接入れるパターンのみ生成</span>
+                                        <span class="hint" id="groundStateOnlyHint">カスケードやファウンテンから直接入れるもののみ生成</span>
                                     </div>
 
                                     <hr class="divider">
@@ -682,6 +681,7 @@
         const isRandomCheckbox = document.getElementById('isRandom');
         const isSyncPatternCheckbox = document.getElementById('isSyncPattern');
         const isGroundStateOnlyCheckbox = document.getElementById('isGroundStateOnly');
+        const groundStateOnlyHint = document.getElementById('groundStateOnlyHint');
         const randomCountGroup = document.getElementById('randomCountGroup');
         const generateBtn = document.getElementById('generateBtn');
         const statusCard = document.getElementById('statusCard');
@@ -704,6 +704,15 @@
         isRandomCheckbox.addEventListener('change', function () {
             randomCountGroup.style.display = this.checked ? 'block' : 'none';
         });
+
+        function updateGroundStateOnlyHint() {
+            groundStateOnlyHint.textContent = isSyncPatternCheckbox.checked
+                ? '(6x,4)*や(4,4)から直接入れるもののみ生成'
+                : 'カスケードやファウンテンから直接入れるもののみ生成';
+        }
+
+        isSyncPatternCheckbox.addEventListener('change', updateGroundStateOnlyHint);
+        updateGroundStateOnlyHint();
 
         // 全角数字を半角に変換
         function convertFullWidthToHalfWidth(input) {
